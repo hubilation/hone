@@ -9,13 +9,13 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can sign up with email and password
-- [ ] **AUTH-02**: User can sign in with email and password
+- [x] **AUTH-01**: User can sign up with email and password
+- [x] **AUTH-02**: User can sign in with email and password
 - [ ] **AUTH-03**: User can sign in with Google OAuth
 - [ ] **AUTH-04**: User can sign in with Sign in with Apple
-- [ ] **AUTH-05**: User session persists across app restarts
-- [ ] **AUTH-06**: User can sign out from app
-- [ ] **AUTH-07**: User can reset password via email
+- [x] **AUTH-05**: User session persists across app restarts
+- [x] **AUTH-06**: User can sign out from app
+- [x] **AUTH-07**: User can reset password via email
 
 ### Activity Management
 
@@ -138,13 +138,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
 | AUTH-03 | Phase 1 | Pending |
 | AUTH-04 | Phase 1 | Pending |
-| AUTH-05 | Phase 1 | Pending |
-| AUTH-06 | Phase 1 | Pending |
-| AUTH-07 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Complete |
+| AUTH-06 | Phase 1 | Complete |
+| AUTH-07 | Phase 1 | Complete |
 | ACT-01 | Phase 2 | Pending |
 | ACT-02 | Phase 2 | Pending |
 | ACT-03 | Phase 2 | Pending |
