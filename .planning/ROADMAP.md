@@ -19,7 +19,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Authentication | 0/? | Not started | - |
+| 1. Foundation & Authentication | 0/4 | Ready to execute | - |
 | 2. Activity Management | 0/? | Not started | - |
 | 3. Session Setup & Execution | 0/? | Not started | - |
 | 4. Session History & Statistics | 0/? | Not started | - |
@@ -46,7 +46,13 @@
 7. Firebase security rules prevent unauthorized data access (tested and validated)
 8. App continues to function when device is offline (auth state persists locally)
 
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Firebase SDK integration, data models, repository pattern
+- [ ] 01-02-PLAN.md — Email/password authentication and auth state routing
+- [ ] 01-03-PLAN.md — Google OAuth and Sign in with Apple
+- [ ] 01-04-PLAN.md — Firestore security rules, emulator testing, human verification checkpoint
 
 **Notes**:
 - Critical pitfalls addressed: Timer architecture (date-based calculations), data model with subcollections (prevents 1MB document limit), security rules with tests, Sign in with Apple complete implementation
@@ -293,4 +299,5 @@ Phase 7: App Store Preparation
 ---
 
 *Roadmap created: 2026-03-01*
-*Ready for planning: Phase 1*
+*Phase 1 planned: 2026-03-02*
+*Ready for execution: Phase 1*
