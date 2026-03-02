@@ -19,7 +19,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Authentication | 0/4 | Ready to execute | - |
+| 1. Foundation & Authentication | 1/4 | In progress | - |
 | 2. Activity Management | 0/? | Not started | - |
 | 3. Session Setup & Execution | 0/? | Not started | - |
 | 4. Session History & Statistics | 0/? | Not started | - |
@@ -49,7 +49,7 @@
 **Plans:** 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Firebase SDK integration, data models, repository pattern
+- [x] 01-01-PLAN.md — Firebase SDK integration, data models, repository pattern (completed 2026-03-02)
 - [ ] 01-02-PLAN.md — Email/password authentication and auth state routing
 - [ ] 01-03-PLAN.md — Google OAuth and Sign in with Apple
 - [ ] 01-04-PLAN.md — Firestore security rules, emulator testing, human verification checkpoint

@@ -66,7 +66,7 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 
 ### Platform & Sync
 
-- [ ] **PLAT-01**: App works fully offline (can create activities and practice without internet)
+- [x] **PLAT-01**: App works fully offline (can create activities and practice without internet) - Firebase SDK with offline persistence configured
 - [ ] **PLAT-02**: Data syncs automatically when internet connection restored
 - [ ] **PLAT-03**: User sees offline indicator when not connected
 - [ ] **PLAT-04**: Changes made on web app appear on iOS in real-time when online
@@ -180,7 +180,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POST-04 | Phase 4 | Pending |
 | POST-05 | Phase 2 | Pending |
 | POST-06 | Phase 4 | Pending |
-| PLAT-01 | Phase 1 | Pending |
+| PLAT-01 | Phase 1 | Complete (01-01) |
 | PLAT-02 | Phase 6 | Pending |
 | PLAT-03 | Phase 6 | Pending |
 | PLAT-04 | Phase 4 | Pending |
