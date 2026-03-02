@@ -138,13 +138,79 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (Populated by roadmapper) | | |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| AUTH-06 | Phase 1 | Pending |
+| AUTH-07 | Phase 1 | Pending |
+| ACT-01 | Phase 2 | Pending |
+| ACT-02 | Phase 2 | Pending |
+| ACT-03 | Phase 2 | Pending |
+| ACT-04 | Phase 2 | Pending |
+| ACT-05 | Phase 2 | Pending |
+| ACT-06 | Phase 2 | Pending |
+| ACT-07 | Phase 2 | Pending |
+| ACT-08 | Phase 2 | Pending |
+| ACT-09 | Phase 2 | Pending |
+| SETUP-01 | Phase 3 | Pending |
+| SETUP-02 | Phase 3 | Pending |
+| SETUP-03 | Phase 5 | Pending |
+| SETUP-04 | Phase 3 | Pending |
+| SETUP-05 | Phase 3 | Pending |
+| EXEC-01 | Phase 3 | Pending |
+| EXEC-02 | Phase 3 | Pending |
+| EXEC-03 | Phase 3 | Pending |
+| EXEC-04 | Phase 3 | Pending |
+| EXEC-05 | Phase 3 | Pending |
+| EXEC-06 | Phase 3 | Pending |
+| EXEC-07 | Phase 3 | Pending |
+| EXEC-08 | Phase 3 | Pending |
+| EXEC-09 | Phase 3 | Pending |
+| EXEC-10 | Phase 3 | Pending |
+| EXEC-11 | Phase 3 | Pending |
+| EXEC-12 | Phase 3 | Pending |
+| EXEC-13 | Phase 3 | Pending |
+| EXEC-14 | Phase 3 | Pending |
+| EXEC-15 | Phase 3 | Pending |
+| POST-01 | Phase 4 | Pending |
+| POST-02 | Phase 4 | Pending |
+| POST-03 | Phase 4 | Pending |
+| POST-04 | Phase 4 | Pending |
+| POST-05 | Phase 2 | Pending |
+| POST-06 | Phase 4 | Pending |
+| PLAT-01 | Phase 1 | Pending |
+| PLAT-02 | Phase 6 | Pending |
+| PLAT-03 | Phase 6 | Pending |
+| PLAT-04 | Phase 4 | Pending |
+| PLAT-05 | Phase 4 | Pending |
+| PLAT-06 | Phase 6 | Pending |
+| PLAT-07 | Phase 6 | Pending |
+| PLAT-08 | Phase 6 | Pending |
+| STORE-01 | Phase 7 | Pending |
+| STORE-02 | Phase 7 | Pending |
+| STORE-03 | Phase 7 | Pending |
+| STORE-04 | Phase 7 | Pending |
+| STORE-05 | Phase 7 | Pending |
+| STORE-06 | Phase 7 | Pending |
+| STORE-07 | Phase 7 | Pending |
+| STORE-08 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 53 total
-- Mapped to phases: 0
-- Unmapped: 53 ⚠️
+- Mapped to phases: 53 (100%)
+- Unmapped: 0
+
+**Phase Distribution:**
+- Phase 1 (Foundation & Auth): 8 requirements
+- Phase 2 (Activity Management): 10 requirements
+- Phase 3 (Session Execution): 19 requirements
+- Phase 4 (History & Statistics): 7 requirements
+- Phase 5 (Smart Features): 2 requirements
+- Phase 6 (Platform Integration): 5 requirements
+- Phase 7 (App Store Prep): 8 requirements
 
 ---
 *Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 after initial definition*
+*Last updated: 2026-03-01 after roadmap creation*
