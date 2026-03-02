@@ -11,8 +11,8 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 
 - [x] **AUTH-01**: User can sign up with email and password
 - [x] **AUTH-02**: User can sign in with email and password
-- [ ] **AUTH-03**: User can sign in with Google OAuth
-- [ ] **AUTH-04**: User can sign in with Sign in with Apple
+- [x] **AUTH-03**: User can sign in with Google OAuth
+- [x] **AUTH-04**: User can sign in with Sign in with Apple
 - [x] **AUTH-05**: User session persists across app restarts
 - [x] **AUTH-06**: User can sign out from app
 - [x] **AUTH-07**: User can reset password via email
@@ -140,8 +140,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | AUTH-01 | Phase 1 | Complete |
 | AUTH-02 | Phase 1 | Complete |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 1 | Complete |
 | AUTH-06 | Phase 1 | Complete |
 | AUTH-07 | Phase 1 | Complete |

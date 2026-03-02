@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 01-foundation-authentication
-current_plan: 01 (completed)
+current_plan: 03 (completed)
 status: completed
-last_updated: "2026-03-02T22:04:10.132Z"
+last_updated: "2026-03-02T22:22:42.245Z"
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
-  percent: 50
+  completed_plans: 3
+  percent: 75
 ---
 
 # Project State: Practice Timer iOS
 
 **Last Updated:** 2026-03-02
 **Current Phase:** 01-foundation-authentication
-**Current Plan:** 02 (completed)
-**Status:** Plan 01-02 complete, ready for Plan 01-03
+**Current Plan:** 03 (completed)
+**Status:** Plan 01-03 complete, ready for Plan 01-04
 
 ---
 
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 01-foundation-authentication
-**Plan:** 01-02-PLAN.md (completed)
+**Plan:** 01-03-PLAN.md (completed)
 **Status:** Executing Phase 1 plans
-**Progress:** [█████░░░░░] 50%
+**Progress:** [████████░░] 75%
 
 **Phase 1 Goal:** Users can authenticate with multiple methods and app has correct foundational architecture for offline-first sync
 
@@ -85,12 +85,20 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 01-03 | 10 min | 3 | 7 | 2026-03-02 |
 | 01-02 | 9 min | 3 | 7 | 2026-03-02 |
 | 01-01 | 5 min | 3 | 10 | 2026-03-02 |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 01-03 Decisions:**
+- Added CLIENT_ID and REVERSED_CLIENT_ID to GoogleService-Info.plist for OAuth redirect configuration
+- Used INFOPLIST_KEY_CFBundleURLTypes in project.pbxproj instead of separate Info.plist to avoid build conflicts
+- AuthViewModel inherits from NSObject to conform to ASAuthorizationControllerDelegate for Apple Sign-In
+- Used withCheckedThrowingContinuation to bridge GIDSignIn callback-based API to async/await pattern
+- Used OAuthProvider.appleCredential with fullName parameter to preserve display name on first sign-in
 
 **Plan 01-02 Decisions:**
 - Used Combine import for @Published property wrapper in AuthViewModel (required for ObservableObject)
@@ -122,7 +130,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 
 **Immediate (Next Session):**
 - [x] Execute Plan 01-02 (Email/password authentication and auth state routing) - COMPLETED
-- [ ] Execute Plan 01-03 (Google OAuth and Sign in with Apple)
+- [x] Execute Plan 01-03 (Google OAuth and Sign in with Apple) - COMPLETED
 - [ ] Execute Plan 01-04 (Firestore security rules, emulator testing, human verification)
 
 **Upcoming:**
@@ -160,19 +168,19 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 01-02 (Email/Password Authentication)
-- Implemented email/password sign up, sign in, sign out, password reset
-- Created AuthViewModel with @MainActor for thread-safe state management
-- Built SignInView, SignUpView, PasswordResetView with OAuth placeholders
-- Wired auth state routing in ContentView (shows auth or main app based on user state)
-- Session persistence works automatically via Firebase Keychain
+- Completed Plan 01-03 (Google OAuth and Sign in with Apple)
+- Configured Google Sign-In SDK with URL schemes for OAuth redirect
+- Implemented signInWithGoogle using GIDSignIn SDK with credential exchange
+- Implemented signInWithApple with OAuthProvider.appleCredential including fullName
+- Added nonce generation with cryptographic random and SHA256 hashing
+- Enabled OAuth buttons in SignInView and SignUpView
 - All tasks committed atomically (3 commits)
 - Project builds successfully without errors
 
 **Next Session Start Here:**
-1. Execute Plan 01-03: OAuth implementation (Google and Sign in with Apple)
-2. Focus: Enable OAuth buttons currently disabled in auth views
-3. Will complete Phase 1 auth flows before moving to security rules in Plan 01-04
+1. Execute Plan 01-04: Firestore security rules, emulator testing, human verification checkpoint
+2. Focus: Implement security rules to prevent unauthorized data access
+3. Will complete Phase 1 authentication and move to Phase 2 (Activities & Offline Sync)
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
