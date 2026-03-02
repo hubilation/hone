@@ -41,15 +41,60 @@ protocol AuthRepositoryProtocol {
 }
 
 final class AuthRepository: AuthRepositoryProtocol {
-    // Implementations will be added in Plans 02-03
-    // This is the protocol structure for now
-
-    func signIn(email: String, password: String) async throws -> User {
-        fatalError("Implemented in Plan 02")
-    }
 
     func signUp(email: String, password: String) async throws -> User {
-        fatalError("Implemented in Plan 02")
+        do {
+            let result = try await Auth.auth().createUser(withEmail: email, password: password)
+            let user = User(from: result.user)
+
+            // Save user profile to Firestore
+            let userRepo = UserRepository()
+            try await userRepo.saveUser(user)
+
+            return user
+        } catch let error as NSError {
+            throw mapFirebaseError(error)
+        }
+    }
+
+    func signIn(email: String, password: String) async throws -> User {
+        do {
+            let result = try await Auth.auth().signIn(withEmail: email, password: password)
+            return User(from: result.user)
+        } catch let error as NSError {
+            throw mapFirebaseError(error)
+        }
+    }
+
+    func signOut() throws {
+        do {
+            try Auth.auth().signOut()
+        } catch let error as NSError {
+            throw AuthError.unknown(error.localizedDescription)
+        }
+    }
+
+    func resetPassword(email: String) async throws {
+        do {
+            try await Auth.auth().sendPasswordReset(withEmail: email)
+        } catch let error as NSError {
+            throw mapFirebaseError(error)
+        }
+    }
+
+    func getCurrentUser() -> User? {
+        guard let firebaseUser = Auth.auth().currentUser else { return nil }
+        return User(from: firebaseUser)
+    }
+
+    func addAuthStateListener(_ listener: @escaping (User?) -> Void) -> AuthStateDidChangeListenerHandle {
+        return Auth.auth().addStateDidChangeListener { _, firebaseUser in
+            listener(firebaseUser.map(User.init))
+        }
+    }
+
+    func removeAuthStateListener(_ handle: AuthStateDidChangeListenerHandle) {
+        Auth.auth().removeStateDidChangeListener(handle)
     }
 
     func signInWithGoogle() async throws -> User {
@@ -60,23 +105,26 @@ final class AuthRepository: AuthRepositoryProtocol {
         fatalError("Implemented in Plan 03")
     }
 
-    func signOut() throws {
-        fatalError("Implemented in Plan 02")
-    }
+    // MARK: - Private Helpers
 
-    func resetPassword(email: String) async throws {
-        fatalError("Implemented in Plan 02")
-    }
+    private func mapFirebaseError(_ error: NSError) -> AuthError {
+        guard let errorCode = AuthErrorCode(rawValue: error.code) else {
+            return .unknown(error.localizedDescription)
+        }
 
-    func getCurrentUser() -> User? {
-        fatalError("Implemented in Plan 02")
-    }
-
-    func addAuthStateListener(_ listener: @escaping (User?) -> Void) -> AuthStateDidChangeListenerHandle {
-        fatalError("Implemented in Plan 02")
-    }
-
-    func removeAuthStateListener(_ handle: AuthStateDidChangeListenerHandle) {
-        fatalError("Implemented in Plan 02")
+        switch errorCode {
+        case .invalidEmail:
+            return .invalidEmail
+        case .weakPassword:
+            return .weakPassword
+        case .userNotFound:
+            return .userNotFound
+        case .wrongPassword:
+            return .wrongPassword
+        case .networkError:
+            return .networkError
+        default:
+            return .unknown(error.localizedDescription)
+        }
     }
 }
