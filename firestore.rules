@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions for validation
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredUserFields() {
+      return request.resource.data.keys().hasAll(['email', 'createdAt', 'updatedAt']);
+    }
+
+    function hasRequiredActivityFields() {
+      return request.resource.data.keys().hasAll(['name', 'category', 'createdAt', 'updatedAt', 'archived']);
+    }
+
+    function hasRequiredSessionFields() {
+      return request.resource.data.keys().hasAll(['startTime', 'totalDuration', 'createdAt', 'updatedAt']);
+    }
+
+    // User profile document - only owner can access
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && hasRequiredUserFields();
+      allow update: if isOwner(userId) && hasRequiredUserFields();
+      allow delete: if isOwner(userId);
+
+      // Activities subcollection - recursive wildcard covers all documents
+      match /activities/{activityId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && hasRequiredActivityFields();
+        allow update: if isOwner(userId) && hasRequiredActivityFields();
+        allow delete: if isOwner(userId);
+      }
+
+      // Sessions subcollection - recursive wildcard covers all documents
+      match /sessions/{sessionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && hasRequiredSessionFields();
+        allow update: if isOwner(userId) && hasRequiredSessionFields();
+        allow delete: if isOwner(userId);
+      }
+
+      // Catch-all for any other subcollections under user
+      // (e.g., future features like notes, goals, etc.)
+      match /{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
