@@ -7,6 +7,9 @@
 
 import Foundation
 import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
+import AuthenticationServices
 
 enum AuthError: LocalizedError {
     case invalidEmail
@@ -98,11 +101,76 @@ final class AuthRepository: AuthRepositoryProtocol {
     }
 
     func signInWithGoogle() async throws -> User {
-        fatalError("Implemented in Plan 03")
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            throw AuthError.unknown("Firebase client ID not found")
+        }
+
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        // Get root view controller for presenting Google Sign-In
+        guard let windowScene = await UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootViewController = await windowScene.windows.first?.rootViewController else {
+            throw AuthError.unknown("No root view controller found")
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
+                if let error = error {
+                    continuation.resume(throwing: AuthError.unknown(error.localizedDescription))
+                    return
+                }
+
+                guard let user = result?.user,
+                      let idToken = user.idToken?.tokenString else {
+                    continuation.resume(throwing: AuthError.unknown("Google Sign-In failed"))
+                    return
+                }
+
+                let credential = GoogleAuthProvider.credential(
+                    withIDToken: idToken,
+                    accessToken: user.accessToken.tokenString
+                )
+
+                Task {
+                    do {
+                        let result = try await Auth.auth().signIn(with: credential)
+                        let user = User(from: result.user)
+
+                        // Save user profile to Firestore (auto-creates if new)
+                        let userRepo = UserRepository()
+                        try await userRepo.saveUser(user)
+
+                        continuation.resume(returning: user)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
     }
 
     func signInWithApple(idToken: String, nonce: String, fullName: PersonNameComponents?) async throws -> User {
-        fatalError("Implemented in Plan 03")
+        // CRITICAL: Use OAuthProvider.appleCredential with fullName parameter
+        // This preserves display name on first sign-in (Apple only provides it once)
+        let credential = OAuthProvider.appleCredential(
+            withIDToken: idToken,
+            rawNonce: nonce,
+            fullName: fullName
+        )
+
+        do {
+            let result = try await Auth.auth().signIn(with: credential)
+            let user = User(from: result.user)
+
+            // Save user profile to Firestore
+            let userRepo = UserRepository()
+            try await userRepo.saveUser(user)
+
+            return user
+        } catch let error as NSError {
+            throw mapFirebaseError(error)
+        }
     }
 
     // MARK: - Private Helpers

@@ -9,9 +9,12 @@ import Foundation
 import SwiftUI
 import Combine
 import FirebaseAuth
+import AuthenticationServices
+import CryptoKit
+import GoogleSignIn
 
 @MainActor
-final class AuthViewModel: ObservableObject {
+final class AuthViewModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
     @Published var user: User?
     @Published var email = ""
     @Published var password = ""
@@ -23,9 +26,11 @@ final class AuthViewModel: ObservableObject {
 
     private let repository: AuthRepositoryProtocol
     private var authStateHandle: AuthStateDidChangeListenerHandle?
+    private var currentNonce: String?
 
     init(repository: AuthRepositoryProtocol = AuthRepository()) {
         self.repository = repository
+        super.init()
 
         // Listen for auth state changes
         authStateHandle = repository.addAuthStateListener { [weak self] user in
@@ -118,5 +123,88 @@ final class AuthViewModel: ObservableObject {
         password = ""
         confirmPassword = ""
         errorMessage = nil
+    }
+
+    // MARK: - OAuth Methods
+
+    func signInWithGoogle() async {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
+            user = try await repository.signInWithGoogle()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func signInWithApple() {
+        let nonce = randomNonceString()
+        currentNonce = nonce
+
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        request.nonce = sha256(nonce)
+
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.performRequests()
+    }
+
+    // MARK: - ASAuthorizationControllerDelegate
+
+    nonisolated func authorizationController(controller: ASAuthorizationController,
+                                  didCompleteWithAuthorization authorization: ASAuthorization) {
+        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let appleIDToken = appleIDCredential.identityToken,
+              let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+            Task { @MainActor in
+                errorMessage = "Apple Sign-In failed"
+            }
+            return
+        }
+
+        Task { @MainActor in
+            guard let nonce = currentNonce else {
+                errorMessage = "Invalid nonce state"
+                return
+            }
+
+            isLoading = true
+            errorMessage = nil
+            defer { isLoading = false }
+
+            do {
+                user = try await repository.signInWithApple(
+                    idToken: idTokenString,
+                    nonce: nonce,
+                    fullName: appleIDCredential.fullName
+                )
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    nonisolated func authorizationController(controller: ASAuthorizationController,
+                                  didCompleteWithError error: Error) {
+        Task { @MainActor in
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - Private Helpers
+
+    private func randomNonceString(length: Int = 32) -> String {
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        return String((0..<length).map { _ in charset.randomElement()! })
+    }
+
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        return hashedData.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
