@@ -1,5 +1,5 @@
 //
-//  Practice_TimerApp.swift
+//  PracticeTimerApp.swift
 //  Practice Timer
 //
 //  Created by Zack Huber on 3/1/26.
@@ -8,7 +8,9 @@
 import SwiftUI
 
 @main
-struct Practice_TimerApp: App {
+struct PracticeTimerApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     var body: some Scene {
         WindowGroup {
             ContentView()
