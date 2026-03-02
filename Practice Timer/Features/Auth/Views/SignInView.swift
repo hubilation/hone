@@ -75,10 +75,12 @@ struct SignInView: View {
                     .padding(.horizontal, 40)
                     .padding(.vertical, 10)
 
-                // OAuth buttons (placeholders - Plan 03 will implement)
+                // OAuth buttons
                 VStack(spacing: 10) {
                     Button(action: {
-                        // Implemented in Plan 03
+                        Task {
+                            await viewModel.signInWithGoogle()
+                        }
                     }) {
                         HStack {
                             Image(systemName: "globe")
@@ -89,10 +91,10 @@ struct SignInView: View {
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(10)
                     }
-                    .disabled(true)  // Enable in Plan 03
+                    .disabled(viewModel.isLoading)
 
                     Button(action: {
-                        // Implemented in Plan 03
+                        viewModel.signInWithApple()
                     }) {
                         HStack {
                             Image(systemName: "applelogo")
@@ -104,7 +106,7 @@ struct SignInView: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     }
-                    .disabled(true)  // Enable in Plan 03
+                    .disabled(viewModel.isLoading)
                 }
                 .padding(.horizontal, 40)
 

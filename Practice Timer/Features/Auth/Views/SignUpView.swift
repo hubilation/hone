@@ -73,9 +73,13 @@ struct SignUpView: View {
                 .padding(.horizontal, 40)
                 .padding(.vertical, 10)
 
-            // OAuth buttons (placeholders - Plan 03 will implement)
+            // OAuth buttons
             VStack(spacing: 10) {
-                Button(action: {}) {
+                Button(action: {
+                    Task {
+                        await viewModel.signInWithGoogle()
+                    }
+                }) {
                     HStack {
                         Image(systemName: "globe")
                         Text("Sign up with Google")
@@ -85,9 +89,11 @@ struct SignUpView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
                 }
-                .disabled(true)
+                .disabled(viewModel.isLoading)
 
-                Button(action: {}) {
+                Button(action: {
+                    viewModel.signInWithApple()
+                }) {
                     HStack {
                         Image(systemName: "applelogo")
                         Text("Sign up with Apple")
@@ -98,7 +104,7 @@ struct SignUpView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
                 }
-                .disabled(true)
+                .disabled(viewModel.isLoading)
             }
             .padding(.horizontal, 40)
 
