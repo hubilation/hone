@@ -25,8 +25,8 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 - [x] **ACT-04**: User can delete activity
 - [x] **ACT-05**: User can archive activity (soft delete)
 - [x] **ACT-06**: User can restore archived activity
-- [ ] **ACT-07**: User can view list of all active activities
-- [ ] **ACT-08**: User can view list of archived activities
+- [x] **ACT-07**: User can view list of all active activities
+- [x] **ACT-08**: User can view list of archived activities
 - [x] **ACT-09**: Activity changes sync in real-time across web and iOS when online
 
 ### Session Setup
@@ -61,7 +61,7 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 - [ ] **POST-02**: Summary shows total time, per-activity time, and notes
 - [ ] **POST-03**: User can view session history (list of past practice sessions)
 - [ ] **POST-04**: User can view details of past practice session
-- [ ] **POST-05**: User can view activity statistics (total time per activity)
+- [x] **POST-05**: User can view activity statistics (total time per activity)
 - [ ] **POST-06**: Session history syncs in real-time across web and iOS when online
 
 ### Platform & Sync
@@ -151,8 +151,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ACT-04 | Phase 2 | Complete |
 | ACT-05 | Phase 2 | Complete |
 | ACT-06 | Phase 2 | Complete |
-| ACT-07 | Phase 2 | Pending |
-| ACT-08 | Phase 2 | Pending |
+| ACT-07 | Phase 2 | Complete |
+| ACT-08 | Phase 2 | Complete |
 | ACT-09 | Phase 2 | Complete |
 | SETUP-01 | Phase 3 | Pending |
 | SETUP-02 | Phase 3 | Pending |
@@ -178,7 +178,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POST-02 | Phase 4 | Pending |
 | POST-03 | Phase 4 | Pending |
 | POST-04 | Phase 4 | Pending |
-| POST-05 | Phase 2 | Pending |
+| POST-05 | Phase 2 | Complete |
 | POST-06 | Phase 4 | Pending |
 | PLAT-01 | Phase 1 | Complete (01-01) |
 | PLAT-02 | Phase 6 | Pending |

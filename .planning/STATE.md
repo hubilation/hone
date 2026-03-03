@@ -5,13 +5,13 @@ milestone_name: milestone
 current_phase: 01
 current_plan: Not started
 status: completed
-last_updated: "2026-03-03T16:46:49.646Z"
+last_updated: "2026-03-03T19:49:02.880Z"
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 7
-  percent: 88
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State: Practice Timer iOS
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 02-activity-management
-**Plan:** 02-03-PLAN.md (completed)
-**Status:** Phase 2 In Progress - Activity management UI with real-time sync complete
-**Progress:** [█████████░] 88%
+**Plan:** 02-04-PLAN.md (completed)
+**Status:** Phase 2 Complete - All activity management features verified working
+**Progress:** [██████████] 100%
 
 **Phase 2 Goal:** Users can create, manage, and organize practice activities with real-time sync
 
@@ -92,10 +92,19 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | Phase 02 P01 | 4 | 3 tasks | 2 files |
 | Phase 02 P02 | 74 | 3 tasks | 3 files |
 | Phase 02 P03 | 7 | 3 tasks | 6 files |
+| Phase 02 P04 | 174 | 4 tasks | 7 files |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 02-04 Decisions:**
+- Used Firestore aggregation queries (.sum, .count) for server-side statistics calculation, saving 99% of reads compared to downloading all session documents
+- Forced .server source for aggregation to ensure accurate calculation from server data, not stale cache
+- Wrapped all listener closure callbacks with MainActor.run to ensure @Published property updates occur on main thread (prevents threading violations)
+- Created composite indexes for userId+activityId+archived queries (required for real-time listeners) via firestore.indexes.json
+- Documented index deployment in FIREBASE_SETUP.md with verification commands
+- Added comprehensive debug logging to trace listener lifecycle (attach/detach/deinit) for memory leak detection
 
 **Plan 02-03 Decisions:**
 - Used nonisolated init to allow ActivityRepository() default parameter without actor isolation conflicts
@@ -205,21 +214,22 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 02-03 (Activity management UI with real-time sync)
-- Created ActivityViewModel with @MainActor, real-time listeners, and proper deinit cleanup
-- Built ActivityListView, ArchivedActivityListView, and ActivityRowView with swipe actions
-- Integrated ActivityListView into TabView navigation with Settings tab
-- Established listener lifecycle management pattern (critical for preventing memory leaks)
-- Updated ActivityFormView to accept onSave closure for clean ViewModel integration
-- All tasks committed atomically (3 commits: ViewModel, views, navigation)
-- Build succeeded and all auto-fixes applied (Activity immutability, actor isolation)
+- Completed Plan 02-04 (Activity statistics with Firestore aggregation)
+- Created StatisticsRepository using server-side aggregation queries (sum, count) that save 99% of reads at scale
+- Built ActivityStatisticsView with loading, error, and empty states, plus pull-to-refresh
+- Integrated statistics navigation into ActivityListView toolbar (chart.bar button)
+- Fixed 4 critical bugs during verification: listener lifecycle, MainActor threading, duplicate attachments, missing composite indexes
+- Created firestore.indexes.json and deployed composite indexes for real-time queries
+- Documented Firebase index deployment in FIREBASE_SETUP.md with verification commands
+- User verified all Phase 2 features working: create, edit, delete, archive, restore, statistics, real-time sync
+- **Phase 2 Complete:** All activity management features verified working end-to-end
 
 **Next Session Start Here:**
-1. Execute Plan 02-04 (final Activity Management plan)
-2. Check plan for additional features (sorting, filtering, search, etc.)
-3. Alternatively, if Phase 2 is complete, move to Phase 3 (Session Timer)
-4. Consider adding test target to Xcode project to run unit tests
-5. Test real-time sync by creating activities and observing updates
+1. Phase 2 is complete - proceed to Phase 3 (Session Setup & Execution)
+2. Research Phase 3 if needed: Timer architecture with iOS backgrounding, RunLoop configuration, component extraction
+3. Plan Phase 3 execution plans with dependency waves
+4. Apply patterns from Phase 2: Repository pattern, real-time listeners with MainActor, composite indexes for complex queries
+5. Consider adding test target to Xcode project before Phase 3 for TDD development
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
