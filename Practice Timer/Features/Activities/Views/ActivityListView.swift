@@ -12,7 +12,10 @@ struct ActivityListView: View {
     @State private var showingCreateSheet = false
     @State private var editingActivity: Activity?
 
+    private let userId: String
+
     init(userId: String) {
+        self.userId = userId
         _viewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
     }
 
@@ -57,6 +60,17 @@ struct ActivityListView: View {
                         ArchivedActivityListView(viewModel: viewModel)
                     } label: {
                         Label("Archived", systemImage: "archivebox")
+                    }
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        ActivityStatisticsView(
+                            userId: userId,
+                            activities: viewModel.activeActivities
+                        )
+                    } label: {
+                        Label("Statistics", systemImage: "chart.bar")
                     }
                 }
             }
