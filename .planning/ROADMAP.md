@@ -20,7 +20,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Authentication | 4/4 | Complete   | 2026-03-03 |
-| 2. Activity Management | 0/? | Not started | - |
+| 2. Activity Management | 0/4 | Not started | - |
 | 3. Session Setup & Execution | 0/? | Not started | - |
 | 4. Session History & Statistics | 0/? | Not started | - |
 | 5. Smart Features & Polish | 0/? | Not started | - |
@@ -50,9 +50,9 @@
 
 Plans:
 - [x] 01-01-PLAN.md — Firebase SDK integration, data models, repository pattern (completed 2026-03-02)
-- [ ] 01-02-PLAN.md — Email/password authentication and auth state routing
-- [ ] 01-03-PLAN.md — Google OAuth and Sign in with Apple
-- [ ] 01-04-PLAN.md — Firestore security rules, emulator testing, human verification checkpoint
+- [x] 01-02-PLAN.md — Email/password authentication and auth state routing (completed 2026-03-02)
+- [x] 01-03-PLAN.md — Google OAuth and Sign in with Apple (completed 2026-03-02)
+- [x] 01-04-PLAN.md — Firestore security rules, emulator testing, human verification checkpoint (completed 2026-03-02)
 
 **Notes**:
 - Critical pitfalls addressed: Timer architecture (date-based calculations), data model with subcollections (prevents 1MB document limit), security rules with tests, Sign in with Apple complete implementation
@@ -79,12 +79,19 @@ Plans:
 8. Changes made on iOS appear on web app in real-time when online
 9. Activity operations work offline and sync automatically when connection restored
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — ActivityRepository with CRUD operations and real-time listeners
+- [ ] 02-02-PLAN.md — Activity category enum and form views
+- [ ] 02-03-PLAN.md — Activity list views with swipe actions and ViewModel
+- [ ] 02-04-PLAN.md — Activity statistics with Firestore aggregation queries, human verification
 
 **Notes**:
 - Validates repository pattern and offline sync behavior before complex features
 - Establishes memory management patterns (Firebase listener cleanup in ViewModels)
 - Activity statistics foundation for Phase 4 history features
+- Wave structure: 02-01 and 02-02 parallel (Wave 1), 02-03 depends on both (Wave 2), 02-04 depends on 02-03 (Wave 3)
 
 ---
 
@@ -300,4 +307,5 @@ Phase 7: App Store Preparation
 
 *Roadmap created: 2026-03-01*
 *Phase 1 planned: 2026-03-02*
-*Ready for execution: Phase 1*
+*Phase 2 planned: 2026-03-02*
+*Ready for execution: Phase 2*
