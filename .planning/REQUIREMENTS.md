@@ -20,7 +20,7 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 ### Activity Management
 
 - [x] **ACT-01**: User can create new practice activity with name
-- [ ] **ACT-02**: User can assign category to activity (instrument, piece, technique, etc.)
+- [x] **ACT-02**: User can assign category to activity (instrument, piece, technique, etc.)
 - [x] **ACT-03**: User can edit activity name and category
 - [x] **ACT-04**: User can delete activity
 - [x] **ACT-05**: User can archive activity (soft delete)
@@ -146,7 +146,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-06 | Phase 1 | Complete |
 | AUTH-07 | Phase 1 | Complete |
 | ACT-01 | Phase 2 | Complete |
-| ACT-02 | Phase 2 | Pending |
+| ACT-02 | Phase 2 | Complete |
 | ACT-03 | Phase 2 | Complete |
 | ACT-04 | Phase 2 | Complete |
 | ACT-05 | Phase 2 | Complete |

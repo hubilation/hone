@@ -5,13 +5,13 @@ milestone_name: milestone
 current_phase: 01
 current_plan: Not started
 status: completed
-last_updated: "2026-03-03T13:44:09.754Z"
+last_updated: "2026-03-03T16:31:03.378Z"
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 8
-  completed_plans: 5
-  percent: 63
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State: Practice Timer iOS
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 02-activity-management
-**Plan:** 02-01-PLAN.md (completed)
-**Status:** Phase 2 In Progress - Activity repository established
-**Progress:** [██████░░░░] 63%
+**Plan:** 02-02-PLAN.md (completed)
+**Status:** Phase 2 In Progress - Activity category system and form UI complete
+**Progress:** [████████░░] 75%
 
 **Phase 2 Goal:** Users can create, manage, and organize practice activities with real-time sync
 
@@ -90,10 +90,19 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 01-02 | 9 min | 3 | 7 | 2026-03-02 |
 | 01-01 | 5 min | 3 | 10 | 2026-03-02 |
 | Phase 02 P01 | 4 | 3 tasks | 2 files |
+| Phase 02 P02 | 74 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 02-02 Decisions:**
+- Used String rawValues matching web app exactly (Instrument, Piece, Theory, Warm-up with hyphen) for cross-platform sync compatibility
+- Chose SF Symbols over custom icons for native iOS feel and accessibility support
+- Made ActivityCategory conform to Identifiable with id=rawValue for SwiftUI Picker compatibility without manual tagging
+- Used .menu picker style (not .wheel or .segmented) for compact representation with 6 options
+- Validated name with .trimmingCharacters(in: .whitespaces).isEmpty to catch whitespace-only input
+- Left save action as TODO for Plan 02-03 when ActivityViewModel is created (clear handoff point)
 
 **Plan 02-01 Decisions:**
 - Used ListenerRegistration return type (not void) so ViewModels can store handle and call remove() in deinit for proper cleanup
@@ -185,19 +194,20 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 02-01 (ActivityRepository with CRUD and real-time sync)
-- Implemented ActivityRepositoryProtocol with 5 CRUD methods and 2 listener methods
-- Established listener memory management pattern (ListenerRegistration return type)
-- Created mock-based unit tests (7 test cases covering all operations)
-- Validated Phase 1 patterns: async/await, protocols, ISO 8601 timestamps, subcollections
-- All tasks committed atomically (2 commits for plan, 1 for docs)
-- Note: Xcode license acceptance required for compilation verification
+- Completed Plan 02-02 (Activity category system and form UI)
+- Created ActivityCategory enum with 6 categories matching web app (Instrument, Piece, Technique, Theory, Warm-up, Other)
+- Implemented SF Symbol icon mapping for visual category representation
+- Built ActivityFormView supporting both create and edit modes with validation
+- Created unit tests for ActivityCategory (7 test cases, pending test target setup)
+- All tasks committed atomically (3 commits: enum, form, tests)
+- Build succeeded after Xcode first launch configuration
 
 **Next Session Start Here:**
-1. Accept Xcode license: `sudo xcodebuild -license`
-2. Execute Plan 02-02 (Activity UI layer with ViewModels)
-3. Focus: Activity list views, create/edit forms, archive/restore UI
-4. Implement ViewModels using ActivityRepository with proper listener cleanup
+1. Execute Plan 02-03 (ActivityViewModel and ActivityListView)
+2. Focus: Connect ActivityFormView to repository, implement list view with category icons
+3. Wire save button action to ViewModel create/update methods
+4. Implement proper listener cleanup in ViewModel deinit
+5. Optional: Add test target to Xcode project to enable test execution
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
