@@ -5,13 +5,13 @@ milestone_name: milestone
 current_phase: 01
 current_plan: Not started
 status: completed
-last_updated: "2026-03-03T16:31:03.378Z"
+last_updated: "2026-03-03T16:46:49.646Z"
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 88
 ---
 
 # Project State: Practice Timer iOS
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 02-activity-management
-**Plan:** 02-02-PLAN.md (completed)
-**Status:** Phase 2 In Progress - Activity category system and form UI complete
-**Progress:** [████████░░] 75%
+**Plan:** 02-03-PLAN.md (completed)
+**Status:** Phase 2 In Progress - Activity management UI with real-time sync complete
+**Progress:** [█████████░] 88%
 
 **Phase 2 Goal:** Users can create, manage, and organize practice activities with real-time sync
 
@@ -91,10 +91,21 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 01-01 | 5 min | 3 | 10 | 2026-03-02 |
 | Phase 02 P01 | 4 | 3 tasks | 2 files |
 | Phase 02 P02 | 74 | 3 tasks | 3 files |
+| Phase 02 P03 | 7 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 02-03 Decisions:**
+- Used nonisolated init to allow ActivityRepository() default parameter without actor isolation conflicts
+- Created new Activity instance in updateActivity (not mutation) because name and category are immutable let properties
+- Used @StateObject for ActivityViewModel ownership in ActivityListView, @ObservedObject for passed ViewModel in ArchivedActivityListView
+- Stored ListenerRegistration in ViewModel properties and removed in deinit to prevent memory leaks (critical pattern from Phase 1 research)
+- Used [weak self] in listener closures to prevent retain cycles
+- Called startListening() in onAppear (not init) to ensure listeners attach when view appears on screen
+- Configured allowsFullSwipe: false on delete swipe action to prevent accidental data loss
+- Updated ActivityFormView to use onSave closure pattern for clean ViewModel integration
 
 **Plan 02-02 Decisions:**
 - Used String rawValues matching web app exactly (Instrument, Piece, Theory, Warm-up with hyphen) for cross-platform sync compatibility
@@ -194,20 +205,21 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 02-02 (Activity category system and form UI)
-- Created ActivityCategory enum with 6 categories matching web app (Instrument, Piece, Technique, Theory, Warm-up, Other)
-- Implemented SF Symbol icon mapping for visual category representation
-- Built ActivityFormView supporting both create and edit modes with validation
-- Created unit tests for ActivityCategory (7 test cases, pending test target setup)
-- All tasks committed atomically (3 commits: enum, form, tests)
-- Build succeeded after Xcode first launch configuration
+- Completed Plan 02-03 (Activity management UI with real-time sync)
+- Created ActivityViewModel with @MainActor, real-time listeners, and proper deinit cleanup
+- Built ActivityListView, ArchivedActivityListView, and ActivityRowView with swipe actions
+- Integrated ActivityListView into TabView navigation with Settings tab
+- Established listener lifecycle management pattern (critical for preventing memory leaks)
+- Updated ActivityFormView to accept onSave closure for clean ViewModel integration
+- All tasks committed atomically (3 commits: ViewModel, views, navigation)
+- Build succeeded and all auto-fixes applied (Activity immutability, actor isolation)
 
 **Next Session Start Here:**
-1. Execute Plan 02-03 (ActivityViewModel and ActivityListView)
-2. Focus: Connect ActivityFormView to repository, implement list view with category icons
-3. Wire save button action to ViewModel create/update methods
-4. Implement proper listener cleanup in ViewModel deinit
-5. Optional: Add test target to Xcode project to enable test execution
+1. Execute Plan 02-04 (final Activity Management plan)
+2. Check plan for additional features (sorting, filtering, search, etc.)
+3. Alternatively, if Phase 2 is complete, move to Phase 3 (Session Timer)
+4. Consider adding test target to Xcode project to run unit tests
+5. Test real-time sync by creating activities and observing updates
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
