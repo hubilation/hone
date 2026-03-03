@@ -12,48 +12,52 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if authViewModel.user != nil {
+            if let user = authViewModel.user {
                 // User is signed in - show main app
-                MainAppView()
+                MainAppView(user: user)
                     .environmentObject(authViewModel)
             } else {
                 // User not signed in - show auth
                 SignInView()
+                    .environmentObject(authViewModel)
             }
         }
     }
 }
 
-// Placeholder for main app (Phase 2 will expand)
 struct MainAppView: View {
+    let user: User
     @EnvironmentObject var authViewModel: AuthViewModel
 
     var body: some View {
-        NavigationView {
-            VStack {
-                Text("Welcome to Practice Timer!")
-                    .font(.title)
-                    .padding()
-
-                if let user = authViewModel.user {
-                    Text("Signed in as: \(user.email)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+        TabView {
+            ActivityListView(userId: user.id ?? "")
+                .tabItem {
+                    Label("Activities", systemImage: "list.bullet")
                 }
 
-                Spacer()
-
-                Button("Sign Out") {
-                    authViewModel.signOut()
+            // Placeholder for future tabs
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
                 }
-                .padding()
-                .background(Color.red)
-                .foregroundColor(.white)
-                .cornerRadius(10)
+        }
+    }
+}
 
-                Spacer()
+struct SettingsView: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    Button("Sign Out", role: .destructive) {
+                        authViewModel.signOut()
+                    }
+                }
             }
-            .navigationTitle("Home")
+            .navigationTitle("Settings")
         }
     }
 }
