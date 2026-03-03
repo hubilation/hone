@@ -12,15 +12,30 @@
 		3D5026A02F56120700D21FEB /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 3D50269F2F56120700D21FEB /* FirebaseFirestore */; };
 		3D5026A32F5618AE00D21FEB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3D5026A22F5618AE00D21FEB /* GoogleSignIn */; };
 		3D5026A52F5618AE00D21FEB /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3D5026A42F5618AE00D21FEB /* GoogleSignInSwift */; };
+		3D5027122F567F5900D21FEB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D5027112F567F5900D21FEB /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3D5026692F550CC800D21FEB /* Practice Timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Practice Timer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D5027112F567F5900D21FEB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3D50278A2F5682F600D21FEB /* Exceptions for "Practice Timer" folder in "Practice Timer" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Practice-Timer-Info.plist",
+			);
+			target = 3D5026682F550CC800D21FEB /* Practice Timer */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3D50266B2F550CC800D21FEB /* Practice Timer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3D50278A2F5682F600D21FEB /* Exceptions for "Practice Timer" folder in "Practice Timer" target */,
+			);
 			path = "Practice Timer";
 			sourceTree = "<group>";
 		};
@@ -45,6 +60,7 @@
 		3D5026602F550CC800D21FEB = {
 			isa = PBXGroup;
 			children = (
+				3D5027112F567F5900D21FEB /* GoogleService-Info.plist */,
 				3D50266B2F550CC800D21FEB /* Practice Timer */,
 				3D50269A2F56119900D21FEB /* Frameworks */,
 				3D50266A2F550CC800D21FEB /* Products */,
@@ -139,6 +155,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D5027122F567F5900D21FEB /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,15 +304,7 @@
 				DEVELOPMENT_TEAM = 8Y29B24Y28;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleTypeRole = Editor;
-						CFBundleURLName = "google-oauth";
-						CFBundleURLSchemes = (
-							"$(REVERSED_CLIENT_ID)",
-						);
-					},
-				);
+				INFOPLIST_FILE = "Practice-Timer-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -329,15 +338,7 @@
 				DEVELOPMENT_TEAM = 8Y29B24Y28;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleTypeRole = Editor;
-						CFBundleURLName = "google-oauth";
-						CFBundleURLSchemes = (
-							"$(REVERSED_CLIENT_ID)",
-						);
-					},
-				);
+				INFOPLIST_FILE = "Practice-Timer-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
