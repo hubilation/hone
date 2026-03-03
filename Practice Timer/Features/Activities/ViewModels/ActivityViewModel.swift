@@ -48,16 +48,20 @@ final class ActivityViewModel: ObservableObject {
 
         // Listen to active activities (sorted alphabetically by name)
         activeListener = repository.listenToActiveActivities(userId: userId) { [weak self] activities in
-            print("DEBUG: Active listener callback fired - received \(activities.count) activities")
-            activities.forEach { print("  - \($0.name) (id: \($0.id ?? "nil"))") }
-            self?.activeActivities = activities
-            print("DEBUG: activeActivities array updated to \(self?.activeActivities.count ?? 0) items")
+            Task { @MainActor in
+                print("DEBUG: Active listener callback fired - received \(activities.count) activities")
+                activities.forEach { print("  - \($0.name) (id: \($0.id ?? "nil"))") }
+                self?.activeActivities = activities
+                print("DEBUG: activeActivities array updated to \(self?.activeActivities.count ?? 0) items")
+            }
         }
 
         // Listen to archived activities (sorted by recently archived)
         archivedListener = repository.listenToArchivedActivities(userId: userId) { [weak self] activities in
-            print("DEBUG: Archived listener callback fired - received \(activities.count) activities")
-            self?.archivedActivities = activities
+            Task { @MainActor in
+                print("DEBUG: Archived listener callback fired - received \(activities.count) activities")
+                self?.archivedActivities = activities
+            }
         }
 
         print("DEBUG: Listeners attached successfully")
