@@ -15,11 +15,13 @@ struct ActivityFormView: View {
     @Environment(\.dismiss) var dismiss
 
     let activity: Activity?
+    let onSave: (String, ActivityCategory) -> Void
 
     // MARK: - Initialization
 
-    init(activity: Activity? = nil) {
+    init(activity: Activity? = nil, onSave: @escaping (String, ActivityCategory) -> Void) {
         self.activity = activity
+        self.onSave = onSave
     }
 
     // MARK: - Body
@@ -51,9 +53,7 @@ struct ActivityFormView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        // TODO: Call viewModel.createActivity or updateActivity
-                        // This will be wired in Plan 02-03 when ActivityViewModel is created
-                        // Save action will be connected to ActivityViewModel in Plan 02-03. Form validation ready.
+                        onSave(name, category)
                         dismiss()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -73,7 +73,9 @@ struct ActivityFormView: View {
 // MARK: - Preview
 
 #Preview("Create Mode") {
-    ActivityFormView()
+    ActivityFormView { name, category in
+        print("Creating activity: \(name), \(category.rawValue)")
+    }
 }
 
 #Preview("Edit Mode") {
@@ -86,5 +88,7 @@ struct ActivityFormView: View {
         archived: false
     )
 
-    return ActivityFormView(activity: sampleActivity)
+    return ActivityFormView(activity: sampleActivity) { name, category in
+        print("Updating activity: \(name), \(category.rawValue)")
+    }
 }
