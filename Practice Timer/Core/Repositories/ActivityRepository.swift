@@ -44,6 +44,59 @@ protocol ActivityRepositoryProtocol {
 ///
 /// **Listener Memory Management:** CRITICAL - Store returned ListenerRegistration in
 /// ViewModel property and call remove() in deinit to prevent memory leaks.
+///
+/// **FIRESTORE INDEX REQUIREMENTS:**
+///
+/// This repository requires composite indexes for efficient querying. Firestore cannot
+/// efficiently execute queries that combine WHERE filters with ORDER BY on different fields
+/// without a composite index.
+///
+/// **Required Indexes:**
+///
+/// 1. **Active Activities Query** (listenToActiveActivities)
+///    - Collection: `users/{userId}/activities`
+///    - Fields: `archived` (ascending), `name` (ascending)
+///    - Query: `.whereField("archived", isEqualTo: false).order(by: "name")`
+///    - Why needed: Sorting active activities alphabetically
+///
+/// 2. **Archived Activities Query** (listenToArchivedActivities)
+///    - Collection: `users/{userId}/activities`
+///    - Fields: `archived` (ascending), `updatedAt` (descending)
+///    - Query: `.whereField("archived", isEqualTo: true).order(by: "updatedAt", descending: true)`
+///    - Why needed: Sorting archived activities by most recently updated
+///
+/// **Index Deployment:**
+///
+/// Indexes are defined in `firestore.indexes.json` at project root.
+/// Deploy indexes using Firebase CLI:
+/// ```bash
+/// firebase deploy --only firestore:indexes
+/// ```
+///
+/// **What Happens Without Indexes:**
+///
+/// If indexes are missing, queries will fail at runtime with error:
+/// "The query requires an index. You can create it here: [Firebase Console URL]"
+///
+/// Firestore will provide a direct link to create the index in the console, but it's
+/// better to define indexes in firestore.indexes.json for:
+/// - Version control tracking
+/// - Reproducible deployments across environments
+/// - Automatic deployment in CI/CD pipelines
+///
+/// **Testing Index Requirements:**
+///
+/// 1. **Local Emulator:** Firestore emulator auto-creates indexes, so missing indexes
+///    won't be caught during local development. Always test against production Firestore
+///    before releasing.
+///
+/// 2. **Production Testing:** Create test account, run app, verify all queries execute
+///    without "requires an index" errors.
+///
+/// 3. **CI/CD:** Include `firebase deploy --only firestore:indexes` in deployment scripts
+///    to ensure indexes are always deployed before app releases.
+///
+/// See `FIREBASE_SETUP.md` for complete Firebase setup and deployment instructions.
 final class ActivityRepository: ActivityRepositoryProtocol {
     private let db = Firestore.firestore()
 
@@ -146,6 +199,11 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     /// - Returns: ListenerRegistration that MUST be stored and removed in deinit
     func listenToActiveActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration {
         print("DEBUG: Repository creating active activities listener for userId: \(userId)")
+
+        // COMPOSITE INDEX REQUIRED: archived (ascending) + name (ascending)
+        // This query filters by archived=false AND sorts by name, which requires
+        // a composite index. Without it, query fails with "requires an index" error.
+        // Index defined in firestore.indexes.json, deployed via: firebase deploy --only firestore:indexes
         return db.collection("users")
             .document(userId)
             .collection("activities")
@@ -187,6 +245,11 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     /// - Returns: ListenerRegistration that MUST be stored and removed in deinit
     func listenToArchivedActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration {
         print("DEBUG: Repository creating archived activities listener for userId: \(userId)")
+
+        // COMPOSITE INDEX REQUIRED: archived (ascending) + updatedAt (descending)
+        // This query filters by archived=true AND sorts by updatedAt descending, which requires
+        // a composite index. Without it, query fails with "requires an index" error.
+        // Index defined in firestore.indexes.json, deployed via: firebase deploy --only firestore:indexes
         return db.collection("users")
             .document(userId)
             .collection("activities")
