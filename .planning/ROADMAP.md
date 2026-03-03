@@ -21,7 +21,7 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation & Authentication | 4/4 | Complete   | 2026-03-03 |
 | 2. Activity Management | 4/4 | Complete   | 2026-03-03 |
-| 3. Session Setup & Execution | 0/? | Not started | - |
+| 3. Session Setup & Execution | 0/6 | Planned | - |
 | 4. Session History & Statistics | 0/? | Not started | - |
 | 5. Smart Features & Polish | 0/? | Not started | - |
 | 6. Platform Integration | 0/? | Not started | - |
@@ -116,13 +116,23 @@ Plans:
 11. User can end session and see confirmation with summary preview
 12. Session controls are simple and obvious with large touch targets (operable while holding instrument)
 
-**Plans**: TBD
+**Plans**: 6 plans in 5 waves
+
+Plans:
+- [ ] 03-01-PLAN.md — Session data models and SessionRepository (Wave 1)
+- [ ] 03-02-PLAN.md — SessionViewModel with date-based timer architecture (Wave 2)
+- [ ] 03-03-PLAN.md — Session setup UI with activity selection and reordering (Wave 3)
+- [ ] 03-04-PLAN.md — Timer display and session control components (Wave 3)
+- [ ] 03-05-PLAN.md — Active session orchestrator and summary view (Wave 4)
+- [ ] 03-06-PLAN.md — Navigation integration and human verification checkpoint (Wave 5)
 
 **Notes**:
 - Most complex phase: Timer architecture, backgrounding, component extraction
 - Critical pitfalls: Date-based timer calculation (not tick counters), RunLoop .common mode, component architecture (avoid massive view files)
 - Session setup streamlined compared to web app (PROJECT.md goal)
 - In-between time tracking is unique web app feature to preserve
+- Wave structure enables parallel execution: 03-03 and 03-04 can run simultaneously (different files)
+- Checkpoint in 03-06 verifies critical behaviors only humans can test (readability from distance, background survival)
 
 ---
 
