@@ -14,6 +14,7 @@ enum RepositoryError: LocalizedError {
     case encodingFailed
     case decodingFailed
     case networkError
+    case missingDocumentId
 
     var errorDescription: String? {
         switch self {
@@ -22,6 +23,7 @@ enum RepositoryError: LocalizedError {
         case .encodingFailed: return "Failed to encode data"
         case .decodingFailed: return "Failed to decode data"
         case .networkError: return "Network error"
+        case .missingDocumentId: return "Missing document ID"
         }
     }
 }
