@@ -33,13 +33,23 @@ final class ActivityViewModel: ObservableObject {
     /// Attach Firestore listeners for real-time updates
     /// MUST be called in onAppear (not init) to ensure listeners attach when view appears
     func startListening() {
+        // Prevent attaching multiple listeners
+        guard activeListener == nil, archivedListener == nil else {
+            print("DEBUG: Listeners already attached, skipping startListening()")
+            return
+        }
+
+        print("DEBUG: Attaching Firestore listeners")
+
         // Listen to active activities (sorted alphabetically by name)
         activeListener = repository.listenToActiveActivities(userId: userId) { [weak self] activities in
+            print("DEBUG: Active listener received \(activities.count) activities")
             self?.activeActivities = activities
         }
 
         // Listen to archived activities (sorted by recently archived)
         archivedListener = repository.listenToArchivedActivities(userId: userId) { [weak self] activities in
+            print("DEBUG: Archived listener received \(activities.count) activities")
             self?.archivedActivities = activities
         }
     }
