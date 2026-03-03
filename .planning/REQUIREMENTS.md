@@ -19,15 +19,15 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 
 ### Activity Management
 
-- [ ] **ACT-01**: User can create new practice activity with name
+- [x] **ACT-01**: User can create new practice activity with name
 - [ ] **ACT-02**: User can assign category to activity (instrument, piece, technique, etc.)
-- [ ] **ACT-03**: User can edit activity name and category
-- [ ] **ACT-04**: User can delete activity
-- [ ] **ACT-05**: User can archive activity (soft delete)
-- [ ] **ACT-06**: User can restore archived activity
+- [x] **ACT-03**: User can edit activity name and category
+- [x] **ACT-04**: User can delete activity
+- [x] **ACT-05**: User can archive activity (soft delete)
+- [x] **ACT-06**: User can restore archived activity
 - [ ] **ACT-07**: User can view list of all active activities
 - [ ] **ACT-08**: User can view list of archived activities
-- [ ] **ACT-09**: Activity changes sync in real-time across web and iOS when online
+- [x] **ACT-09**: Activity changes sync in real-time across web and iOS when online
 
 ### Session Setup
 
@@ -145,15 +145,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-05 | Phase 1 | Complete |
 | AUTH-06 | Phase 1 | Complete |
 | AUTH-07 | Phase 1 | Complete |
-| ACT-01 | Phase 2 | Pending |
+| ACT-01 | Phase 2 | Complete |
 | ACT-02 | Phase 2 | Pending |
-| ACT-03 | Phase 2 | Pending |
-| ACT-04 | Phase 2 | Pending |
-| ACT-05 | Phase 2 | Pending |
-| ACT-06 | Phase 2 | Pending |
+| ACT-03 | Phase 2 | Complete |
+| ACT-04 | Phase 2 | Complete |
+| ACT-05 | Phase 2 | Complete |
+| ACT-06 | Phase 2 | Complete |
 | ACT-07 | Phase 2 | Pending |
 | ACT-08 | Phase 2 | Pending |
-| ACT-09 | Phase 2 | Pending |
+| ACT-09 | Phase 2 | Complete |
 | SETUP-01 | Phase 3 | Pending |
 | SETUP-02 | Phase 3 | Pending |
 | SETUP-03 | Phase 5 | Pending |

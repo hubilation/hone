@@ -5,13 +5,13 @@ milestone_name: milestone
 current_phase: 01
 current_plan: Not started
 status: completed
-last_updated: "2026-03-03T03:33:53.203Z"
+last_updated: "2026-03-03T13:44:09.754Z"
 progress:
-  total_phases: 1
+  total_phases: 2
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 8
+  completed_plans: 5
+  percent: 63
 ---
 
 # Project State: Practice Timer iOS
@@ -44,12 +44,12 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 
 ## Current Position
 
-**Phase:** 01-foundation-authentication
-**Plan:** 01-04-PLAN.md (completed)
-**Status:** Phase 1 Complete - All authentication and security foundations established
-**Progress:** [██████████] 100%
+**Phase:** 02-activity-management
+**Plan:** 02-01-PLAN.md (completed)
+**Status:** Phase 2 In Progress - Activity repository established
+**Progress:** [██████░░░░] 63%
 
-**Phase 1 Goal:** Users can authenticate with multiple methods and app has correct foundational architecture for offline-first sync
+**Phase 2 Goal:** Users can create, manage, and organize practice activities with real-time sync
 
 **Phase 1 Success Criteria:**
 1. User can sign up with email/password and immediately access their account
@@ -89,10 +89,19 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 01-03 | 10 min | 3 | 7 | 2026-03-02 |
 | 01-02 | 9 min | 3 | 7 | 2026-03-02 |
 | 01-01 | 5 min | 3 | 10 | 2026-03-02 |
+| Phase 02 P01 | 4 | 3 tasks | 2 files |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 02-01 Decisions:**
+- Used ListenerRegistration return type (not void) so ViewModels can store handle and call remove() in deinit for proper cleanup
+- Implemented archive/restore as separate methods (not generic update) for clear intent and automatic timestamp updates
+- Used compactMap in listeners to skip malformed documents rather than failing entire query
+- Separated archive (soft delete) from delete (hard delete) for data safety and user experience
+- Added missingDocumentId case to shared RepositoryError enum for consistency across repositories
+- Used mock repository pattern for unit tests (not Firebase emulator) to avoid external dependencies and enable fast CI/CD
 
 **Plan 01-04 Decisions:**
 - Used rules_version = '2' for recursive wildcard support (match /{document=**})
@@ -176,19 +185,19 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 01-04 (Firestore security rules and end-to-end verification)
-- Implemented comprehensive security rules with recursive wildcards
-- Deployed security rules to Firebase production
-- Human verification completed: all auth flows working (email/password, Google OAuth)
-- Session persistence verified across app restarts
-- Phase 1 Complete: Foundation & Authentication fully established
+- Completed Plan 02-01 (ActivityRepository with CRUD and real-time sync)
+- Implemented ActivityRepositoryProtocol with 5 CRUD methods and 2 listener methods
+- Established listener memory management pattern (ListenerRegistration return type)
+- Created mock-based unit tests (7 test cases covering all operations)
+- Validated Phase 1 patterns: async/await, protocols, ISO 8601 timestamps, subcollections
 - All tasks committed atomically (2 commits for plan, 1 for docs)
+- Note: Xcode license acceptance required for compilation verification
 
 **Next Session Start Here:**
-1. Plan Phase 2: Activities & Offline Sync
-2. Focus: Activity management with CRUD operations, real-time listeners, offline-first sync
-3. Establish memory management patterns (Firebase listener cleanup)
-4. Validate repository pattern with actual Firestore operations
+1. Accept Xcode license: `sudo xcodebuild -license`
+2. Execute Plan 02-02 (Activity UI layer with ViewModels)
+3. Focus: Activity list views, create/edit forms, archive/restore UI
+4. Implement ViewModels using ActivityRepository with proper listener cleanup
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
