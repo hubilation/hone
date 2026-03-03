@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02
-current_plan: Not started
-status: completed
-last_updated: "2026-03-03T19:58:30.752Z"
+current_phase: 03
+current_plan: 02
+status: in_progress
+last_updated: "2026-03-03T23:49:13Z"
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_plans: 15
+  completed_plans: 9
+  percent: 60
 ---
 
 # Project State: Practice Timer iOS
 
-**Last Updated:** 2026-03-02
-**Current Phase:** 02
-**Current Plan:** Not started
-**Status:** Milestone complete
+**Last Updated:** 2026-03-03
+**Current Phase:** 03
+**Current Plan:** 03-02-PLAN.md
+**Status:** In progress
 
 ---
 
@@ -44,12 +44,12 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 
 ## Current Position
 
-**Phase:** 02-activity-management
-**Plan:** 02-04-PLAN.md (completed)
-**Status:** Phase 2 Complete - All activity management features verified working
-**Progress:** [██████████] 100%
+**Phase:** 03-session-setup-execution
+**Plan:** 03-02-PLAN.md (next)
+**Status:** Phase 3 In Progress - Session data foundation complete
+**Progress:** [█▒▒▒▒▒▒▒▒▒] 17% (1/6 plans)
 
-**Phase 2 Goal:** Users can create, manage, and organize practice activities with real-time sync
+**Phase 3 Goal:** Users can plan and execute timed practice sessions with accurate timing that survives backgrounding
 
 **Phase 1 Success Criteria:**
 1. User can sign up with email/password and immediately access their account
@@ -67,36 +67,44 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 
 **Phases:**
 - Total: 7
-- Completed: 1 (Phase 1)
-- In Progress: 0
-- Not Started: 6
+- Completed: 2 (Phases 1-2)
+- In Progress: 1 (Phase 3)
+- Not Started: 4
 
 **Requirements:**
 - Total v1: 53
-- Completed: 8 (Phase 1: AUTH-01 through AUTH-07, PLAT-01)
-- In Progress: 0
+- Completed: 20 (Phase 1: 8, Phase 2: 10, Phase 3: 2)
+- In Progress: 17 (Phase 3 remaining)
 - Coverage: 100% (all mapped to phases)
 
 **Velocity:**
-- Plans per session: 1
-- Average plan completion time: 5 minutes
+- Plans per session: 1-4
+- Average plan completion time: 3 minutes
 - Blockers encountered: 0
 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 03-01 | 2 min | 2 | 2 | 2026-03-03 |
+| 02-04 | 15 min | 4 | 7 | 2026-03-03 |
+| 02-03 | 7 min | 3 | 6 | 2026-03-03 |
+| 02-02 | 74 min | 3 | 3 | 2026-03-03 |
+| 02-01 | 4 min | 3 | 2 | 2026-03-03 |
 | 01-04 | 15 min | 3 | 3 | 2026-03-02 |
 | 01-03 | 10 min | 3 | 7 | 2026-03-02 |
 | 01-02 | 9 min | 3 | 7 | 2026-03-02 |
-| 01-01 | 5 min | 3 | 10 | 2026-03-02 |
-| Phase 02 P01 | 4 | 3 tasks | 2 files |
-| Phase 02 P02 | 74 | 3 tasks | 3 files |
-| Phase 02 P03 | 7 | 3 tasks | 6 files |
-| Phase 02 P04 | 174 | 4 tasks | 7 files |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 03-01 Decisions:**
+- Used string values for Session.state field ("setup", "active", "paused", "inBetween", "ended") matching web app format for cross-platform sync compatibility
+- Made SessionActivity.activityId optional to support in-between time tracking where activityId=nil and isInBetweenTime=true
+- Denormalized activityName in SessionActivity to enable history display without joining Activity documents
+- Implemented getActiveSession() querying state != "ended" to find interrupted sessions on app launch for crash recovery
+- Used [String: Any] dictionary in updateSessionState() for flexible atomic updates (can update state alone or multiple fields together)
+- Followed Phase 2 ActivityRepository patterns: return ListenerRegistration for memory management, use compactMap for resilience
 
 **Plan 02-04 Decisions:**
 - Used Firestore aggregation queries (.sum, .count) for server-side statistics calculation, saving 99% of reads compared to downloading all session documents
@@ -214,22 +222,21 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 02-04 (Activity statistics with Firestore aggregation)
-- Created StatisticsRepository using server-side aggregation queries (sum, count) that save 99% of reads at scale
-- Built ActivityStatisticsView with loading, error, and empty states, plus pull-to-refresh
-- Integrated statistics navigation into ActivityListView toolbar (chart.bar button)
-- Fixed 4 critical bugs during verification: listener lifecycle, MainActor threading, duplicate attachments, missing composite indexes
-- Created firestore.indexes.json and deployed composite indexes for real-time queries
-- Documented Firebase index deployment in FIREBASE_SETUP.md with verification commands
-- User verified all Phase 2 features working: create, edit, delete, archive, restore, statistics, real-time sync
-- **Phase 2 Complete:** All activity management features verified working end-to-end
+- Completed Plan 03-01 (Session data foundation)
+- Extended Session model with state tracking fields (state, pausedAt, currentActivityIndex) for crash recovery
+- Created SessionActivity model for sessions/{sessionId}/activities subcollection
+- Implemented SessionRepository with 7 methods following ActivityRepository pattern from Phase 2
+- Built crash recovery infrastructure with getActiveSession() to find interrupted sessions
+- Established atomic state update pattern with updateSessionState() for immediate persistence
+- All patterns follow Phase 2: protocol-based, async/await for CRUD, ListenerRegistration for listeners
+- **Plan 03-01 Complete:** Session data foundation ready for SessionViewModel
 
 **Next Session Start Here:**
-1. Phase 2 is complete - proceed to Phase 3 (Session Setup & Execution)
-2. Research Phase 3 if needed: Timer architecture with iOS backgrounding, RunLoop configuration, component extraction
-3. Plan Phase 3 execution plans with dependency waves
-4. Apply patterns from Phase 2: Repository pattern, real-time listeners with MainActor, composite indexes for complex queries
-5. Consider adding test target to Xcode project before Phase 3 for TDD development
+1. Execute Plan 03-02 (SessionViewModel with date-based timer architecture)
+2. Apply patterns: Repository pattern, real-time listeners with MainActor, state persistence
+3. Focus on date-based timer calculations (not tick counters) for backgrounding survival
+4. Use RunLoop .common mode for timer (critical for iOS backgrounding)
+5. Plans 03-03 and 03-04 can run in parallel (Wave 3) - different files, no dependencies
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend

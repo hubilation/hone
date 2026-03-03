@@ -39,7 +39,7 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 
 ### Session Execution
 
-- [ ] **EXEC-01**: User can start timed practice session
+- [x] **EXEC-01**: User can start timed practice session
 - [ ] **EXEC-02**: User sees large, clear time display during practice (readable from distance)
 - [ ] **EXEC-03**: User can pause practice session
 - [ ] **EXEC-04**: User can resume paused practice session
@@ -53,7 +53,7 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 - [ ] **EXEC-12**: User can end practice session
 - [ ] **EXEC-13**: Timer continues accurately when app is backgrounded
 - [ ] **EXEC-14**: Timer displays use simple, obvious controls
-- [ ] **EXEC-15**: Session state persists if app crashes or is force-quit
+- [x] **EXEC-15**: Session state persists if app crashes or is force-quit
 
 ### Post-Session
 
@@ -159,7 +159,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SETUP-03 | Phase 5 | Pending |
 | SETUP-04 | Phase 3 | Pending |
 | SETUP-05 | Phase 3 | Pending |
-| EXEC-01 | Phase 3 | Pending |
+| EXEC-01 | Phase 3 | Complete |
 | EXEC-02 | Phase 3 | Pending |
 | EXEC-03 | Phase 3 | Pending |
 | EXEC-04 | Phase 3 | Pending |
@@ -173,7 +173,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXEC-12 | Phase 3 | Pending |
 | EXEC-13 | Phase 3 | Pending |
 | EXEC-14 | Phase 3 | Pending |
-| EXEC-15 | Phase 3 | Pending |
+| EXEC-15 | Phase 3 | Complete |
 | POST-01 | Phase 4 | Pending |
 | POST-02 | Phase 4 | Pending |
 | POST-03 | Phase 4 | Pending |
