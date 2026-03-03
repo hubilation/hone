@@ -22,10 +22,12 @@ final class ActivityViewModel: ObservableObject {
     // CRITICAL: Store listeners to remove in deinit (prevents memory leaks)
     private var activeListener: ListenerRegistration?
     private var archivedListener: ListenerRegistration?
+    private var listenersStarted = false
 
     nonisolated init(userId: String, repository: ActivityRepositoryProtocol = ActivityRepository()) {
         self.userId = userId
         self.repository = repository
+        print("DEBUG: ActivityViewModel initialized for userId: \(userId)")
     }
 
     // MARK: - Listener Management
@@ -33,25 +35,32 @@ final class ActivityViewModel: ObservableObject {
     /// Attach Firestore listeners for real-time updates
     /// MUST be called in onAppear (not init) to ensure listeners attach when view appears
     func startListening() {
+        print("DEBUG: startListening() called - listenersStarted: \(listenersStarted)")
+
         // Prevent attaching multiple listeners
-        guard activeListener == nil, archivedListener == nil else {
-            print("DEBUG: Listeners already attached, skipping startListening()")
+        guard !listenersStarted else {
+            print("DEBUG: Listeners already started, skipping startListening()")
             return
         }
 
-        print("DEBUG: Attaching Firestore listeners")
+        listenersStarted = true
+        print("DEBUG: Attaching Firestore listeners for userId: \(userId)")
 
         // Listen to active activities (sorted alphabetically by name)
         activeListener = repository.listenToActiveActivities(userId: userId) { [weak self] activities in
-            print("DEBUG: Active listener received \(activities.count) activities")
+            print("DEBUG: Active listener callback fired - received \(activities.count) activities")
+            activities.forEach { print("  - \($0.name) (id: \($0.id ?? "nil"))") }
             self?.activeActivities = activities
+            print("DEBUG: activeActivities array updated to \(self?.activeActivities.count ?? 0) items")
         }
 
         // Listen to archived activities (sorted by recently archived)
         archivedListener = repository.listenToArchivedActivities(userId: userId) { [weak self] activities in
-            print("DEBUG: Archived listener received \(activities.count) activities")
+            print("DEBUG: Archived listener callback fired - received \(activities.count) activities")
             self?.archivedActivities = activities
         }
+
+        print("DEBUG: Listeners attached successfully")
     }
 
     deinit {

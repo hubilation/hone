@@ -99,6 +99,7 @@ struct ActivityListView: View {
             }
         }
         .onAppear {
+            print("DEBUG: ActivityListView.onAppear called")
             viewModel.startListening()
         }
     }

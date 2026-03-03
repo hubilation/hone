@@ -145,20 +145,37 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     ///   - completion: Called with updated activity list whenever data changes
     /// - Returns: ListenerRegistration that MUST be stored and removed in deinit
     func listenToActiveActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration {
+        print("DEBUG: Repository creating active activities listener for userId: \(userId)")
         return db.collection("users")
             .document(userId)
             .collection("activities")
             .whereField("archived", isEqualTo: false)
             .order(by: "name")
             .addSnapshotListener { snapshot, error in
-                guard let documents = snapshot?.documents else {
+                if let error = error {
+                    print("DEBUG: ERROR in active activities listener: \(error.localizedDescription)")
                     completion([])
                     return
                 }
 
-                let activities = documents.compactMap { doc -> Activity? in
-                    try? doc.data(as: Activity.self)
+                guard let documents = snapshot?.documents else {
+                    print("DEBUG: Active activities snapshot has no documents")
+                    completion([])
+                    return
                 }
+
+                print("DEBUG: Active activities snapshot received \(documents.count) documents")
+                let activities = documents.compactMap { doc -> Activity? in
+                    do {
+                        let activity = try doc.data(as: Activity.self)
+                        print("  - Successfully decoded: \(activity.name)")
+                        return activity
+                    } catch {
+                        print("  - ERROR decoding document \(doc.documentID): \(error)")
+                        return nil
+                    }
+                }
+                print("DEBUG: Repository calling completion with \(activities.count) activities")
                 completion(activities)
             }
     }
@@ -169,19 +186,34 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     ///   - completion: Called with updated activity list whenever data changes
     /// - Returns: ListenerRegistration that MUST be stored and removed in deinit
     func listenToArchivedActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration {
+        print("DEBUG: Repository creating archived activities listener for userId: \(userId)")
         return db.collection("users")
             .document(userId)
             .collection("activities")
             .whereField("archived", isEqualTo: true)
             .order(by: "updatedAt", descending: true)
             .addSnapshotListener { snapshot, error in
-                guard let documents = snapshot?.documents else {
+                if let error = error {
+                    print("DEBUG: ERROR in archived activities listener: \(error.localizedDescription)")
                     completion([])
                     return
                 }
 
+                guard let documents = snapshot?.documents else {
+                    print("DEBUG: Archived activities snapshot has no documents")
+                    completion([])
+                    return
+                }
+
+                print("DEBUG: Archived activities snapshot received \(documents.count) documents")
                 let activities = documents.compactMap { doc -> Activity? in
-                    try? doc.data(as: Activity.self)
+                    do {
+                        let activity = try doc.data(as: Activity.self)
+                        return activity
+                    } catch {
+                        print("  - ERROR decoding archived document \(doc.documentID): \(error)")
+                        return nil
+                    }
                 }
                 completion(activities)
             }
