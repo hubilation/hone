@@ -80,6 +80,29 @@ function checkUserAllowed(emailOrUid) {
 }
 
 /**
+ * Transform web app session to iOS format
+ */
+function transformSession(webSession) {
+  const iosSession = {
+    state: webSession.completed ? 'ended' : 'setup',
+    startTime: webSession.createdAt,
+    endTime: webSession.completedAt || null,
+    totalDuration: webSession.totalTime || 0,
+    createdAt: webSession.createdAt,
+    updatedAt: webSession.updatedAt || webSession.createdAt
+  };
+
+  // Set currentActivityIndex to last activity index
+  if (webSession.activities && webSession.activities.length > 0) {
+    iosSession.currentActivityIndex = webSession.activities.length - 1;
+  } else {
+    iosSession.currentActivityIndex = 0;
+  }
+
+  return iosSession;
+}
+
+/**
  * Main migration function
  */
 export async function migrateUserSessions(userEmailOrUid, isDryRun = false) {
@@ -95,14 +118,62 @@ export async function migrateUserSessions(userEmailOrUid, isDryRun = false) {
   console.log(`User ID: ${userId}`);
   console.log(`Dry Run: ${isDryRun ? 'YES (no changes will be made)' : 'NO'}\n`);
 
-  // Placeholder for migration logic (Tasks 2-3)
-  console.log('Migration logic will be implemented in next tasks...\n');
+  // Get all sessions for user
+  console.log('1️⃣  Fetching sessions...');
+  const sessionsRef = db.collection('users').document(userId).collection('sessions');
+  const sessionsSnapshot = await sessionsRef.get();
+
+  if (sessionsSnapshot.empty) {
+    console.log('   No sessions found for user\n');
+    return {
+      userId,
+      sessionCount: 0,
+      activityCount: 0,
+      totalDuration: 0
+    };
+  }
+
+  console.log(`   Found ${sessionsSnapshot.size} sessions\n`);
+
+  let sessionCount = 0;
+  let activityCount = 0;
+  let totalDuration = 0;
+
+  // Transform each session
+  console.log('2️⃣  Transforming sessions...');
+
+  for (const sessionDoc of sessionsSnapshot.docs) {
+    const webSession = sessionDoc.data();
+    const sessionId = sessionDoc.id;
+
+    // Transform to iOS format
+    const iosSession = transformSession(webSession);
+
+    // Count activities
+    const activityArray = webSession.activities || [];
+    activityCount += activityArray.length;
+    totalDuration += (webSession.totalTime || 0);
+
+    if (!isDryRun) {
+      // Write transformed session (overwrite existing)
+      await sessionDoc.ref.set(iosSession);
+    }
+
+    sessionCount++;
+    process.stdout.write(`   Transformed ${sessionCount}/${sessionsSnapshot.size} sessions (${activityCount} activities total)...\r`);
+  }
+
+  console.log(`\n   ✅ Transformed ${sessionCount} sessions\n`);
+
+  // Placeholder for Task 3 (activities subcollection creation)
+  console.log('3️⃣  Creating activities subcollections...');
+  console.log('   (Will be implemented in Task 3)\n');
 
   return {
     userId,
-    sessionCount: 0,
-    activityCount: 0,
-    totalDuration: 0
+    sessionCount,
+    activityCount,
+    totalDuration
   };
 }
 
