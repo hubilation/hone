@@ -1,0 +1,28 @@
+# Xcode
+.DS_Store
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Firebase
+.firebase/
+*-adminsdk-*.json
+serviceAccountKey.json
+
+# Sensitive files
+*.pem
+*.key
+.env
+.env.local
+
+# Planning (already gitignored via GSD)
+.planning/
