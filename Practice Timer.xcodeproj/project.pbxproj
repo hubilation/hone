@@ -20,22 +20,9 @@
 		3D5027112F567F5900D21FEB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3D50278A2F5682F600D21FEB /* Exceptions for "Practice Timer" folder in "Practice Timer" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Practice-Timer-Info.plist",
-			);
-			target = 3D5026682F550CC800D21FEB /* Practice Timer */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3D50266B2F550CC800D21FEB /* Practice Timer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				3D50278A2F5682F600D21FEB /* Exceptions for "Practice Timer" folder in "Practice Timer" target */,
-			);
 			path = "Practice Timer";
 			sourceTree = "<group>";
 		};
