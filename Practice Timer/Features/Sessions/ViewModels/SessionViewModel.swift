@@ -104,9 +104,10 @@ final class SessionViewModel: ObservableObject {
         currentSession = try await repository.createSession(userId: userId, session: session)
 
         // Initialize activities array (first activity has startTime, rest are empty)
+        // Assign temporary UUIDs so ForEach can render them (will be replaced with Firestore IDs when saved)
         activities = selectedActivities.enumerated().map { index, activity in
             SessionActivity(
-                id: nil,
+                id: UUID().uuidString,
                 activityId: activity.id,
                 activityName: activity.name,
                 startTime: index == 0 ? nowString : "",
