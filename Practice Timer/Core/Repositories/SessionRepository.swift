@@ -31,9 +31,45 @@ protocol SessionRepositoryProtocol {
     func endSession(userId: String, sessionId: String, endTime: String, totalDuration: Int) async throws
     func addSessionActivity(userId: String, sessionId: String, activity: SessionActivity) async throws
 
+    /// Get historical notes for an activity from previous sessions
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - activityId: The activity to get notes for
+    ///   - limit: Maximum number of notes to return (default 10)
+    /// - Returns: Array of SessionActivity with notes, sorted by most recent first
+    func getHistoricalNotes(userId: String, activityId: String, limit: Int) async throws -> [SessionActivity]
+
     // Real-time listener methods (return ListenerRegistration for cleanup)
     func listenToSession(userId: String, sessionId: String, completion: @escaping (Session?) -> Void) -> ListenerRegistration
     func listenToSessionActivities(userId: String, sessionId: String, completion: @escaping ([SessionActivity]) -> Void) -> ListenerRegistration
+
+    /// Get ended sessions ordered by most recent first
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - limit: Maximum number of sessions to return (default 100)
+    /// - Returns: Array of ended sessions sorted by startTime descending
+    func getSessions(userId: String, limit: Int) async throws -> [Session]
+
+    /// Listen to ended sessions with real-time updates
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - limit: Maximum number of sessions to return (default 100)
+    ///   - completion: Closure called with updated sessions array
+    /// - Returns: ListenerRegistration for cleanup
+    func listenToSessions(userId: String, limit: Int, completion: @escaping ([Session]) -> Void) -> ListenerRegistration
+
+    /// Get all activities for a specific session
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - sessionId: The session's unique identifier
+    /// - Returns: Array of SessionActivity ordered by createdAt
+    func getSessionActivities(userId: String, sessionId: String) async throws -> [SessionActivity]
+
+    /// Delete session and all associated activities
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - sessionId: The session's unique identifier
+    func deleteSession(userId: String, sessionId: String) async throws
 }
 
 // MARK: - Implementation
@@ -233,5 +269,153 @@ final class SessionRepository: SessionRepositoryProtocol {
                 }
                 completion(activities)
             }
+    }
+
+    /// Get historical notes for an activity from previous sessions
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - activityId: The activity to get notes for
+    ///   - limit: Maximum number of notes to return
+    /// - Returns: Array of SessionActivity with notes, sorted by most recent first
+    func getHistoricalNotes(userId: String, activityId: String, limit: Int = 10) async throws -> [SessionActivity] {
+        // NOTE: This method is deprecated - we now use Activity.practiceNotes instead
+        // Kept for backwards compatibility but not actively used
+        let snapshot = try await db.collectionGroup("activities")
+            .whereField("activityId", isEqualTo: activityId)
+            .order(by: "createdAt", descending: true)
+            .limit(to: limit)
+            .getDocuments()
+
+        let activities = snapshot.documents.compactMap { doc -> SessionActivity? in
+            do {
+                let activity = try doc.data(as: SessionActivity.self)
+                // Filter: only return activities with notes and not in-between time
+                guard let notes = activity.notes,
+                      !notes.isEmpty,
+                      !activity.isInBetweenTime else {
+                    return nil
+                }
+                return activity
+            } catch {
+                print("Error decoding SessionActivity: \(error)")
+                return nil
+            }
+        }
+
+        return activities
+    }
+
+    // MARK: - Session History
+
+    /// Get ended sessions ordered by most recent first
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - limit: Maximum number of sessions to return
+    /// - Returns: Array of ended sessions sorted by startTime descending
+    func getSessions(userId: String, limit: Int = 100) async throws -> [Session] {
+        let snapshot = try await db.collection("users")
+            .document(userId)
+            .collection("sessions")
+            .whereField("state", isEqualTo: "ended")
+            .order(by: "startTime", descending: true)
+            .limit(to: limit)
+            .getDocuments()
+
+        return snapshot.documents.compactMap { doc -> Session? in
+            do {
+                return try doc.data(as: Session.self)
+            } catch {
+                print("ERROR decoding session \(doc.documentID): \(error)")
+                return nil
+            }
+        }
+    }
+
+    /// Listen to ended sessions with real-time updates
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - limit: Maximum number of sessions to return
+    ///   - completion: Closure called with updated sessions array
+    /// - Returns: ListenerRegistration for cleanup
+    func listenToSessions(userId: String, limit: Int = 100, completion: @escaping ([Session]) -> Void) -> ListenerRegistration {
+        return db.collection("users")
+            .document(userId)
+            .collection("sessions")
+            .whereField("state", isEqualTo: "ended")
+            .order(by: "startTime", descending: true)
+            .limit(to: limit)
+            .addSnapshotListener { snapshot, error in
+                if let error = error {
+                    print("ERROR in sessions listener: \(error.localizedDescription)")
+                    completion([])
+                    return
+                }
+
+                guard let documents = snapshot?.documents else {
+                    completion([])
+                    return
+                }
+
+                let sessions = documents.compactMap { doc -> Session? in
+                    do {
+                        return try doc.data(as: Session.self)
+                    } catch {
+                        print("ERROR decoding session \(doc.documentID): \(error)")
+                        return nil
+                    }
+                }
+                completion(sessions)
+            }
+    }
+
+    /// Get all activities for a specific session
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - sessionId: The session's unique identifier
+    /// - Returns: Array of SessionActivity ordered by createdAt
+    func getSessionActivities(userId: String, sessionId: String) async throws -> [SessionActivity] {
+        let snapshot = try await db.collection("users")
+            .document(userId)
+            .collection("sessions")
+            .document(sessionId)
+            .collection("activities")
+            .order(by: "createdAt")
+            .getDocuments()
+
+        return snapshot.documents.compactMap { doc -> SessionActivity? in
+            do {
+                return try doc.data(as: SessionActivity.self)
+            } catch {
+                print("ERROR decoding activity \(doc.documentID): \(error)")
+                return nil
+            }
+        }
+    }
+
+    /// Delete session and all associated activities
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - sessionId: The session's unique identifier
+    func deleteSession(userId: String, sessionId: String) async throws {
+        let sessionRef = db.collection("users")
+            .document(userId)
+            .collection("sessions")
+            .document(sessionId)
+
+        // 1. Delete all activities subcollection documents
+        let activitiesSnapshot = try await sessionRef
+            .collection("activities")
+            .getDocuments()
+
+        let batch = db.batch()
+        for doc in activitiesSnapshot.documents {
+            batch.deleteDocument(doc.reference)
+        }
+
+        // 2. Delete session document
+        batch.deleteDocument(sessionRef)
+
+        // Commit batch atomically
+        try await batch.commit()
     }
 }
