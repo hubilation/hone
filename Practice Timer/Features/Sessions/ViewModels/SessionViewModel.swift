@@ -193,13 +193,21 @@ final class SessionViewModel: ObservableObject {
             activity: activities[currentActivityIndex]
         )
 
-        // Reset timer state
-        pausedElapsedTime = 0
-        elapsedTime = 0
+        // Move to next activity
+        currentActivityIndex += 1
 
-        // Start in-between timer
-        sessionState = .inBetween
-        startTimer()
+        // Check if session is complete
+        if currentActivityIndex < activities.count {
+            // Reset timer for next activity
+            pausedElapsedTime = 0
+            elapsedTime = 0
+            sessionState = .active
+            activities[currentActivityIndex].startTime = nowString
+            startTimer()
+        } else {
+            // All activities complete
+            await endSession()
+        }
     }
 
     /// Start next activity (ends in-between time)

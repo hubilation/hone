@@ -13,9 +13,24 @@ import SwiftUI
 struct ActiveSessionView: View {
     @ObservedObject var viewModel: SessionViewModel
     @Environment(\.scenePhase) private var scenePhase
-    @State private var showingSummary = false
 
     var body: some View {
+        Group {
+            if viewModel.sessionState == .ended {
+                SessionSummaryView(session: viewModel.currentSession, activities: viewModel.activities)
+            } else {
+                activeSessionContent
+            }
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            // CRITICAL: Refresh timer when app returns to foreground
+            if oldPhase == .background && newPhase == .active {
+                viewModel.refreshTimerIfNeeded()
+            }
+        }
+    }
+
+    private var activeSessionContent: some View {
         ScrollView {
             VStack(spacing: 30) {
                 // Current activity header
@@ -26,28 +41,12 @@ struct ActiveSessionView: View {
                 // Large timer display
                 TimerDisplayView(elapsedTime: viewModel.elapsedTime)
 
-                // Session progress bar
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Session Progress")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    ProgressView(value: viewModel.progress)
-                        .progressViewStyle(.linear)
-                        .tint(.blue)
-                }
-                .padding(.horizontal)
-
                 // Session controls (Pause/Resume/End)
                 SessionControlsView(
                     state: viewModel.sessionState,
                     onPause: { Task { await viewModel.pauseTimer() } },
                     onResume: { Task { await viewModel.resumeTimer() } },
-                    onEnd: {
-                        Task {
-                            await viewModel.endSession()
-                            showingSummary = true
-                        }
-                    }
+                    onEnd: { Task { await viewModel.endSession() } }
                 )
 
                 Divider()
@@ -80,32 +79,11 @@ struct ActiveSessionView: View {
                     }
                 )
                 .padding(.horizontal)
-
-                // Manual "Start Next Activity" button when in inBetween state
-                if viewModel.sessionState == .inBetween {
-                    Button(action: {
-                        Task { await viewModel.startNextActivity() }
-                    }) {
-                        Label("Start Next Activity", systemImage: "play.circle.fill")
-                            .font(.title3)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                }
             }
             .padding()
         }
         .navigationTitle("Practice Session")
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: scenePhase) { oldPhase, newPhase in
-            // CRITICAL: Refresh timer when app returns to foreground
-            if oldPhase == .background && newPhase == .active {
-                viewModel.refreshTimerIfNeeded()
-            }
-        }
-        .sheet(isPresented: $showingSummary) {
-            SessionSummaryView(session: viewModel.currentSession, activities: viewModel.activities)
-        }
     }
 }
 
