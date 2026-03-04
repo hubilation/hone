@@ -29,6 +29,16 @@ struct MainAppView: View {
     let user: User
     @EnvironmentObject var authViewModel: AuthViewModel
 
+    @StateObject private var activityViewModel: ActivityViewModel
+    @StateObject private var sessionHistoryViewModel: SessionHistoryViewModel
+
+    init(user: User) {
+        self.user = user
+        let userId = user.id ?? ""
+        _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
+        _sessionHistoryViewModel = StateObject(wrappedValue: SessionHistoryViewModel(userId: userId))
+    }
+
     var body: some View {
         TabView {
             ActivityListView(userId: user.id ?? "")
@@ -38,8 +48,28 @@ struct MainAppView: View {
 
             SessionSetupView(userId: user.id ?? "")
                 .tabItem {
-                    Label("Sessions", systemImage: "timer")
+                    Label("Practice", systemImage: "play.circle")
                 }
+
+            SessionHistoryView(userId: user.id ?? "")
+                .tabItem {
+                    Label("History", systemImage: "clock")
+                }
+
+            NavigationStack {
+                StatisticsView(
+                    userId: user.id ?? "",
+                    sessions: sessionHistoryViewModel.sessions,
+                    activities: activityViewModel.activeActivities
+                )
+                .onAppear {
+                    activityViewModel.startListening()
+                    sessionHistoryViewModel.startListening()
+                }
+            }
+            .tabItem {
+                Label("Statistics", systemImage: "chart.bar")
+            }
 
             SettingsView()
                 .tabItem {
