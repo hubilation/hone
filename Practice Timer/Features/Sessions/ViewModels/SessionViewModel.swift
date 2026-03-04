@@ -368,15 +368,8 @@ final class SessionViewModel: ObservableObject {
 
     /// Upcoming activities (not yet started)
     var upcomingActivities: [SessionActivity] {
-        print("DEBUG upcomingActivities: currentActivityIndex=\(currentActivityIndex), activities.count=\(activities.count)")
-        guard currentActivityIndex + 1 < activities.count else {
-            print("DEBUG upcomingActivities: returning empty (no upcoming activities)")
-            return []
-        }
-        let upcoming = Array(activities[(currentActivityIndex + 1)...])
-        print("DEBUG upcomingActivities: returning \(upcoming.count) activities")
-        upcoming.forEach { print("  - \($0.activityName)") }
-        return upcoming
+        guard currentActivityIndex + 1 < activities.count else { return [] }
+        return Array(activities[(currentActivityIndex + 1)...])
     }
 
     /// Notes for current activity

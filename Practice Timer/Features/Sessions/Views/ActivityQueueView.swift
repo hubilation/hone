@@ -15,34 +15,20 @@ struct ActivityQueueView: View {
     let onRemove: (SessionActivity) -> Void
     let onReorder: (IndexSet, Int) -> Void
 
-    @State private var editMode: EditMode = .inactive
-
     var body: some View {
-        let _ = print("DEBUG ActivityQueueView: Received \(activities.count) activities")
-        let _ = activities.forEach { print("  - \($0.activityName) (id: \($0.id ?? "nil"))") }
-
-        return VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Upcoming Activities")
-                    .font(.headline)
-
-                Spacer()
-
-                if !activities.isEmpty {
-                    EditButton()
-                        .environment(\.editMode, $editMode)
-                }
-            }
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Upcoming Activities")
+                .font(.headline)
 
             if activities.isEmpty {
                 Text("No upcoming activities")
                     .foregroundColor(.secondary)
                     .padding()
             } else {
-                List {
+                VStack(spacing: 8) {
                     ForEach(activities) { activity in
                         HStack {
-                            VStack(alignment: .leading) {
+                            VStack(alignment: .leading, spacing: 4) {
                                 Text(activity.activityName)
                                     .font(.body)
                                 if activity.isInBetweenTime {
@@ -54,21 +40,19 @@ struct ActivityQueueView: View {
 
                             Spacer()
 
-                            // Remove button (only in non-edit mode)
-                            if editMode == .inactive {
-                                Button(action: { onRemove(activity) }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(.plain)
+                            // Remove button
+                            Button(action: { onRemove(activity) }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.red)
                             }
+                            .buttonStyle(.plain)
                         }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .cornerRadius(8)
                     }
-                    .onMove(perform: editMode == .active ? onReorder : nil)
                 }
-                .environment(\.editMode, $editMode)
-                .frame(maxHeight: 200)  // Limit height to prevent taking over screen
-                .listStyle(.plain)
 
                 // Skip to next button
                 Button(action: onSkip) {
@@ -76,6 +60,7 @@ struct ActivityQueueView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.regular)
+                .padding(.top, 4)
             }
         }
     }
