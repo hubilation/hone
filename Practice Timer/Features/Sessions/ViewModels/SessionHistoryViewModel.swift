@@ -13,6 +13,7 @@ struct DayGroup: Identifiable {
 @MainActor
 final class SessionHistoryViewModel: ObservableObject {
     @Published var sessions: [Session] = []
+    @Published var sessionActivities: [String: [SessionActivity]] = [:]
     @Published var isLoading = false
 
     private let repository: SessionRepositoryProtocol
@@ -72,6 +73,31 @@ final class SessionHistoryViewModel: ObservableObject {
         sessionsListener = repository.listenToSessions(userId: userId, limit: 100) { [weak self] sessions in
             Task { @MainActor in
                 self?.sessions = sessions
+                // Load activities for all sessions
+                await self?.loadActivitiesForSessions(sessions)
+            }
+        }
+    }
+
+    private func loadActivitiesForSessions(_ sessions: [Session]) async {
+        // Load activities for each session in parallel
+        await withTaskGroup(of: (String, [SessionActivity]).self) { group in
+            for session in sessions {
+                guard let sessionId = session.id else { continue }
+
+                group.addTask {
+                    do {
+                        let activities = try await self.repository.getSessionActivities(userId: self.userId, sessionId: sessionId)
+                        return (sessionId, activities)
+                    } catch {
+                        print("ERROR loading activities for session \(sessionId): \(error)")
+                        return (sessionId, [])
+                    }
+                }
+            }
+
+            for await (sessionId, activities) in group {
+                sessionActivities[sessionId] = activities
             }
         }
     }

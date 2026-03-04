@@ -20,22 +20,23 @@ struct SessionHistoryView: View {
                 ForEach(viewModel.groupedSessions) { group in
                     Section(header: Text(group.dayHeader)) {
                         ForEach(group.sessions) { session in
-                            SessionHistoryRow(session: session, activities: [])
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    Task {
-                                        selectedActivities = await viewModel.getActivities(for: session)
-                                        selectedSession = session
-                                    }
+                            SessionHistoryRow(
+                                session: session,
+                                activities: viewModel.sessionActivities[session.id ?? ""] ?? []
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                selectedActivities = viewModel.sessionActivities[session.id ?? ""] ?? []
+                                selectedSession = session
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    sessionToDelete = session
+                                    showingDeleteConfirmation = true
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
                                 }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        sessionToDelete = session
-                                        showingDeleteConfirmation = true
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
+                            }
                         }
                     }
                 }

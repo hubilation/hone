@@ -67,6 +67,7 @@ struct ActiveSessionView: View {
                 // Notes for current activity
                 SessionNotesView(
                     notes: viewModel.currentActivityNotes,
+                    historicalNotes: viewModel.historicalNotes,
                     onAddNote: { note in Task { await viewModel.addNote(note) } }
                 )
                 .padding(.horizontal)

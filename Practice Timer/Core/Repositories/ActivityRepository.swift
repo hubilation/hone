@@ -22,10 +22,12 @@ protocol ActivityRepositoryProtocol {
     func deleteActivity(userId: String, activityId: String) async throws
     func archiveActivity(userId: String, activityId: String) async throws
     func restoreActivity(userId: String, activityId: String) async throws
+    func addPracticeNote(userId: String, activityId: String, note: PracticeNote) async throws
 
     // Real-time listener methods (return ListenerRegistration for cleanup)
     func listenToActiveActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration
     func listenToArchivedActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration
+    func getActivity(userId: String, activityId: String) async throws -> Activity?
 }
 
 // MARK: - Implementation
@@ -188,6 +190,52 @@ final class ActivityRepository: ActivityRepositoryProtocol {
             .collection("activities")
             .document(activityId)
             .updateData(updates)
+    }
+
+    /// Adds a practice note to an activity
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - activityId: The activity's document ID
+    ///   - note: The practice note to add
+    /// - Throws: Firestore error if update fails
+    func addPracticeNote(userId: String, activityId: String, note: PracticeNote) async throws {
+        // Use arrayUnion to append the note to the practiceNotes array
+        let noteData: [String: Any] = [
+            "notes": note.notes,
+            "sessionId": note.sessionId,
+            "timestamp": note.timestamp
+        ]
+
+        let updates: [String: Any] = [
+            "practiceNotes": FieldValue.arrayUnion([noteData]),
+            "updatedAt": Date().toISO8601String()
+        ]
+
+        try await db.collection("users")
+            .document(userId)
+            .collection("activities")
+            .document(activityId)
+            .updateData(updates)
+    }
+
+    /// Gets a single activity by ID
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - activityId: The activity's document ID
+    /// - Returns: The activity, or nil if not found
+    /// - Throws: Firestore error if fetch fails
+    func getActivity(userId: String, activityId: String) async throws -> Activity? {
+        let snapshot = try await db.collection("users")
+            .document(userId)
+            .collection("activities")
+            .document(activityId)
+            .getDocument()
+
+        guard snapshot.exists else {
+            return nil
+        }
+
+        return try snapshot.data(as: Activity.self)
     }
 
     // MARK: - Real-time Listeners

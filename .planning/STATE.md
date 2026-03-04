@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 04
-current_plan: 01
+current_plan: 03
 status: in_progress
-last_updated: "2026-03-04T01:00:00Z"
+last_updated: "2026-03-04T02:45:00Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 16
-  completed_plans: 16
+  completed_plans: 19
   percent: 100
 ---
 
@@ -18,8 +18,8 @@ progress:
 
 **Last Updated:** 2026-03-04
 **Current Phase:** 04
-**Current Plan:** 04-01-PLAN.md (complete)
-**Status:** Phase 4 In Progress - Session history data layer complete
+**Current Plan:** 04-03-PLAN.md (complete)
+**Status:** Phase 4 In Progress - Statistics charts complete
 
 ---
 
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 04-session-history-statistics
-**Plan:** 04-03-PLAN.md (next)
-**Status:** Phase 4 In Progress - Session history UI layer complete
-**Progress:** [██████▒▒▒▒] 50% (2/4 plans)
+**Plan:** 04-04-PLAN.md (next)
+**Status:** Phase 4 In Progress - Statistics charts complete
+**Progress:** [████████▒▒] 75% (3/4 plans)
 
 **Phase 4 Goal:** Users can review past sessions with detailed activity breakdowns and see practice statistics
 
@@ -85,6 +85,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 04-03 | 15 min | 3 | 4 | 2026-03-04 |
 | 04-02 | 4 min | 3 | 3 | 2026-03-04 |
 | 04-01 | 8 min | 3 | 3 | 2026-03-04 |
 | 03-06 | 10 min | 2 | 5 | 2026-03-04 |
@@ -92,14 +93,25 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 03-04 | 8 min | 2 | 4 | 2026-03-04 |
 | 03-03 | 0 min | 1 | 1 | 2026-03-04 |
 | 03-02 | 30 min | 1 | 2 | 2026-03-04 |
-| 03-01 | 2 min | 2 | 2 | 2026-03-03 |
 
 ## Accumulated Context
 
 ### Critical Decisions
 
+**Plan 04-03 Decisions:**
+- Swift Charts BarMark with gradient (Color.blue.gradient) for visual polish in daily practice chart
+- DailyPracticeChartView filters sessions to last 30 days using Calendar date arithmetic, groups by calendar day with Dictionary(grouping:)
+- Daily chart converts seconds to minutes for better chart scale, sorts ascending for left-to-right chronological display
+- ActivityBreakdownChartView uses StatisticsRepository.getAllActivityStatistics() for server-side aggregation (99% read savings)
+- Activity chart has dynamic height (50pt per activity, min 150pt) to accommodate varying activity counts
+- Activity chart sorts descending by hours (most-practiced first) for priority visibility
+- StatisticsView week summary filters to last 7 days, displays total time with TimeInterval.formatted() and session count
+- Blue color for time metric, green for session count provides visual distinction in summary cards
+- NavigationLink to ActivityStatisticsView reuses Phase 2 detail view for complete statistics
+- Fixed SessionHistoryViewModel init to be MainActor-isolated (removed nonisolated) for Swift 6 strict concurrency compliance
+
 **Plan 04-02 Decisions:**
-- SessionHistoryViewModel uses nonisolated init to allow default repository parameter without actor isolation conflicts with @MainActor class
+- SessionHistoryViewModel init removed nonisolated keyword to be MainActor-isolated (Swift 6 concurrency fix)
 - Lazy loading activities on row tap prevents N+1 queries on initial list render (100 sessions would cause 101 Firestore reads)
 - Empty array passed to SessionHistoryRow initially - activities loaded only when user taps via async getActivities() method
 - groupedSessions as computed property enables reactive updates when sessions array changes from @Published
@@ -286,19 +298,20 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 04-02 (Session History UI Layer)
-- Created SessionHistoryViewModel with day grouping logic and real-time session listener
-- Implemented DayGroup struct for organizing sessions by calendar day (Today, Yesterday, formatted dates)
-- Built SessionHistoryRow compact 2-line display component showing time, duration, activity preview, notes indicator
-- Developed SessionHistoryView with day-grouped sections, lazy loading, tap navigation, and swipe-to-delete
-- Lazy loading prevents N+1 Firestore queries (load activities only when user taps session)
-- Real-time listener updates session list automatically with proper cleanup in deinit
-- **Plan 04-02 Complete:** Session history UI layer ready, reuses SessionSummaryView from Phase 3
+- Completed Plan 04-03 (Statistics Charts)
+- Created DailyPracticeChartView with Swift Charts bar chart showing practice time per day (last 30 days)
+- Built ActivityBreakdownChartView with horizontal bar chart displaying total hours per activity
+- Developed StatisticsView container combining week summary, both charts, and navigation to ActivityStatisticsView
+- DailyPracticeChartView filters by ended sessions, groups by calendar day, converts to minutes, sorts chronologically
+- ActivityBreakdownChartView uses server-side aggregation via StatisticsRepository (99% read savings at scale)
+- Week summary shows total time (formatted with TimeInterval.formatted()) and session count for last 7 days
+- Fixed SessionHistoryViewModel Swift 6 concurrency issue (removed nonisolated from init)
+- **Plan 04-03 Complete:** Statistics charts ready for navigation integration in Plan 04-04
 
 **Next Session Start Here:**
-1. Execute Plan 04-03 (Session Detail View improvements if needed)
-2. Or Execute Plan 04-04 (Statistics calculations and display)
-3. Continue Phase 4 with statistics and detail views
+1. Execute Plan 04-04 (Navigation Integration)
+2. Add Statistics tab to main navigation
+3. Complete Phase 4 with full session history and statistics feature
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend

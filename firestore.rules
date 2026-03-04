@@ -43,6 +43,14 @@ service cloud.firestore {
         allow create: if isOwner(userId) && hasRequiredSessionFields();
         allow update: if isOwner(userId) && hasRequiredSessionFields();
         allow delete: if isOwner(userId);
+
+        // Session activities subcollection - required for collection group queries
+        match /activities/{activityId} {
+          allow read: if isOwner(userId);
+          allow create: if isOwner(userId);
+          allow update: if isOwner(userId);
+          allow delete: if isOwner(userId);
+        }
       }
 
       // Catch-all for any other subcollections under user

@@ -48,10 +48,12 @@ final class SessionViewModel: ObservableObject {
     @Published var currentActivityIndex: Int = 0
     @Published var activities: [SessionActivity] = []
     @Published var currentSession: Session?
+    @Published var historicalNotes: [PracticeNote] = []
 
     // MARK: - Dependencies
 
     private let repository: SessionRepositoryProtocol
+    private let activityRepository: ActivityRepositoryProtocol
     private let userId: String
 
     // MARK: - Timer State (CRITICAL: Date-based, not tick counter)
@@ -69,9 +71,14 @@ final class SessionViewModel: ObservableObject {
 
     // MARK: - Initialization
 
-    nonisolated init(userId: String, repository: SessionRepositoryProtocol = SessionRepository()) {
+    nonisolated init(
+        userId: String,
+        repository: SessionRepositoryProtocol = SessionRepository(),
+        activityRepository: ActivityRepositoryProtocol = ActivityRepository()
+    ) {
         self.userId = userId
         self.repository = repository
+        self.activityRepository = activityRepository
     }
 
     deinit {
@@ -125,6 +132,9 @@ final class SessionViewModel: ObservableObject {
 
         // Start timer
         startTimer()
+
+        // Load historical notes for first activity
+        await loadHistoricalNotes()
     }
 
     /// Start date-based timer with .common RunLoop mode
@@ -205,6 +215,9 @@ final class SessionViewModel: ObservableObject {
             sessionState = .active
             activities[currentActivityIndex].startTime = nowString
             startTimer()
+
+            // Load historical notes for new activity
+            await loadHistoricalNotes()
         } else {
             // All activities complete
             await endSession()
@@ -239,6 +252,9 @@ final class SessionViewModel: ObservableObject {
         sessionState = .active
         activities[currentActivityIndex].startTime = nowString
         startTimer()
+
+        // Load historical notes for new activity
+        await loadHistoricalNotes()
     }
 
     /// Start next activity (ends in-between time)
@@ -278,6 +294,9 @@ final class SessionViewModel: ObservableObject {
             sessionState = .active
             activities[currentActivityIndex].startTime = nowString
             startTimer()
+
+            // Load historical notes for new activity
+            await loadHistoricalNotes()
         } else {
             // All activities complete
             await endSession()
@@ -288,21 +307,71 @@ final class SessionViewModel: ObservableObject {
     /// - Parameter note: Note text to add
     func addNote(_ note: String) async {
         guard currentActivityIndex < activities.count else { return }
+        guard let activityId = activities[currentActivityIndex].activityId else { return }
         guard let sessionId = currentSession?.id else { return }
 
-        // Update or append note
+        // Create practice note
+        let practiceNote = PracticeNote(
+            notes: note,
+            sessionId: sessionId,
+            timestamp: Date().toISO8601String()
+        )
+
+        // 1. Add to Activity.practiceNotes array (for historical notes across sessions)
+        do {
+            try await activityRepository.addPracticeNote(
+                userId: userId,
+                activityId: activityId,
+                note: practiceNote
+            )
+        } catch {
+            print("Error adding practice note to Activity: \(error)")
+            return
+        }
+
+        // 2. Also add to SessionActivity.notes (for current session summary)
         if let existingNotes = activities[currentActivityIndex].notes {
             activities[currentActivityIndex].notes = existingNotes + "\n" + note
         } else {
             activities[currentActivityIndex].notes = note
         }
 
-        // Persist to Firestore
-        try? await repository.addSessionActivity(
-            userId: userId,
-            sessionId: sessionId,
-            activity: activities[currentActivityIndex]
-        )
+        // Save SessionActivity to Firestore
+        do {
+            try await repository.addSessionActivity(
+                userId: userId,
+                sessionId: sessionId,
+                activity: activities[currentActivityIndex]
+            )
+        } catch {
+            print("Error adding note to SessionActivity: \(error)")
+        }
+
+        // Reload all notes to show the new one
+        await loadHistoricalNotes()
+    }
+
+    /// Load all notes for current activity from Activity document
+    func loadHistoricalNotes() async {
+        // Clear notes first to prevent showing wrong activity's notes
+        historicalNotes = []
+
+        guard currentActivityIndex < activities.count else { return }
+        guard let activityId = activities[currentActivityIndex].activityId else { return }
+
+        do {
+            // Fetch the activity with its practiceNotes array
+            guard let activity = try await activityRepository.getActivity(userId: userId, activityId: activityId) else {
+                historicalNotes = []
+                return
+            }
+
+            // Get ALL notes (including current session) and sort by timestamp descending (newest first)
+            historicalNotes = (activity.practiceNotes ?? []).sorted { $0.timestamp > $1.timestamp }
+        } catch {
+            print("Error loading notes: \(error)")
+            historicalNotes = []
+        }
     }
 
     /// Remove activity from queue
