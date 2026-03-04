@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 03
-current_plan: 03
+current_plan: 05
 status: in_progress
-last_updated: "2026-03-04T00:32:00Z"
+last_updated: "2026-03-04T00:45:01Z"
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 15
-  completed_plans: 12
-  percent: 80
+  completed_plans: 13
+  percent: 87
 ---
 
 # Project State: Practice Timer iOS
 
 **Last Updated:** 2026-03-04
 **Current Phase:** 03
-**Current Plan:** 03-03-PLAN.md (complete)
+**Current Plan:** 03-05-PLAN.md (complete)
 **Status:** In progress
 
 ---
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 03-session-setup-execution
-**Plan:** 03-05-PLAN.md (next)
-**Status:** Phase 3 In Progress - SessionSetupView complete
-**Progress:** [████▒▒▒▒▒▒] 67% (4/6 plans)
+**Plan:** 03-06-PLAN.md (next)
+**Status:** Phase 3 In Progress - ActiveSessionView complete
+**Progress:** [████████▒▒] 83% (5/6 plans)
 
 **Phase 3 Goal:** Users can plan and execute timed practice sessions with accurate timing that survives backgrounding
 
@@ -85,6 +85,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 03-05 | 3 min | 2 | 2 | 2026-03-04 |
 | 03-04 | 8 min | 2 | 4 | 2026-03-04 |
 | 03-03 | 0 min | 1 | 1 | 2026-03-04 |
 | 03-02 | 30 min | 1 | 2 | 2026-03-04 |
@@ -92,11 +93,24 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 02-04 | 15 min | 4 | 7 | 2026-03-03 |
 | 02-03 | 7 min | 3 | 6 | 2026-03-03 |
 | 02-02 | 74 min | 3 | 3 | 2026-03-03 |
-| 02-01 | 4 min | 3 | 2 | 2026-03-03 |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 03-05 Decisions:**
+- @ObservedObject (not @StateObject) for SessionViewModel because VM created in SessionSetupView - orchestrator doesn't own the ViewModel
+- ScrollView layout handles keyboard appearance when adding notes and accommodates long activity queues without layout breaks
+- scenePhase .onChange(of:) calls refreshTimerIfNeeded() when returning to foreground (oldPhase == .background && newPhase == .active) - critical for timer survival after iOS backgrounding
+- Manual "Start Next Activity" button when sessionState == .inBetween gives user control over break length (not auto-start) - user determines when break is over
+- Sheet presentation for SessionSummaryView (dismissible modal after session ends) using @State showingSummary flag
+- VStack spacing: 30 provides generous touch targets for operation while holding instrument
+- IndexSet.first conversion for reorderActivities callback (ActivityQueueView passes IndexSet from .onMove, SessionViewModel expects Int)
+- String.toDate() extension for ISO 8601 timestamp parsing in SessionSummaryView (converts Firestore strings to Date for display)
+- Human-readable duration format (10h 15m 30s) instead of HH:MM:SS for better readability in session summary
+- Separate sections in summary for total time, activity breakdown, and break time (filter isInBetweenTime activities into distinct "Break Time" section)
+- Display notes inline with each activity in summary (no separate section needed for better context)
+- ProgressView with viewModel.progress shows session completion percentage (currentActivityIndex / activities.count) throughout practice
 
 **Plan 03-03 Decisions:**
 - Tap-to-select interface achieves 3-tap session creation (tap activity 1, tap activity 2, tap Start) vs web app's 6+ interactions through multi-step form
@@ -251,24 +265,23 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 03-03 (SessionSetupView) - documentation catch-up
-- Created 03-03-SUMMARY.md documenting SessionSetupView implementation
-- SessionSetupView implements 3-tap session creation workflow (tap activity 1, tap activity 2, tap Start)
-- Tap-to-select interface achieves PROJECT.md goal of "fewer steps than web app" (3 taps vs 6+ clicks)
-- Selection order becomes session order automatically via orderedActivities array
-- EditButton enables optional drag-to-reorder functionality following iOS patterns
-- selectedActivityIds Set provides O(1) selection state lookup for performance
-- NavigationLink with isActive binding for programmatic navigation to ActiveSessionView
-- Requirements completed: SETUP-01, SETUP-02, SETUP-04, SETUP-05
-- **Plan 03-03 Complete:** SessionSetupView ready for end-to-end session creation flow
+- Completed Plan 03-05 (ActiveSessionView orchestration and SessionSummaryView)
+- Created ActiveSessionView composing TimerDisplayView, SessionControlsView, SessionNotesView, ActivityQueueView
+- Implemented scenePhase monitoring with .onChange calling refreshTimerIfNeeded() for background survival
+- Added ProgressView showing session completion percentage throughout practice
+- Manual "Start Next Activity" button provides user control over break duration
+- Created SessionSummaryView displaying post-session breakdown with total time, activities, and breaks
+- Human-readable duration format (Xh Ym Zs) for better readability in summary
+- Sheet presentation for SessionSummaryView after session ends
+- Requirements completed: EXEC-10
+- **Plan 03-05 Complete:** End-to-end session flow ready from setup through execution to summary
 
 **Next Session Start Here:**
-1. Execute Plan 03-05 (ActiveSessionView implementation)
-2. ActiveSessionView will compose UI components from 03-04: TimerDisplayView + SessionControlsView + SessionNotesView + ActivityQueueView
-3. Integrate with SessionViewModel (03-02) using @ObservedObject pattern
-4. Apply Pattern 4 from research: Compose small components into larger views
-5. Complete end-to-end flow: SessionSetupView → startSession() → ActiveSessionView → practice session
-6. Verify backgrounding survival and crash recovery patterns
+1. Execute Plan 03-06 (Activity Completion & Persistence)
+2. Persist completed activities to Firestore when session ends
+3. Handle activity completion state transitions
+4. Verify crash recovery and data persistence patterns
+5. Complete Phase 3 with full session lifecycle implementation
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
