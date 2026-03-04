@@ -1,13 +1,32 @@
 #!/usr/bin/env node
 import admin from 'firebase-admin';
 import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Read project ID from .firebaserc
+let projectId;
+try {
+  const firebaserc = JSON.parse(
+    readFileSync(join(__dirname, '..', '.firebaserc'), 'utf8')
+  );
+  projectId = firebaserc.projects.default;
+} catch (error) {
+  console.error('Error reading .firebaserc:', error.message);
+  process.exit(1);
+}
 
 // Initialize Firebase Admin
 // Expects GOOGLE_APPLICATION_CREDENTIALS env var or service account key file
 try {
   admin.initializeApp({
-    credential: admin.credential.applicationDefault()
+    credential: admin.credential.applicationDefault(),
+    projectId: projectId
   });
+  console.log(`🔗 Connected to Firebase project: ${projectId}\n`);
 } catch (error) {
   console.error('Error initializing Firebase Admin:', error.message);
   console.error('\nPlease set up authentication:');
