@@ -19,6 +19,26 @@ try {
 }
 
 const db = admin.firestore();
+const auth = admin.auth();
+
+/**
+ * Convert email to UID if needed
+ */
+async function getUserId(emailOrUid) {
+  // If it looks like an email, lookup the UID
+  if (emailOrUid.includes('@')) {
+    try {
+      const userRecord = await auth.getUserByEmail(emailOrUid);
+      console.log(`   📧 ${emailOrUid} → UID: ${userRecord.uid}`);
+      return userRecord.uid;
+    } catch (error) {
+      console.error(`   ❌ User not found: ${emailOrUid}`);
+      throw error;
+    }
+  }
+  // Otherwise assume it's already a UID
+  return emailOrUid;
+}
 
 /**
  * Copy all session data from source user to target user
@@ -195,13 +215,20 @@ console.log('\n⚠️  WARNING: This will DELETE all existing data for target us
 console.log(`Source: ${sourceUser}`);
 console.log(`Target: ${targetUser}\n`);
 
-// Run the copy
-copyUserData(sourceUser, targetUser)
-  .then(() => {
+console.log('🔍 Looking up user IDs...\n');
+
+// Convert emails to UIDs if needed, then run the copy
+(async () => {
+  try {
+    const sourceUid = await getUserId(sourceUser);
+    const targetUid = await getUserId(targetUser);
+
+    console.log('\n');
+    await copyUserData(sourceUid, targetUid);
     console.log('🎉 Done!');
     process.exit(0);
-  })
-  .catch((error) => {
-    console.error('\n❌ Error:', error);
+  } catch (error) {
+    console.error('\n❌ Error:', error.message);
     process.exit(1);
-  });
+  }
+})();

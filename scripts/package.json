@@ -4,7 +4,8 @@
   "description": "Utility scripts for Practice Timer development",
   "type": "module",
   "scripts": {
-    "copy-user-data": "node copy-user-data.js"
+    "copy-user-data": "node copy-user-data.js",
+    "find-uid": "node find-user-uid.js"
   },
   "dependencies": {
     "firebase-admin": "^12.0.0"
