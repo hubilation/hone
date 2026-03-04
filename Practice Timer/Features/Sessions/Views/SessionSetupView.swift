@@ -13,7 +13,7 @@ struct SessionSetupView: View {
     @State private var selectedActivityIds: Set<String> = []
     @State private var orderedActivities: [Activity] = []
     @State private var isEditMode: EditMode = .inactive
-    @State private var navigateToSession = false
+    @State private var sessionStarted = false
     @State private var showingError = false
     @State private var errorMessage = ""
 
@@ -132,16 +132,9 @@ struct SessionSetupView: View {
         } message: {
             Text(errorMessage)
         }
-        // Hidden NavigationLink for programmatic navigation
-        .background(
-            NavigationLink(
-                destination: ActiveSessionView(viewModel: sessionViewModel),
-                isActive: $navigateToSession
-            ) {
-                EmptyView()
-            }
-            .hidden()
-        )
+        .navigationDestination(isPresented: $sessionStarted) {
+            ActiveSessionView(viewModel: sessionViewModel)
+        }
     }
 
     // MARK: - Helper Methods
@@ -164,7 +157,7 @@ struct SessionSetupView: View {
         Task {
             do {
                 try await sessionViewModel.startSession(selectedActivities: orderedActivities)
-                navigateToSession = true
+                sessionStarted = true
             } catch {
                 errorMessage = "Failed to start session: \(error.localizedDescription)"
                 showingError = true
