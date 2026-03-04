@@ -84,9 +84,11 @@ struct ActiveSessionView: View {
                         Task { await viewModel.removeActivity(activity) }
                     },
                     onReorder: { from, to in
-                        // Convert IndexSet to Int for first index
+                        // Offset indices by currentActivityIndex + 1 since upcoming activities
+                        // are a slice of the full activities array
+                        let offset = viewModel.currentActivityIndex + 1
                         if let fromIndex = from.first {
-                            viewModel.reorderActivities(from: fromIndex, to: to)
+                            viewModel.reorderActivities(from: fromIndex + offset, to: to + offset)
                         }
                     }
                 )
