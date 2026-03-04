@@ -123,6 +123,9 @@ struct SessionSetupView: View {
                 }
             }
             .environment(\.editMode, $isEditMode)
+            .navigationDestination(isPresented: $sessionStarted) {
+                ActiveSessionView(viewModel: sessionViewModel)
+            }
         }
         .onAppear {
             activityViewModel.startListening()
@@ -131,9 +134,6 @@ struct SessionSetupView: View {
             Button("OK") { }
         } message: {
             Text(errorMessage)
-        }
-        .navigationDestination(isPresented: $sessionStarted) {
-            ActiveSessionView(viewModel: sessionViewModel)
         }
     }
 
