@@ -177,6 +177,40 @@ final class SessionViewModel: ObservableObject {
         try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
     }
 
+    /// Complete current activity and move to next
+    func completeCurrentActivity() async {
+        guard currentActivityIndex < activities.count else { return }
+        guard let sessionId = currentSession?.id else { return }
+
+        // End current activity
+        let nowString = Date().toISO8601String()
+        activities[currentActivityIndex].endTime = nowString
+        activities[currentActivityIndex].duration = Int(elapsedTime)
+
+        // Save current activity to Firestore
+        try? await repository.addSessionActivity(
+            userId: userId,
+            sessionId: sessionId,
+            activity: activities[currentActivityIndex]
+        )
+
+        // Move to next activity
+        currentActivityIndex += 1
+
+        // Check if session is complete
+        if currentActivityIndex < activities.count {
+            // Reset timer for next activity
+            pausedElapsedTime = 0
+            elapsedTime = 0
+            sessionState = .active
+            activities[currentActivityIndex].startTime = nowString
+            startTimer()
+        } else {
+            // All activities complete
+            await endSession()
+        }
+    }
+
     /// Skip to a specific activity in the queue
     func skipToActivity(_ targetActivity: SessionActivity) async {
         guard currentActivityIndex < activities.count else { return }

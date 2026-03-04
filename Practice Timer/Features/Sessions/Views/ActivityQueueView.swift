@@ -11,26 +11,37 @@ import SwiftUI
 /// SINGLE RESPONSIBILITY: Display and manage activity queue during session
 struct ActivityQueueView: View {
     let activities: [SessionActivity]
+    let currentActivityName: String
     let onSkip: (SessionActivity) -> Void
     let onRemove: (SessionActivity) -> Void
     let onReorder: (IndexSet, Int) -> Void
 
     @State private var activityToSkipTo: SessionActivity?
     @State private var showingSkipConfirmation = false
+    @State private var editMode: EditMode = .inactive
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Upcoming Activities")
-                .font(.headline)
+            HStack {
+                Text("Upcoming Activities")
+                    .font(.headline)
+
+                Spacer()
+
+                if !activities.isEmpty {
+                    EditButton()
+                        .environment(\.editMode, $editMode)
+                }
+            }
 
             if activities.isEmpty {
                 Text("No upcoming activities")
                     .foregroundColor(.secondary)
                     .padding()
             } else {
-                VStack(spacing: 12) {
+                List {
                     ForEach(activities) { activity in
-                        HStack {
+                        HStack(spacing: 12) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(activity.activityName)
                                     .font(.title3)
@@ -44,37 +55,45 @@ struct ActivityQueueView: View {
 
                             Spacer()
 
-                            // Remove button
-                            Button(action: { onRemove(activity) }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.title2)
-                                    .foregroundColor(.red)
+                            // Remove button (only in non-edit mode)
+                            if editMode == .inactive {
+                                Button(action: { onRemove(activity) }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
                         }
-                        .padding(.vertical, 16)
-                        .padding(.horizontal, 16)
-                        .background(Color(uiColor: .secondarySystemGroupedBackground))
-                        .cornerRadius(12)
+                        .padding(.vertical, 8)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .listRowBackground(Color(uiColor: .secondarySystemGroupedBackground))
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            activityToSkipTo = activity
-                            showingSkipConfirmation = true
+                            if editMode == .inactive {
+                                activityToSkipTo = activity
+                                showingSkipConfirmation = true
+                            }
                         }
                     }
+                    .onMove(perform: onReorder)
                 }
+                .environment(\.editMode, $editMode)
+                .listStyle(.plain)
+                .scrollDisabled(true)
+                .frame(height: CGFloat(activities.count) * 70)
             }
         }
-        .alert("Skip to Activity?", isPresented: $showingSkipConfirmation) {
+        .alert("Complete Activity?", isPresented: $showingSkipConfirmation) {
             Button("Cancel", role: .cancel) { }
-            Button("Skip", role: .destructive) {
+            Button("Complete & Start") {
                 if let activity = activityToSkipTo {
                     onSkip(activity)
                 }
             }
         } message: {
             if let activity = activityToSkipTo {
-                Text("Skip current activity and start \"\(activity.activityName)\"?")
+                Text("Complete \"\(currentActivityName)\" and start \"\(activity.activityName)\"?")
             }
         }
     }
@@ -110,6 +129,7 @@ struct ActivityQueueView: View {
 
     ActivityQueueView(
         activities: activities,
+        currentActivityName: "Current Activity",
         onSkip: { activity in print("Skip to \(activity.activityName)") },
         onRemove: { print("Remove \($0.activityName)") },
         onReorder: { print("Reorder \($0) to \($1)") }

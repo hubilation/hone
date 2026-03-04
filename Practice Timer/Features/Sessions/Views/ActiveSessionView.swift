@@ -13,6 +13,7 @@ import SwiftUI
 struct ActiveSessionView: View {
     @ObservedObject var viewModel: SessionViewModel
     @Environment(\.scenePhase) private var scenePhase
+    @State private var showingCompleteConfirmation = false
 
     var body: some View {
         Group {
@@ -41,6 +42,18 @@ struct ActiveSessionView: View {
                 // Large timer display
                 TimerDisplayView(elapsedTime: viewModel.elapsedTime)
 
+                // Complete Activity button
+                Button(action: {
+                    showingCompleteConfirmation = true
+                }) {
+                    Label("Complete Activity", systemImage: "checkmark.circle.fill")
+                        .frame(maxWidth: .infinity)
+                        .font(.headline)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .tint(.green)
+
                 // Session controls (Pause/Resume/End)
                 SessionControlsView(
                     state: viewModel.sessionState,
@@ -63,6 +76,7 @@ struct ActiveSessionView: View {
                 // Upcoming activities queue
                 ActivityQueueView(
                     activities: viewModel.upcomingActivities,
+                    currentActivityName: viewModel.currentActivityName,
                     onSkip: { activity in
                         Task { await viewModel.skipToActivity(activity) }
                     },
@@ -82,6 +96,14 @@ struct ActiveSessionView: View {
         }
         .navigationTitle("Practice Session")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Complete Activity?", isPresented: $showingCompleteConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Complete") {
+                Task { await viewModel.completeCurrentActivity() }
+            }
+        } message: {
+            Text("Mark \"\(viewModel.currentActivityName)\" as complete and move to next activity?")
+        }
     }
 }
 
