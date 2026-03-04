@@ -36,7 +36,11 @@ struct MainAppView: View {
                     Label("Activities", systemImage: "list.bullet")
                 }
 
-            // Placeholder for future tabs
+            SessionSetupView(userId: user.id ?? "")
+                .tabItem {
+                    Label("Sessions", systemImage: "timer")
+                }
+
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
