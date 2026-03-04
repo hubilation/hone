@@ -21,7 +21,7 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation & Authentication | 4/4 | Complete   | 2026-03-03 |
 | 2. Activity Management | 4/4 | Complete   | 2026-03-03 |
-| 3. Session Setup & Execution | 1/6 | In Progress | - |
+| 3. Session Setup & Execution | 4/6 | In Progress | - |
 | 4. Session History & Statistics | 0/? | Not started | - |
 | 5. Smart Features & Polish | 0/? | Not started | - |
 | 6. Platform Integration | 0/? | Not started | - |
@@ -120,9 +120,9 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Session data models and SessionRepository (Wave 1) (completed 2026-03-03)
-- [ ] 03-02-PLAN.md — SessionViewModel with date-based timer architecture (Wave 2)
-- [ ] 03-03-PLAN.md — Session setup UI with activity selection and reordering (Wave 3)
-- [ ] 03-04-PLAN.md — Timer display and session control components (Wave 3)
+- [x] 03-02-PLAN.md — SessionViewModel with date-based timer architecture (Wave 2) (completed 2026-03-04)
+- [x] 03-03-PLAN.md — Session setup UI with activity selection and reordering (Wave 3) (completed 2026-03-04)
+- [x] 03-04-PLAN.md — Timer display and session control components (Wave 3) (completed 2026-03-04)
 - [ ] 03-05-PLAN.md — Active session orchestrator and summary view (Wave 4)
 - [ ] 03-06-PLAN.md — Navigation integration and human verification checkpoint (Wave 5)
 
