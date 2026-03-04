@@ -7,13 +7,16 @@
 
 import SwiftUI
 
-/// Upcoming activities with skip/remove/reorder actions
+/// Upcoming activities with skip/remove actions
 /// SINGLE RESPONSIBILITY: Display and manage activity queue during session
 struct ActivityQueueView: View {
     let activities: [SessionActivity]
-    let onSkip: () -> Void
+    let onSkip: (SessionActivity) -> Void
     let onRemove: (SessionActivity) -> Void
     let onReorder: (IndexSet, Int) -> Void
+
+    @State private var activityToSkipTo: SessionActivity?
+    @State private var showingSkipConfirmation = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -25,12 +28,13 @@ struct ActivityQueueView: View {
                     .foregroundColor(.secondary)
                     .padding()
             } else {
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
                     ForEach(activities) { activity in
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(activity.activityName)
-                                    .font(.body)
+                                    .font(.title3)
+                                    .fontWeight(.medium)
                                 if activity.isInBetweenTime {
                                     Text("Break")
                                         .font(.caption)
@@ -43,24 +47,34 @@ struct ActivityQueueView: View {
                             // Remove button
                             Button(action: { onRemove(activity) }) {
                                 Image(systemName: "xmark.circle.fill")
+                                    .font(.title2)
                                     .foregroundColor(.red)
                             }
                             .buttonStyle(.plain)
                         }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 16)
                         .background(Color(uiColor: .secondarySystemGroupedBackground))
-                        .cornerRadius(8)
+                        .cornerRadius(12)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            activityToSkipTo = activity
+                            showingSkipConfirmation = true
+                        }
                     }
                 }
-
-                // Skip to next button
-                Button(action: onSkip) {
-                    Label("Skip to Next Activity", systemImage: "forward.fill")
+            }
+        }
+        .alert("Skip to Activity?", isPresented: $showingSkipConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Skip", role: .destructive) {
+                if let activity = activityToSkipTo {
+                    onSkip(activity)
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.regular)
-                .padding(.top, 4)
+            }
+        } message: {
+            if let activity = activityToSkipTo {
+                Text("Skip current activity and start \"\(activity.activityName)\"?")
             }
         }
     }
@@ -96,7 +110,7 @@ struct ActivityQueueView: View {
 
     ActivityQueueView(
         activities: activities,
-        onSkip: { print("Skip") },
+        onSkip: { activity in print("Skip to \(activity.activityName)") },
         onRemove: { print("Remove \($0.activityName)") },
         onReorder: { print("Reorder \($0) to \($1)") }
     )

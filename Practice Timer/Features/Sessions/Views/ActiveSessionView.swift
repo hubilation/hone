@@ -63,10 +63,8 @@ struct ActiveSessionView: View {
                 // Upcoming activities queue
                 ActivityQueueView(
                     activities: viewModel.upcomingActivities,
-                    onSkip: {
-                        Task {
-                            await viewModel.skipToNext()
-                        }
+                    onSkip: { activity in
+                        Task { await viewModel.skipToActivity(activity) }
                     },
                     onRemove: { activity in
                         Task { await viewModel.removeActivity(activity) }

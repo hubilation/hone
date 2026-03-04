@@ -177,38 +177,34 @@ final class SessionViewModel: ObservableObject {
         try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
     }
 
-    /// Skip to next activity (starts in-between timer)
-    func skipToNext() async {
+    /// Skip to a specific activity in the queue
+    func skipToActivity(_ targetActivity: SessionActivity) async {
         guard currentActivityIndex < activities.count else { return }
+        guard let sessionId = currentSession?.id else { return }
 
-        // End current activity
+        // Find the target activity's index
+        guard let targetIndex = activities.firstIndex(where: { $0.id == targetActivity.id }) else { return }
+
+        // End current activity and save it
         let nowString = Date().toISO8601String()
         activities[currentActivityIndex].endTime = nowString
         activities[currentActivityIndex].duration = Int(elapsedTime)
 
-        // Save current activity to Firestore
-        guard let sessionId = currentSession?.id else { return }
         try? await repository.addSessionActivity(
             userId: userId,
             sessionId: sessionId,
             activity: activities[currentActivityIndex]
         )
 
-        // Move to next activity
-        currentActivityIndex += 1
+        // Jump to target activity
+        currentActivityIndex = targetIndex
 
-        // Check if session is complete
-        if currentActivityIndex < activities.count {
-            // Reset timer for next activity
-            pausedElapsedTime = 0
-            elapsedTime = 0
-            sessionState = .active
-            activities[currentActivityIndex].startTime = nowString
-            startTimer()
-        } else {
-            // All activities complete
-            await endSession()
-        }
+        // Reset timer for new activity
+        pausedElapsedTime = 0
+        elapsedTime = 0
+        sessionState = .active
+        activities[currentActivityIndex].startTime = nowString
+        startTimer()
     }
 
     /// Start next activity (ends in-between time)
