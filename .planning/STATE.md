@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 04-session-history-statistics
-**Plan:** 04-02-PLAN.md (next)
-**Status:** Phase 4 In Progress - Data layer complete
-**Progress:** [███▒▒▒▒▒▒▒] 25% (1/4 plans)
+**Plan:** 04-03-PLAN.md (next)
+**Status:** Phase 4 In Progress - Session history UI layer complete
+**Progress:** [██████▒▒▒▒] 50% (2/4 plans)
 
 **Phase 4 Goal:** Users can review past sessions with detailed activity breakdowns and see practice statistics
 
@@ -85,6 +85,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 04-02 | 4 min | 3 | 3 | 2026-03-04 |
 | 04-01 | 8 min | 3 | 3 | 2026-03-04 |
 | 03-06 | 10 min | 2 | 5 | 2026-03-04 |
 | 03-05 | 3 min | 2 | 2 | 2026-03-04 |
@@ -92,11 +93,21 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 03-03 | 0 min | 1 | 1 | 2026-03-04 |
 | 03-02 | 30 min | 1 | 2 | 2026-03-04 |
 | 03-01 | 2 min | 2 | 2 | 2026-03-03 |
-| 02-04 | 15 min | 4 | 7 | 2026-03-03 |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 04-02 Decisions:**
+- SessionHistoryViewModel uses nonisolated init to allow default repository parameter without actor isolation conflicts with @MainActor class
+- Lazy loading activities on row tap prevents N+1 queries on initial list render (100 sessions would cause 101 Firestore reads)
+- Empty array passed to SessionHistoryRow initially - activities loaded only when user taps via async getActivities() method
+- groupedSessions as computed property enables reactive updates when sessions array changes from @Published
+- Dictionary(grouping:) for efficient session grouping by calendar day
+- Calendar.current.startOfDay() handles timezone-aware day comparison for Today/Yesterday logic
+- Swipe-to-delete with allowsFullSwipe: false prevents accidental deletion
+- Day grouping pattern: DayGroup struct with id (ISO date), dayHeader (display text), sessions array
+- Sheet presentation for SessionSummaryView reuses unchanged component from Phase 3
 
 **Plan 04-01 Decisions:**
 - Extension on TimeInterval (not standalone function) provides dot syntax for duration formatting: `duration.formatted()`
@@ -275,21 +286,19 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 04-01 (Session History Data Layer)
-- Created TimeInterval+Formatting extension for shared duration helper (e.g., "1h 15m 30s")
-- Added 4 new methods to SessionRepository: getSessions, listenToSessions, getSessionActivities, deleteSession
-- Implemented real-time listener for ended sessions with ListenerRegistration cleanup pattern
-- Created cascade delete using batch operation (atomic deletion of activities + session)
-- Added composite index for session history query (state + startTime) to firestore.indexes.json
-- Requirements completed: HIST-01, HIST-05 (partial - data layer only)
-- **Plan 04-01 Complete:** Data access layer ready for session history feature
+- Completed Plan 04-02 (Session History UI Layer)
+- Created SessionHistoryViewModel with day grouping logic and real-time session listener
+- Implemented DayGroup struct for organizing sessions by calendar day (Today, Yesterday, formatted dates)
+- Built SessionHistoryRow compact 2-line display component showing time, duration, activity preview, notes indicator
+- Developed SessionHistoryView with day-grouped sections, lazy loading, tap navigation, and swipe-to-delete
+- Lazy loading prevents N+1 Firestore queries (load activities only when user taps session)
+- Real-time listener updates session list automatically with proper cleanup in deinit
+- **Plan 04-02 Complete:** Session history UI layer ready, reuses SessionSummaryView from Phase 3
 
 **Next Session Start Here:**
-1. Execute Plan 04-02 (SessionHistoryViewModel)
-2. Create ViewModel with real-time session listener
-3. Implement delete session action for swipe-to-delete
-4. Handle loading states and empty history cases
-5. Continue Phase 4 with UI layer for session history
+1. Execute Plan 04-03 (Session Detail View improvements if needed)
+2. Or Execute Plan 04-04 (Statistics calculations and display)
+3. Continue Phase 4 with statistics and detail views
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend

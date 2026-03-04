@@ -156,9 +156,9 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — Session history data layer (SessionRepository extensions, TimeInterval formatting) (completed 2026-03-04)
-- [ ] 04-02-PLAN.md — SessionHistoryViewModel with real-time session listener
-- [ ] 04-03-PLAN.md — SessionHistoryView with list display and swipe-to-delete
-- [ ] 04-04-PLAN.md — SessionDetailView showing activity breakdown and statistics
+- [x] 04-02-PLAN.md — Session history UI layer (SessionHistoryViewModel, SessionHistoryRow, SessionHistoryView) (completed 2026-03-04)
+- [ ] 04-03-PLAN.md — Statistics charts and visualizations
+- [ ] 04-04-PLAN.md — Navigation integration and final polish
 
 **Notes**:
 - Foundation for Phase 5 smart suggestions (requires historical data)
