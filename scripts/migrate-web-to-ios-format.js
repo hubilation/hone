@@ -120,7 +120,7 @@ export async function migrateUserSessions(userEmailOrUid, isDryRun = false) {
 
   // Get all sessions for user
   console.log('1️⃣  Fetching sessions...');
-  const sessionsRef = db.collection('users').document(userId).collection('sessions');
+  const sessionsRef = db.collection('users').doc(userId).collection('sessions');
   const sessionsSnapshot = await sessionsRef.get();
 
   if (sessionsSnapshot.empty) {
