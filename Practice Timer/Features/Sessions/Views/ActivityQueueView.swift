@@ -18,7 +18,10 @@ struct ActivityQueueView: View {
     @State private var editMode: EditMode = .inactive
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        let _ = print("DEBUG ActivityQueueView: Received \(activities.count) activities")
+        let _ = activities.forEach { print("  - \($0.activityName) (id: \($0.id ?? "nil"))") }
+
+        return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Upcoming Activities")
                     .font(.headline)
