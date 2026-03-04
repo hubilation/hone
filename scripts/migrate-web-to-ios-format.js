@@ -165,14 +165,75 @@ export async function migrateUserSessions(userEmailOrUid, isDryRun = false) {
 
   console.log(`\n   ✅ Transformed ${sessionCount} sessions\n`);
 
-  // Placeholder for Task 3 (activities subcollection creation)
+  // Create activities subcollections
   console.log('3️⃣  Creating activities subcollections...');
-  console.log('   (Will be implemented in Task 3)\n');
+
+  let activitiesCreated = 0;
+
+  for (const sessionDoc of sessionsSnapshot.docs) {
+    const webSession = sessionDoc.data();
+    const sessionId = sessionDoc.id;
+    const activityArray = webSession.activities || [];
+
+    if (activityArray.length === 0) {
+      continue;
+    }
+
+    const activityTimes = webSession.activityTimes || {};
+    const activityNotes = webSession.activityNotes || {};
+    const sessionStartTime = webSession.createdAt;
+
+    // Calculate start time for each activity
+    let cumulativeOffset = 0;
+
+    for (let index = 0; index < activityArray.length; index++) {
+      const activity = activityArray[index];
+      const duration = activityTimes[index] || 0;
+      const notes = activityNotes[index] || null;
+
+      // Calculate activity start and end times
+      const startTime = new Date(new Date(sessionStartTime).getTime() + cumulativeOffset * 1000);
+      const endTime = new Date(startTime.getTime() + duration * 1000);
+
+      // Create SessionActivity document
+      const sessionActivity = {
+        activityId: activity.id || null,
+        activityName: activity.name,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        duration: duration,
+        notes: notes,
+        isInBetweenTime: false,
+        createdAt: sessionStartTime,
+        updatedAt: webSession.updatedAt || sessionStartTime
+      };
+
+      if (!isDryRun) {
+        // Create document in activities subcollection
+        const activitiesRef = db.collection('users')
+          .doc(userId)
+          .collection('sessions')
+          .doc(sessionId)
+          .collection('activities');
+
+        await activitiesRef.add(sessionActivity);
+      }
+
+      activitiesCreated++;
+      cumulativeOffset += duration;
+    }
+
+    if (isDryRun) {
+      console.log(`   [DRY RUN] Would create ${activityArray.length} activities for session ${sessionId}`);
+    }
+  }
+
+  console.log(`   ✅ Created ${activitiesCreated} activity documents\n`);
 
   return {
     userId,
     sessionCount,
-    activityCount,
+    activityCount: activitiesCreated,
     totalDuration
   };
 }
