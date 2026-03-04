@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 03
-current_plan: 02
+current_plan: 03
 status: in_progress
-last_updated: "2026-03-03T23:49:13Z"
+last_updated: "2026-03-04T00:19:04Z"
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 15
-  completed_plans: 9
-  percent: 60
+  completed_plans: 10
+  percent: 67
 ---
 
 # Project State: Practice Timer iOS
 
-**Last Updated:** 2026-03-03
+**Last Updated:** 2026-03-04
 **Current Phase:** 03
-**Current Plan:** 03-02-PLAN.md
+**Current Plan:** 03-03-PLAN.md
 **Status:** In progress
 
 ---
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 03-session-setup-execution
-**Plan:** 03-02-PLAN.md (next)
-**Status:** Phase 3 In Progress - Session data foundation complete
-**Progress:** [█▒▒▒▒▒▒▒▒▒] 17% (1/6 plans)
+**Plan:** 03-03-PLAN.md (next)
+**Status:** Phase 3 In Progress - SessionViewModel complete
+**Progress:** [███▒▒▒▒▒▒▒] 33% (2/6 plans)
 
 **Phase 3 Goal:** Users can plan and execute timed practice sessions with accurate timing that survives backgrounding
 
@@ -85,6 +85,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 03-02 | 30 min | 1 | 2 | 2026-03-04 |
 | 03-01 | 2 min | 2 | 2 | 2026-03-03 |
 | 02-04 | 15 min | 4 | 7 | 2026-03-03 |
 | 02-03 | 7 min | 3 | 6 | 2026-03-03 |
@@ -92,11 +93,20 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 02-01 | 4 min | 3 | 2 | 2026-03-03 |
 | 01-04 | 15 min | 3 | 3 | 2026-03-02 |
 | 01-03 | 10 min | 3 | 7 | 2026-03-02 |
-| 01-02 | 9 min | 3 | 7 | 2026-03-02 |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 03-02 Decisions:**
+- Date-based timer calculation (pausedElapsedTime + Date().timeIntervalSince(startTime)) survives iOS backgrounding because elapsed time is recalculated from Date difference, not incremented on timer ticks
+- Timer.publish(on: .main, in: .common) uses .common RunLoop mode (not .default) to prevent timer freezing during scrolling, typing, and user interaction (critical for iOS UX)
+- Immediate Firestore persistence on all state changes (pause, skip, note) enables crash recovery - if app crashes, user can resume from last persisted state
+- SessionState enum manages lifecycle transitions (setup → active → paused → inBetween → ended) with state-driven timer control
+- pausedElapsedTime preserves accumulated time across multiple pause/resume cycles without drift
+- refreshTimerIfNeeded() restarts timer on foreground return if sessionState is active (timer publisher is cancelled when app backgrounds)
+- [weak self] in timer sink closure prevents retain cycles (timer publisher holds strong reference to closure)
+- reorderActivities(from: Int, to: Int) uses Int indices (not IndexSet) to avoid SwiftUI dependency in ViewModel (separation of concerns)
 
 **Plan 03-01 Decisions:**
 - Used string values for Session.state field ("setup", "active", "paused", "inBetween", "ended") matching web app format for cross-platform sync compatibility
@@ -222,21 +232,21 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 03-01 (Session data foundation)
-- Extended Session model with state tracking fields (state, pausedAt, currentActivityIndex) for crash recovery
-- Created SessionActivity model for sessions/{sessionId}/activities subcollection
-- Implemented SessionRepository with 7 methods following ActivityRepository pattern from Phase 2
-- Built crash recovery infrastructure with getActiveSession() to find interrupted sessions
-- Established atomic state update pattern with updateSessionState() for immediate persistence
-- All patterns follow Phase 2: protocol-based, async/await for CRUD, ListenerRegistration for listeners
-- **Plan 03-01 Complete:** Session data foundation ready for SessionViewModel
+- Completed Plan 03-02 (SessionViewModel with date-based timer architecture)
+- Implemented SessionViewModel with @MainActor isolation following ActivityViewModel pattern
+- Created date-based timer using Timer.publish(every: 0.1, on: .main, in: .common) for backgrounding survival
+- Built state machine managing 5 lifecycle states (setup/active/paused/inBetween/ended)
+- Integrated immediate Firestore persistence on all state changes for crash recovery
+- Added refreshTimerIfNeeded() for foreground return handling
+- Used [weak self] in timer closure and listener cleanup in deinit for memory safety
+- **Plan 03-02 Complete:** SessionViewModel ready for UI integration
 
 **Next Session Start Here:**
-1. Execute Plan 03-02 (SessionViewModel with date-based timer architecture)
-2. Apply patterns: Repository pattern, real-time listeners with MainActor, state persistence
-3. Focus on date-based timer calculations (not tick counters) for backgrounding survival
-4. Use RunLoop .common mode for timer (critical for iOS backgrounding)
-5. Plans 03-03 and 03-04 can run in parallel (Wave 3) - different files, no dependencies
+1. Wave 3 parallelization: Execute Plan 03-03 (ActiveSessionView) OR Plan 03-04 (SessionSetupView)
+2. Plans 03-03 and 03-04 have no dependencies on each other - can run in parallel
+3. Both plans depend on 03-02 (SessionViewModel) which is now complete
+4. Apply patterns: SwiftUI observation of @Published properties, state-driven UI rendering
+5. Use SessionViewModel computed properties (currentActivityName, progress, upcomingActivities) for display
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
