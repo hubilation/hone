@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 03
-current_plan: 06
-status: phase_complete
-last_updated: "2026-03-04T00:50:00Z"
+current_phase: 04
+current_plan: 01
+status: in_progress
+last_updated: "2026-03-04T01:00:00Z"
 progress:
-  total_phases: 3
+  total_phases: 4
   completed_phases: 3
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 16
+  completed_plans: 16
   percent: 100
 ---
 
 # Project State: Practice Timer iOS
 
 **Last Updated:** 2026-03-04
-**Current Phase:** 03
-**Current Plan:** 03-06-PLAN.md (complete)
-**Status:** Phase 3 Complete - Ready for verification
+**Current Phase:** 04
+**Current Plan:** 04-01-PLAN.md (complete)
+**Status:** Phase 4 In Progress - Session history data layer complete
 
 ---
 
@@ -44,12 +44,12 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 
 ## Current Position
 
-**Phase:** 03-session-setup-execution
-**Plan:** 03-06-PLAN.md (next)
-**Status:** Phase 3 In Progress - ActiveSessionView complete
-**Progress:** [████████▒▒] 83% (5/6 plans)
+**Phase:** 04-session-history-statistics
+**Plan:** 04-02-PLAN.md (next)
+**Status:** Phase 4 In Progress - Data layer complete
+**Progress:** [███▒▒▒▒▒▒▒] 25% (1/4 plans)
 
-**Phase 3 Goal:** Users can plan and execute timed practice sessions with accurate timing that survives backgrounding
+**Phase 4 Goal:** Users can review past sessions with detailed activity breakdowns and see practice statistics
 
 **Phase 1 Success Criteria:**
 1. User can sign up with email/password and immediately access their account
@@ -67,36 +67,46 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 
 **Phases:**
 - Total: 7
-- Completed: 2 (Phases 1-2)
-- In Progress: 1 (Phase 3)
-- Not Started: 4
+- Completed: 3 (Phases 1-3)
+- In Progress: 1 (Phase 4)
+- Not Started: 3
 
 **Requirements:**
 - Total v1: 53
-- Completed: 24 (Phase 1: 8, Phase 2: 10, Phase 3: 6)
-- In Progress: 13 (Phase 3 remaining)
+- Completed: 37 (Phase 1: 8, Phase 2: 10, Phase 3: 13, Phase 4: 6 in progress)
+- In Progress: 6 (Phase 4)
 - Coverage: 100% (all mapped to phases)
 
 **Velocity:**
 - Plans per session: 1-4
-- Average plan completion time: 3 minutes
+- Average plan completion time: 5 minutes
 - Blockers encountered: 0
 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 04-01 | 8 min | 3 | 3 | 2026-03-04 |
+| 03-06 | 10 min | 2 | 5 | 2026-03-04 |
 | 03-05 | 3 min | 2 | 2 | 2026-03-04 |
 | 03-04 | 8 min | 2 | 4 | 2026-03-04 |
 | 03-03 | 0 min | 1 | 1 | 2026-03-04 |
 | 03-02 | 30 min | 1 | 2 | 2026-03-04 |
 | 03-01 | 2 min | 2 | 2 | 2026-03-03 |
 | 02-04 | 15 min | 4 | 7 | 2026-03-03 |
-| 02-03 | 7 min | 3 | 6 | 2026-03-03 |
-| 02-02 | 74 min | 3 | 3 | 2026-03-03 |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 04-01 Decisions:**
+- Extension on TimeInterval (not standalone function) provides dot syntax for duration formatting: `duration.formatted()`
+- getSessions filters by state == "ended" to exclude active/setup sessions from history view
+- Default limit 100 sessions covers 6-12 months for typical user, prevents unbounded queries
+- listenToSessions returns ListenerRegistration for cleanup in ViewModel deinit (memory leak prevention)
+- compactMap skips malformed documents for resilience rather than failing entire query
+- deleteSession uses batch operation for atomic cascade delete (activities first, then session)
+- Composite index (state + startTime) required for session history query, will deploy after all Phase 4 views complete
+- getSessionActivities ordered by createdAt maintains session activity sequence for detail view
 
 **Plan 03-05 Decisions:**
 - @ObservedObject (not @StateObject) for SessionViewModel because VM created in SessionSetupView - orchestrator doesn't own the ViewModel
@@ -265,23 +275,21 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 03-05 (ActiveSessionView orchestration and SessionSummaryView)
-- Created ActiveSessionView composing TimerDisplayView, SessionControlsView, SessionNotesView, ActivityQueueView
-- Implemented scenePhase monitoring with .onChange calling refreshTimerIfNeeded() for background survival
-- Added ProgressView showing session completion percentage throughout practice
-- Manual "Start Next Activity" button provides user control over break duration
-- Created SessionSummaryView displaying post-session breakdown with total time, activities, and breaks
-- Human-readable duration format (Xh Ym Zs) for better readability in summary
-- Sheet presentation for SessionSummaryView after session ends
-- Requirements completed: EXEC-10
-- **Plan 03-05 Complete:** End-to-end session flow ready from setup through execution to summary
+- Completed Plan 04-01 (Session History Data Layer)
+- Created TimeInterval+Formatting extension for shared duration helper (e.g., "1h 15m 30s")
+- Added 4 new methods to SessionRepository: getSessions, listenToSessions, getSessionActivities, deleteSession
+- Implemented real-time listener for ended sessions with ListenerRegistration cleanup pattern
+- Created cascade delete using batch operation (atomic deletion of activities + session)
+- Added composite index for session history query (state + startTime) to firestore.indexes.json
+- Requirements completed: HIST-01, HIST-05 (partial - data layer only)
+- **Plan 04-01 Complete:** Data access layer ready for session history feature
 
 **Next Session Start Here:**
-1. Execute Plan 03-06 (Activity Completion & Persistence)
-2. Persist completed activities to Firestore when session ends
-3. Handle activity completion state transitions
-4. Verify crash recovery and data persistence patterns
-5. Complete Phase 3 with full session lifecycle implementation
+1. Execute Plan 04-02 (SessionHistoryViewModel)
+2. Create ViewModel with real-time session listener
+3. Implement delete session action for swipe-to-delete
+4. Handle loading states and empty history cases
+5. Continue Phase 4 with UI layer for session history
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend

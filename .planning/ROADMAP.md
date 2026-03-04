@@ -9,7 +9,7 @@
 
 - [x] **Phase 1: Foundation & Authentication** - Firebase setup, auth flows, data models, security rules (completed 2026-03-03)
 - [x] **Phase 2: Activity Management** - CRUD operations, categorization, archive/restore, real-time sync (completed 2026-03-03)
-- [ ] **Phase 3: Session Setup & Execution** - Timer with backgrounding, session flow, notes, pause/resume
+- [x] **Phase 3: Session Setup & Execution** - Timer with backgrounding, session flow, notes, pause/resume (completed 2026-03-04)
 - [ ] **Phase 4: Session History & Statistics** - Past sessions, activity stats, filtering, detail views
 - [ ] **Phase 5: Smart Features & Polish** - Smart suggestions, visual progress, in-between time tracking
 - [ ] **Phase 6: Platform Integration** - iPad layouts, offline indicators, optimistic UI, performance
@@ -21,8 +21,8 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation & Authentication | 4/4 | Complete   | 2026-03-03 |
 | 2. Activity Management | 4/4 | Complete   | 2026-03-03 |
-| 3. Session Setup & Execution | 4/6 | In Progress | - |
-| 4. Session History & Statistics | 0/? | Not started | - |
+| 3. Session Setup & Execution | 6/6 | Complete   | 2026-03-04 |
+| 4. Session History & Statistics | 1/4 | In Progress | - |
 | 5. Smart Features & Polish | 0/? | Not started | - |
 | 6. Platform Integration | 0/? | Not started | - |
 | 7. App Store Preparation | 0/? | Not started | - |
@@ -123,8 +123,8 @@ Plans:
 - [x] 03-02-PLAN.md — SessionViewModel with date-based timer architecture (Wave 2) (completed 2026-03-04)
 - [x] 03-03-PLAN.md — Session setup UI with activity selection and reordering (Wave 3) (completed 2026-03-04)
 - [x] 03-04-PLAN.md — Timer display and session control components (Wave 3) (completed 2026-03-04)
-- [ ] 03-05-PLAN.md — Active session orchestrator and summary view (Wave 4)
-- [ ] 03-06-PLAN.md — Navigation integration and human verification checkpoint (Wave 5)
+- [x] 03-05-PLAN.md — Active session orchestrator and summary view (Wave 4) (completed 2026-03-04)
+- [x] 03-06-PLAN.md — Navigation integration and human verification checkpoint (Wave 5) (completed 2026-03-04)
 
 **Notes**:
 - Most complex phase: Timer architecture, backgrounding, component extraction
@@ -152,12 +152,19 @@ Plans:
 6. User can filter session history by date range or activity
 7. Statistics show meaningful practice trends (total time per activity, practice frequency)
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [x] 04-01-PLAN.md — Session history data layer (SessionRepository extensions, TimeInterval formatting) (completed 2026-03-04)
+- [ ] 04-02-PLAN.md — SessionHistoryViewModel with real-time session listener
+- [ ] 04-03-PLAN.md — SessionHistoryView with list display and swipe-to-delete
+- [ ] 04-04-PLAN.md — SessionDetailView showing activity breakdown and statistics
 
 **Notes**:
 - Foundation for Phase 5 smart suggestions (requires historical data)
-- Performance consideration: Paginate large session collections
+- Performance consideration: Default limit 100 sessions (covers 6-12 months)
 - Charts and statistics provide user motivation
+- Composite index (state + startTime) required for session history query
 
 ---
 
