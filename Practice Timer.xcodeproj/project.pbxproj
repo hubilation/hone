@@ -13,6 +13,8 @@
 		3D5026A32F5618AE00D21FEB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3D5026A22F5618AE00D21FEB /* GoogleSignIn */; };
 		3D5026A52F5618AE00D21FEB /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3D5026A42F5618AE00D21FEB /* GoogleSignInSwift */; };
 		3D5027122F567F5900D21FEB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D5027112F567F5900D21FEB /* GoogleService-Info.plist */; };
+		598127D53ED44D62940304B8 /* ActiveSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07102773AE54664BD799647 /* ActiveSessionView.swift */; };
+		887DF9F02C2740DD80D2603A /* SessionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE19D89BC3594F25A73E00D9 /* SessionSetupView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +53,7 @@
 				3D50266B2F550CC800D21FEB /* Practice Timer */,
 				3D50269A2F56119900D21FEB /* Frameworks */,
 				3D50266A2F550CC800D21FEB /* Products */,
+				3D836B402F57B35700D1C3D3 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -67,6 +70,13 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3D836B402F57B35700D1C3D3 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

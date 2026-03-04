@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 03
-current_plan: 03
+current_plan: 04
 status: in_progress
-last_updated: "2026-03-04T00:19:04Z"
+last_updated: "2026-03-04T00:30:47Z"
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 15
-  completed_plans: 10
-  percent: 67
+  completed_plans: 11
+  percent: 73
 ---
 
 # Project State: Practice Timer iOS
@@ -45,9 +45,9 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Current Position
 
 **Phase:** 03-session-setup-execution
-**Plan:** 03-03-PLAN.md (next)
-**Status:** Phase 3 In Progress - SessionViewModel complete
-**Progress:** [███▒▒▒▒▒▒▒] 33% (2/6 plans)
+**Plan:** 03-05-PLAN.md (next)
+**Status:** Phase 3 In Progress - UI components extracted
+**Progress:** [████▒▒▒▒▒▒] 50% (3/6 plans)
 
 **Phase 3 Goal:** Users can plan and execute timed practice sessions with accurate timing that survives backgrounding
 
@@ -85,6 +85,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 **Recent Plans:**
 | Plan | Duration | Tasks | Files | Completed |
 |------|----------|-------|-------|-----------|
+| 03-04 | 8 min | 2 | 4 | 2026-03-04 |
 | 03-02 | 30 min | 1 | 2 | 2026-03-04 |
 | 03-01 | 2 min | 2 | 2 | 2026-03-03 |
 | 02-04 | 15 min | 4 | 7 | 2026-03-03 |
@@ -92,11 +93,20 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 | 02-02 | 74 min | 3 | 3 | 2026-03-03 |
 | 02-01 | 4 min | 3 | 2 | 2026-03-03 |
 | 01-04 | 15 min | 3 | 3 | 2026-03-02 |
-| 01-03 | 10 min | 3 | 7 | 2026-03-02 |
 
 ## Accumulated Context
 
 ### Critical Decisions
+
+**Plan 03-04 Decisions:**
+- 80pt font size for timer display (readable from 10 feet per PROJECT.md requirement) combined with .monospaced design and .monospacedDigit() prevents width jitter when digits change
+- .controlSize(.large) ensures 60pt+ touch targets necessary for operation while holding instrument (EXEC-14 requirement)
+- State-dependent button display (only show relevant actions based on SessionState) prevents showing irrelevant controls to user
+- Closure-based callbacks (components receive closures, not ViewModel references) enables testability and prevents tight coupling
+- Append mode for notes (doesn't replace existing notes) allows user to add multiple notes during same activity
+- EditButton for reorder mode (consistent with iOS patterns) vs custom drag handles for familiar UX
+- maxHeight constraint on queue (prevent list from dominating screen) maintains balanced layout during session
+- Component Extraction Pattern: < 150 lines per component, single responsibility, clear prop interfaces following research Pattern 4 from 03-RESEARCH.md
 
 **Plan 03-02 Decisions:**
 - Date-based timer calculation (pausedElapsedTime + Date().timeIntervalSince(startTime)) survives iOS backgrounding because elapsed time is recalculated from Date difference, not incremented on timer ticks
@@ -232,21 +242,23 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
-- Completed Plan 03-02 (SessionViewModel with date-based timer architecture)
-- Implemented SessionViewModel with @MainActor isolation following ActivityViewModel pattern
-- Created date-based timer using Timer.publish(every: 0.1, on: .main, in: .common) for backgrounding survival
-- Built state machine managing 5 lifecycle states (setup/active/paused/inBetween/ended)
-- Integrated immediate Firestore persistence on all state changes for crash recovery
-- Added refreshTimerIfNeeded() for foreground return handling
-- Used [weak self] in timer closure and listener cleanup in deinit for memory safety
-- **Plan 03-02 Complete:** SessionViewModel ready for UI integration
+- Completed Plan 03-04 (Session UI Components extraction)
+- Created TimerDisplayView with 80pt monospace font readable from 10 feet
+- Created SessionControlsView with state-dependent buttons and 60pt+ touch targets
+- Created SessionNotesView with input validation and append mode
+- Created ActivityQueueView with skip/remove/reorder actions
+- All components follow single responsibility principle (< 150 lines each)
+- All components use closure-based callbacks for clean separation from ViewModel
+- All components include previews for isolated testing
+- **Plan 03-04 Complete:** UI components ready for composition in ActiveSessionView and SessionSetupView
 
 **Next Session Start Here:**
-1. Wave 3 parallelization: Execute Plan 03-03 (ActiveSessionView) OR Plan 03-04 (SessionSetupView)
-2. Plans 03-03 and 03-04 have no dependencies on each other - can run in parallel
-3. Both plans depend on 03-02 (SessionViewModel) which is now complete
-4. Apply patterns: SwiftUI observation of @Published properties, state-driven UI rendering
-5. Use SessionViewModel computed properties (currentActivityName, progress, upcomingActivities) for display
+1. Wave 3 continues: Execute Plan 03-03 (ActiveSessionView) OR Plan 03-05 (SessionSetupView)
+2. Plans 03-03 and 03-05 can now compose the extracted UI components (03-04)
+3. Both views integrate with SessionViewModel (03-02) using @ObservedObject pattern
+4. Apply Pattern 4 from research: Compose small components into larger views
+5. ActiveSessionView composes TimerDisplayView + SessionControlsView + SessionNotesView + ActivityQueueView
+6. SessionSetupView will compose ActivitySelectionView + SessionConfigView
 
 **Context for Handoff:**
 - Project type: Native iOS app (SwiftUI) with Firebase backend
