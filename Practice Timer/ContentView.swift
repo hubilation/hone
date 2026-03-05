@@ -35,6 +35,8 @@ struct MainAppView: View {
     init(user: User) {
         self.user = user
         let userId = user.id ?? ""
+        print("🔍 DEBUG: MainAppView init with userId: '\(userId)'")
+        print("🔍 DEBUG: user.id = \(user.id ?? "nil")")
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
         _sessionHistoryViewModel = StateObject(wrappedValue: SessionHistoryViewModel(userId: userId))
     }

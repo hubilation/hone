@@ -23,6 +23,7 @@ protocol ActivityRepositoryProtocol {
     func archiveActivity(userId: String, activityId: String) async throws
     func restoreActivity(userId: String, activityId: String) async throws
     func addPracticeNote(userId: String, activityId: String, note: PracticeNote) async throws
+    func updateActivityStats(userId: String, activityId: String, additionalTime: Int, lastUsed: String) async throws
 
     // Real-time listener methods (return ListenerRegistration for cleanup)
     func listenToActiveActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration
@@ -163,7 +164,8 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     /// - Throws: Firestore error if update fails
     func archiveActivity(userId: String, activityId: String) async throws {
         let updates: [String: Any] = [
-            "archived": true,
+            "active": false,
+            "archived": true,  // For backward compatibility with web app
             "updatedAt": Date().toISO8601String()
         ]
 
@@ -181,7 +183,8 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     /// - Throws: Firestore error if update fails
     func restoreActivity(userId: String, activityId: String) async throws {
         let updates: [String: Any] = [
-            "archived": false,
+            "active": true,
+            "archived": false,  // For backward compatibility with web app
             "updatedAt": Date().toISO8601String()
         ]
 
@@ -203,11 +206,34 @@ final class ActivityRepository: ActivityRepositoryProtocol {
         let noteData: [String: Any] = [
             "notes": note.notes,
             "sessionId": note.sessionId,
-            "timestamp": note.timestamp
+            "timestamp": note.timestamp,
+            "timeSpent": note.timeSpent
         ]
 
         let updates: [String: Any] = [
             "practiceNotes": FieldValue.arrayUnion([noteData]),
+            "updatedAt": Date().toISO8601String(),
+            "lastUsed": Date().toISO8601String()  // Update lastUsed when note added
+        ]
+
+        try await db.collection("users")
+            .document(userId)
+            .collection("activities")
+            .document(activityId)
+            .updateData(updates)
+    }
+
+    /// Updates activity statistics (totalPracticeTime and lastUsed)
+    /// - Parameters:
+    ///   - userId: The user's unique identifier
+    ///   - activityId: The activity's document ID
+    ///   - additionalTime: Seconds to add to totalPracticeTime
+    ///   - lastUsed: ISO 8601 timestamp of last use
+    /// - Throws: Firestore error if update fails
+    func updateActivityStats(userId: String, activityId: String, additionalTime: Int, lastUsed: String) async throws {
+        let updates: [String: Any] = [
+            "totalPracticeTime": FieldValue.increment(Int64(additionalTime)),
+            "lastUsed": lastUsed,
             "updatedAt": Date().toISO8601String()
         ]
 
@@ -248,14 +274,14 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     func listenToActiveActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration {
         print("DEBUG: Repository creating active activities listener for userId: \(userId)")
 
-        // COMPOSITE INDEX REQUIRED: archived (ascending) + name (ascending)
-        // This query filters by archived=false AND sorts by name, which requires
+        // COMPOSITE INDEX REQUIRED: active (ascending) + name (ascending)
+        // This query filters by active=true AND sorts by name, which requires
         // a composite index. Without it, query fails with "requires an index" error.
         // Index defined in firestore.indexes.json, deployed via: firebase deploy --only firestore:indexes
         return db.collection("users")
             .document(userId)
             .collection("activities")
-            .whereField("archived", isEqualTo: false)
+            .whereField("active", isEqualTo: true)
             .order(by: "name")
             .addSnapshotListener { snapshot, error in
                 if let error = error {
@@ -294,14 +320,14 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     func listenToArchivedActivities(userId: String, completion: @escaping ([Activity]) -> Void) -> ListenerRegistration {
         print("DEBUG: Repository creating archived activities listener for userId: \(userId)")
 
-        // COMPOSITE INDEX REQUIRED: archived (ascending) + updatedAt (descending)
-        // This query filters by archived=true AND sorts by updatedAt descending, which requires
+        // COMPOSITE INDEX REQUIRED: active (ascending) + updatedAt (descending)
+        // This query filters by active=false AND sorts by updatedAt descending, which requires
         // a composite index. Without it, query fails with "requires an index" error.
         // Index defined in firestore.indexes.json, deployed via: firebase deploy --only firestore:indexes
         return db.collection("users")
             .document(userId)
             .collection("activities")
-            .whereField("archived", isEqualTo: true)
+            .whereField("active", isEqualTo: false)
             .order(by: "updatedAt", descending: true)
             .addSnapshotListener { snapshot, error in
                 if let error = error {

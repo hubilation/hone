@@ -8,48 +8,34 @@
 import SwiftUI
 import Charts
 
-/// Data point for activity practice time
-struct ActivityPracticeData: Identifiable {
-    let id = UUID()
-    let activityName: String
-    let hours: Double
-}
-
 struct ActivityBreakdownChartView: View {
     let userId: String
     let activities: [Activity]
 
-    @State private var chartData: [ActivityPracticeData] = []
+    @State private var chartData: [AverageSessionTimeData] = []
     @State private var isLoading = false
 
-    private let statisticsRepository = StatisticsRepository()
+    private let statisticsRepository = StatisticsRepository.shared
 
     private func loadChartData() async {
         isLoading = true
         defer { isLoading = false }
 
         do {
-            let stats = try await statisticsRepository.getAllActivityStatistics(
+            chartData = try await statisticsRepository.getAverageSessionTimes(
                 userId: userId,
-                activities: activities
+                activities: activities,
+                days: 30
             )
-
-            chartData = stats.map { stat in
-                ActivityPracticeData(
-                    activityName: stat.activityName,
-                    hours: stat.totalPracticeTime / 3600.0
-                )
-            }
-            .sorted { $0.hours > $1.hours }  // Most-practiced first
         } catch {
-            print("ERROR loading activity statistics: \(error)")
+            print("ERROR loading average session times: \(error)")
             chartData = []
         }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Practice Time by Activity")
+            Text("Average Session Time (Last 30 Days)")
                 .font(.headline)
 
             if isLoading {
@@ -57,7 +43,7 @@ struct ActivityBreakdownChartView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 40)
             } else if chartData.isEmpty {
-                Text("No practice data yet. Complete a session to see activity breakdown.")
+                Text("No practice sessions in the last 30 days.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -65,52 +51,39 @@ struct ActivityBreakdownChartView: View {
             } else {
                 Chart(chartData) { data in
                     BarMark(
-                        x: .value("Hours", data.hours),
+                        x: .value("Minutes", data.averageMinutes),
                         y: .value("Activity", data.activityName)
                     )
                     .foregroundStyle(by: .value("Activity", data.activityName))
+                    .annotation(position: .trailing) {
+                        Text(String(format: "%.0f min", data.averageMinutes))
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 .chartXAxis {
                     AxisMarks { value in
                         AxisValueLabel {
-                            if let hours = value.as(Double.self) {
-                                Text(String(format: "%.1fh", hours))
+                            if let minutes = value.as(Double.self) {
+                                Text(String(format: "%.0f min", minutes))
                             }
                         }
                     }
                 }
+                .chartLegend(.hidden)  // Hide legend since we have annotations
                 .frame(height: max(50.0 * Double(chartData.count), 150))  // Dynamic height based on activity count
             }
         }
         .padding()
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(12)
-        .task {
+        .task(id: activities.count) {
             await loadChartData()
         }
     }
 }
 
 #Preview {
-    let activities = [
-        Activity(
-            id: "a1",
-            name: "Scales",
-            category: "Technique",
-            createdAt: Date().toISO8601String(),
-            updatedAt: Date().toISO8601String(),
-            archived: false
-        ),
-        Activity(
-            id: "a2",
-            name: "Sight Reading",
-            category: "Warm-up",
-            createdAt: Date().toISO8601String(),
-            updatedAt: Date().toISO8601String(),
-            archived: false
-        )
-    ]
-
-    ActivityBreakdownChartView(userId: "preview-user", activities: activities)
+    ActivityBreakdownChartView(userId: "preview-user", activities: [])
         .padding()
 }

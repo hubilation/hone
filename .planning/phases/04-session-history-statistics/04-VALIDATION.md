@@ -1,10 +1,11 @@
 ---
 phase: 04
 slug: session-history-statistics
-status: ready
+status: complete
 nyquist_compliant: true
 wave_0_complete: false
 created: 2026-03-04
+completed: 2026-03-05
 ---
 
 # Phase 04 — Validation Strategy
@@ -38,18 +39,18 @@ created: 2026-03-04
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 04-01-01 | 01 | 1 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-01-02 | 01 | 1 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-01-03 | 01 | 1 | Infrastructure | syntax | `python3 -c "import json; json.load(open('firestore.indexes.json'))"` | ✅ | ⬜ pending |
-| 04-02-01 | 02 | 2 | POST-03 (partial) | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-02-02 | 02 | 2 | POST-03 (partial) | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-02-03 | 02 | 2 | POST-03 (partial) | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-03-01 | 03 | 2 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-03-02 | 03 | 2 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-03-03 | 03 | 2 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-04-01 | 04 | 3 | POST-03/04/06 | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ⬜ pending |
-| 04-04-02 | 04 | 3 | PLAT-04/05 | deployment | `firebase deploy --only firestore:indexes` | ✅ | ⬜ pending |
-| 04-04-03 | 04 | 3 | All Phase 4 | manual | Human verification checkpoint (blocking) | N/A | ⬜ pending |
+| 04-01-01 | 01 | 1 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-01-02 | 01 | 1 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-01-03 | 01 | 1 | Infrastructure | syntax | `python3 -c "import json; json.load(open('firestore.indexes.json'))"` | ✅ | ✅ green |
+| 04-02-01 | 02 | 2 | POST-03 (partial) | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-02-02 | 02 | 2 | POST-03 (partial) | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-02-03 | 02 | 2 | POST-03 (partial) | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-03-01 | 03 | 2 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-03-02 | 03 | 2 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-03-03 | 03 | 2 | Infrastructure | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-04-01 | 04 | 3 | POST-03/04/06 | build | `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build` | ✅ | ✅ green |
+| 04-04-02 | 04 | 3 | PLAT-04/05 | deployment | `firebase deploy --only firestore:indexes` | ✅ | ✅ green |
+| 04-04-03 | 04 | 3 | All Phase 4 | manual | Human verification checkpoint (blocking) | N/A | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -86,6 +87,15 @@ created: 2026-03-04
 | Memory leak prevention | N/A | Profiling tools | See 04-04 Task 3 checkpoint step 10 |
 
 *Rationale:* Phase 4 focuses on UI presentation and cross-platform behavior that requires human judgment for UX quality. Build verification ensures code compiles; manual checkpoint ensures features work correctly from user perspective.
+
+**Human Verification Completed 2026-03-05:**
+- ✅ Session history displays with day grouping (fixed date parsing for fractional seconds)
+- ✅ Session detail shows activities (fixed race condition with ReactiveSessionSummaryView)
+- ✅ Activities grouped by category: Warm-up → Piece → Technique → others (both tabs)
+- ✅ Archive/restore functionality working correctly
+- ✅ Cross-platform data compatibility (iOS ↔ web app)
+- ✅ Firestore indexes deployed and operational
+- ✅ All migration scripts validated and executed
 
 ---
 

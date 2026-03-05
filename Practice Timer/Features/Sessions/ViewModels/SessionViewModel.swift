@@ -194,8 +194,9 @@ final class SessionViewModel: ObservableObject {
 
         // End current activity
         let nowString = Date().toISO8601String()
+        let duration = Int(elapsedTime)
         activities[currentActivityIndex].endTime = nowString
-        activities[currentActivityIndex].duration = Int(elapsedTime)
+        activities[currentActivityIndex].duration = duration
 
         // Save current activity to Firestore
         try? await repository.addSessionActivity(
@@ -203,6 +204,16 @@ final class SessionViewModel: ObservableObject {
             sessionId: sessionId,
             activity: activities[currentActivityIndex]
         )
+
+        // Update Activity.totalPracticeTime and lastUsed
+        if let activityId = activities[currentActivityIndex].activityId {
+            try? await activityRepository.updateActivityStats(
+                userId: userId,
+                activityId: activityId,
+                additionalTime: duration,
+                lastUsed: nowString
+            )
+        }
 
         // Move to next activity
         currentActivityIndex += 1
@@ -234,14 +245,25 @@ final class SessionViewModel: ObservableObject {
 
         // End current activity and save it
         let nowString = Date().toISO8601String()
+        let duration = Int(elapsedTime)
         activities[currentActivityIndex].endTime = nowString
-        activities[currentActivityIndex].duration = Int(elapsedTime)
+        activities[currentActivityIndex].duration = duration
 
         try? await repository.addSessionActivity(
             userId: userId,
             sessionId: sessionId,
             activity: activities[currentActivityIndex]
         )
+
+        // Update Activity.totalPracticeTime and lastUsed
+        if let activityId = activities[currentActivityIndex].activityId {
+            try? await activityRepository.updateActivityStats(
+                userId: userId,
+                activityId: activityId,
+                additionalTime: duration,
+                lastUsed: nowString
+            )
+        }
 
         // Jump to target activity
         currentActivityIndex = targetIndex
@@ -314,7 +336,8 @@ final class SessionViewModel: ObservableObject {
         let practiceNote = PracticeNote(
             notes: note,
             sessionId: sessionId,
-            timestamp: Date().toISO8601String()
+            timestamp: Date().toISO8601String(),
+            timeSpent: Int(elapsedTime)
         )
 
         // 1. Add to Activity.practiceNotes array (for historical notes across sessions)
@@ -416,8 +439,9 @@ final class SessionViewModel: ObservableObject {
         // End current activity if not already ended
         if currentActivityIndex < activities.count && activities[currentActivityIndex].endTime == nil {
             let nowString = Date().toISO8601String()
+            let duration = Int(elapsedTime)
             activities[currentActivityIndex].endTime = nowString
-            activities[currentActivityIndex].duration = Int(elapsedTime)
+            activities[currentActivityIndex].duration = duration
 
             guard let sessionId = currentSession?.id else { return }
             try? await repository.addSessionActivity(
@@ -425,6 +449,16 @@ final class SessionViewModel: ObservableObject {
                 sessionId: sessionId,
                 activity: activities[currentActivityIndex]
             )
+
+            // Update Activity.totalPracticeTime and lastUsed for final activity
+            if let activityId = activities[currentActivityIndex].activityId {
+                try? await activityRepository.updateActivityStats(
+                    userId: userId,
+                    activityId: activityId,
+                    additionalTime: duration,
+                    lastUsed: nowString
+                )
+            }
         }
 
         // Calculate total duration from all activities

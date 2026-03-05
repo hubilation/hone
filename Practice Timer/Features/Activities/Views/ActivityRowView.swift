@@ -45,7 +45,7 @@ struct ActivityRowView: View {
             category: "Technique",
             createdAt: "2026-03-03T10:00:00Z",
             updatedAt: "2026-03-03T10:00:00Z",
-            archived: false
+            active: true
         ))
 
         ActivityRowView(activity: Activity(
@@ -54,7 +54,7 @@ struct ActivityRowView: View {
             category: "Instrument",
             createdAt: "2026-03-03T10:00:00Z",
             updatedAt: "2026-03-03T10:00:00Z",
-            archived: false
+            active: true
         ))
     }
 }

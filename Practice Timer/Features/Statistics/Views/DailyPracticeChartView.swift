@@ -8,44 +8,24 @@
 import SwiftUI
 import Charts
 
-/// Data point for daily practice time
-struct DailyPracticeData: Identifiable {
-    let id = UUID()
-    let date: Date
-    let minutes: Int  // Total practice minutes for the day
-}
-
 struct DailyPracticeChartView: View {
+    let userId: String
     let sessions: [Session]
+    let activities: [Activity]
 
-    private var chartData: [DailyPracticeData] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: today)!
+    @State private var chartData: [DailyCategoryPracticeData] = []
+    @State private var isLoading = true
 
-        // Filter sessions to last 30 days
-        let recentSessions = sessions.filter { session in
-            guard session.state == "ended" else { return false }
-            guard let startDate = Date(iso8601String: session.startTime) else { return false }
-            return startDate >= thirtyDaysAgo
-        }
+    private let repository = StatisticsRepository.shared
 
-        // Group by day and sum durations
-        let grouped = Dictionary(grouping: recentSessions) { session -> Date in
-            guard let date = Date(iso8601String: session.startTime) else { return Date() }
-            return calendar.startOfDay(for: date)
-        }
+    private var categories: [String] {
+        let uniqueCategories = Set(chartData.map { $0.category })
+        let categoryOrder = ["Warm-up", "Piece", "Technique"]
 
-        // Map to chart data
-        let data = grouped.map { (date, sessions) in
-            let totalSeconds = sessions.reduce(0) { $0 + $1.totalDuration }
-            return DailyPracticeData(
-                date: date,
-                minutes: totalSeconds / 60
-            )
-        }
-
-        return data.sorted { $0.date < $1.date }  // Ascending for left-to-right chart
+        // Return ordered categories
+        var result = categoryOrder.filter { uniqueCategories.contains($0) }
+        result.append(contentsOf: uniqueCategories.filter { !categoryOrder.contains($0) }.sorted())
+        return result
     }
 
     var body: some View {
@@ -53,7 +33,11 @@ struct DailyPracticeChartView: View {
             Text("Daily Practice (Last 30 Days)")
                 .font(.headline)
 
-            if chartData.isEmpty {
+            if isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 40)
+            } else if chartData.isEmpty {
                 Text("No practice sessions in the last 30 days")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
@@ -65,7 +49,7 @@ struct DailyPracticeChartView: View {
                         x: .value("Date", data.date, unit: .day),
                         y: .value("Minutes", data.minutes)
                     )
-                    .foregroundStyle(Color.blue.gradient)
+                    .foregroundStyle(by: .value("Category", data.category))
                 }
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .day, count: 7)) { value in
@@ -85,12 +69,46 @@ struct DailyPracticeChartView: View {
                         }
                     }
                 }
+                .chartForegroundStyleScale(
+                    domain: categories,
+                    range: categoryColors(for: categories)
+                )
                 .frame(height: 200)
             }
         }
         .padding()
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(12)
+        .task(id: activities.count) {
+            await loadChartData()
+        }
+    }
+
+    private func categoryColors(for categories: [String]) -> [Color] {
+        categories.map { category in
+            switch category {
+            case "Warm-up": return .orange
+            case "Piece": return .blue
+            case "Technique": return .green
+            default: return .purple
+            }
+        }
+    }
+
+    private func loadChartData() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            chartData = try await repository.getDailyCategoryData(
+                userId: userId,
+                activities: activities,
+                days: 30
+            )
+        } catch {
+            print("Error loading daily category data: \(error)")
+            chartData = []
+        }
     }
 }
 
@@ -98,7 +116,7 @@ struct DailyPracticeChartView: View {
     let sessions = [
         Session(
             id: "s1",
-            startTime: Date().addingTimeInterval(-86400).toISO8601String(),  // 1 day ago
+            startTime: Date().addingTimeInterval(-86400).toISO8601String(),
             endTime: Date().addingTimeInterval(-82800).toISO8601String(),
             totalDuration: 3600,
             createdAt: Date().addingTimeInterval(-86400).toISO8601String(),
@@ -106,20 +124,24 @@ struct DailyPracticeChartView: View {
             state: "ended",
             pausedAt: nil,
             currentActivityIndex: nil
-        ),
-        Session(
-            id: "s2",
-            startTime: Date().addingTimeInterval(-172800).toISO8601String(),  // 2 days ago
-            endTime: Date().addingTimeInterval(-169200).toISO8601String(),
-            totalDuration: 5400,
-            createdAt: Date().addingTimeInterval(-172800).toISO8601String(),
-            updatedAt: Date().addingTimeInterval(-172800).toISO8601String(),
-            state: "ended",
-            pausedAt: nil,
-            currentActivityIndex: nil
         )
     ]
 
-    DailyPracticeChartView(sessions: sessions)
-        .padding()
+    let activities = [
+        Activity(
+            id: "a1",
+            name: "Scales",
+            category: "Warm-up",
+            createdAt: Date().toISO8601String(),
+            updatedAt: Date().toISO8601String(),
+            active: true
+        )
+    ]
+
+    DailyPracticeChartView(
+        userId: "preview-user",
+        sessions: sessions,
+        activities: activities
+    )
+    .padding()
 }

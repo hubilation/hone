@@ -338,6 +338,7 @@ final class SessionRepository: SessionRepositoryProtocol {
     ///   - completion: Closure called with updated sessions array
     /// - Returns: ListenerRegistration for cleanup
     func listenToSessions(userId: String, limit: Int = 100, completion: @escaping ([Session]) -> Void) -> ListenerRegistration {
+        print("🔍 DEBUG: SessionRepository.listenToSessions called for userId: '\(userId)'")
         return db.collection("users")
             .document(userId)
             .collection("sessions")
@@ -346,21 +347,25 @@ final class SessionRepository: SessionRepositoryProtocol {
             .limit(to: limit)
             .addSnapshotListener { snapshot, error in
                 if let error = error {
-                    print("ERROR in sessions listener: \(error.localizedDescription)")
+                    print("🔍 ERROR in sessions listener: \(error.localizedDescription)")
                     completion([])
                     return
                 }
 
                 guard let documents = snapshot?.documents else {
+                    print("🔍 DEBUG: Sessions snapshot has no documents")
                     completion([])
                     return
                 }
 
+                print("🔍 DEBUG: Sessions snapshot received \(documents.count) documents")
                 let sessions = documents.compactMap { doc -> Session? in
                     do {
-                        return try doc.data(as: Session.self)
+                        let session = try doc.data(as: Session.self)
+                        print("🔍 DEBUG: Successfully decoded session \(doc.documentID)")
+                        return session
                     } catch {
-                        print("ERROR decoding session \(doc.documentID): \(error)")
+                        print("🔍 ERROR decoding session \(doc.documentID): \(error)")
                         return nil
                     }
                 }

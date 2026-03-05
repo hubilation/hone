@@ -129,15 +129,33 @@ struct SessionSummaryView: View {
     }
 }
 
-// String extension for ISO 8601 to Date conversion
-extension String {
-    func toDate() -> Date? {
-        let formatter = ISO8601DateFormatter()
-        return formatter.date(from: self)
+/// Wrapper view for reactive session summary with SessionHistoryViewModel
+/// Observes ViewModel's sessionActivities dictionary and updates when activities load
+struct ReactiveSessionSummaryView: View {
+    let session: Session?
+    @ObservedObject var viewModel: SessionHistoryViewModel
+
+    var body: some View {
+        SessionSummaryView(
+            session: session,
+            activities: viewModel.sessionActivities[session?.id ?? ""] ?? []
+        )
     }
 }
 
 #Preview {
+    let session = Session(
+        id: "s1",
+        startTime: Date().addingTimeInterval(-1620).toISO8601String(),
+        endTime: Date().toISO8601String(),
+        totalDuration: 1620,
+        createdAt: Date().toISO8601String(),
+        updatedAt: Date().toISO8601String(),
+        state: "ended",
+        pausedAt: nil,
+        currentActivityIndex: 2
+    )
+
     let activities = [
         SessionActivity(
             id: "1",
@@ -177,17 +195,5 @@ extension String {
         )
     ]
 
-    let session = Session(
-        id: "s1",
-        startTime: Date().addingTimeInterval(-1620).toISO8601String(),
-        endTime: Date().toISO8601String(),
-        totalDuration: 1620,
-        createdAt: Date().toISO8601String(),
-        updatedAt: Date().toISO8601String(),
-        state: "ended",
-        pausedAt: nil,
-        currentActivityIndex: 2
-    )
-
-    SessionSummaryView(session: session, activities: activities)
+    return SessionSummaryView(session: session, activities: activities)
 }

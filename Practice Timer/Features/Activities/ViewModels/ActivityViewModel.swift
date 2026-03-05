@@ -98,7 +98,7 @@ final class ActivityViewModel: ObservableObject {
             category: category.rawValue,
             createdAt: Date().toISO8601String(),
             updatedAt: Date().toISO8601String(),
-            archived: false
+            active: true
         )
 
         do {
@@ -132,7 +132,7 @@ final class ActivityViewModel: ObservableObject {
             category: category.rawValue,
             createdAt: activity.createdAt,
             updatedAt: Date().toISO8601String(),
-            archived: activity.archived
+            active: activity.active
         )
 
         do {

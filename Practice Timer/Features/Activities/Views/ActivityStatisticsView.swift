@@ -38,7 +38,7 @@ struct ActivityStatisticsView: View {
     ///   - userId: The user's unique identifier
     ///   - activities: Array of activities to calculate statistics for
     ///   - repository: Statistics repository (defaults to production implementation)
-    init(userId: String, activities: [Activity], repository: StatisticsRepositoryProtocol = StatisticsRepository()) {
+    init(userId: String, activities: [Activity], repository: StatisticsRepositoryProtocol = StatisticsRepository.shared) {
         self.userId = userId
         self.activities = activities
         self.repository = repository
@@ -62,24 +62,45 @@ struct ActivityStatisticsView: View {
                 )
             } else {
                 ForEach(statistics) { stat in
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(stat.activityName)
-                                .font(.headline)
-                            Spacer()
-                            Text(stat.formattedTime)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.blue)
-                        }
+                    NavigationLink {
+                        ActivityDetailStatisticsView(
+                            userId: userId,
+                            activityId: stat.activityId,
+                            activityName: stat.activityName,
+                            activityStatistics: stat
+                        )
+                    } label: {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text(stat.activityName)
+                                    .font(.headline)
+                                Spacer()
+                                Text(stat.formattedTime)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                            }
 
-                        HStack {
-                            Label("\(stat.sessionCount) sessions", systemImage: "calendar")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Label("\(stat.sessionCount) sessions", systemImage: "calendar")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+
+                                Spacer()
+
+                                Text("Last: \(stat.formattedLastPractice)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .padding(.leading, 4)
+                            }
                         }
+                        .padding(.vertical, 4)
                     }
-                    .padding(.vertical, 4)
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -88,7 +109,7 @@ struct ActivityStatisticsView: View {
         .refreshable {
             await loadStatistics()
         }
-        .task {
+        .task(id: activities.count) {
             await loadStatistics()
         }
     }

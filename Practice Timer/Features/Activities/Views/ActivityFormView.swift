@@ -85,7 +85,7 @@ struct ActivityFormView: View {
         category: "Technique",
         createdAt: "2026-03-03T10:00:00Z",
         updatedAt: "2026-03-03T10:00:00Z",
-        archived: false
+        active: true
     )
 
     return ActivityFormView(activity: sampleActivity) { name, category in

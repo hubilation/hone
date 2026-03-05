@@ -102,12 +102,14 @@ struct SessionNotesView: View {
         PracticeNote(
             notes: "Focused on F major scale",
             sessionId: "session1",
-            timestamp: Date().addingTimeInterval(-86400).toISO8601String()  // 1 day ago
+            timestamp: Date().addingTimeInterval(-86400).toISO8601String(),  // 1 day ago
+            timeSpent: 600
         ),
         PracticeNote(
             notes: "C major feeling more comfortable",
             sessionId: "session2",
-            timestamp: Date().addingTimeInterval(-172800).toISO8601String()  // 2 days ago
+            timestamp: Date().addingTimeInterval(-172800).toISO8601String(),  // 2 days ago
+            timeSpent: 720
         )
     ]
 

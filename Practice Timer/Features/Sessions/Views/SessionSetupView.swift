@@ -25,6 +25,35 @@ struct SessionSetupView: View {
         _sessionViewModel = StateObject(wrappedValue: SessionViewModel(userId: userId))
     }
 
+    /// Grouped activities by category with custom order
+    private var groupedActivities: [(category: String, activities: [Activity])] {
+        let categoryOrder = ["Warm-up", "Piece", "Technique"]
+
+        // Group activities by category
+        let grouped = Dictionary(grouping: activityViewModel.activeActivities) { activity in
+            activity.category
+        }
+
+        // Sort by custom order
+        var result: [(category: String, activities: [Activity])] = []
+
+        // Add ordered categories first
+        for category in categoryOrder {
+            if let activities = grouped[category], !activities.isEmpty {
+                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
+            }
+        }
+
+        // Add remaining categories alphabetically
+        for (category, activities) in grouped.sorted(by: { $0.key < $1.key }) {
+            if !categoryOrder.contains(category) {
+                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
+            }
+        }
+
+        return result
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -38,20 +67,20 @@ struct SessionSetupView: View {
                     )
                 } else {
                     List {
-                        // Activity selection section
-                        Section {
-                            ForEach(activityViewModel.activeActivities) { activity in
-                                SelectableActivityRow(
-                                    activity: activity,
-                                    isSelected: selectedActivityIds.contains(activity.id ?? "")
-                                )
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    toggleSelection(activity)
+                        // Activity selection section - grouped by category
+                        ForEach(groupedActivities, id: \.category) { group in
+                            Section(header: Text(group.category)) {
+                                ForEach(group.activities) { activity in
+                                    SelectableActivityRow(
+                                        activity: activity,
+                                        isSelected: selectedActivityIds.contains(activity.id ?? "")
+                                    )
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        toggleSelection(activity)
+                                    }
                                 }
                             }
-                        } header: {
-                            Text("Available Activities")
                         }
 
                         // Session order section (only show if activities selected)

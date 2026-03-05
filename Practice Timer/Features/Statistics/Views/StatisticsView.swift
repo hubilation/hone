@@ -63,7 +63,11 @@ struct StatisticsView: View {
                 .cornerRadius(12)
 
                 // Daily practice chart
-                DailyPracticeChartView(sessions: sessions)
+                DailyPracticeChartView(
+                    userId: userId,
+                    sessions: sessions,
+                    activities: activities
+                )
 
                 // Activity breakdown chart
                 ActivityBreakdownChartView(userId: userId, activities: activities)

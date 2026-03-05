@@ -3,7 +3,6 @@ import SwiftUI
 struct SessionHistoryView: View {
     @StateObject private var viewModel: SessionHistoryViewModel
     @State private var selectedSession: Session?
-    @State private var selectedActivities: [SessionActivity] = []
     @State private var sessionToDelete: Session?
     @State private var showingDeleteConfirmation = false
 
@@ -26,7 +25,6 @@ struct SessionHistoryView: View {
                             )
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                selectedActivities = viewModel.sessionActivities[session.id ?? ""] ?? []
                                 selectedSession = session
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -52,9 +50,9 @@ struct SessionHistoryView: View {
                 }
             }
             .sheet(item: $selectedSession) { session in
-                SessionSummaryView(
+                ReactiveSessionSummaryView(
                     session: session,
-                    activities: selectedActivities
+                    viewModel: viewModel
                 )
             }
             .alert("Delete Session?", isPresented: $showingDeleteConfirmation, presenting: sessionToDelete) { session in
@@ -69,6 +67,7 @@ struct SessionHistoryView: View {
             }
         }
         .onAppear {
+            print("🔍 DEBUG: SessionHistoryView.onAppear called with userId: '\(userId)'")
             viewModel.startListening()
         }
     }

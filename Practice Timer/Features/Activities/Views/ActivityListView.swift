@@ -19,30 +19,63 @@ struct ActivityListView: View {
         _viewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
     }
 
+    /// Grouped activities by category with custom order
+    private var groupedActivities: [(category: String, activities: [Activity])] {
+        let categoryOrder = ["Warm-up", "Piece", "Technique"]
+
+        // Group activities by category
+        let grouped = Dictionary(grouping: viewModel.activeActivities) { activity in
+            activity.category
+        }
+
+        // Sort by custom order
+        var result: [(category: String, activities: [Activity])] = []
+
+        // Add ordered categories first
+        for category in categoryOrder {
+            if let activities = grouped[category], !activities.isEmpty {
+                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
+            }
+        }
+
+        // Add remaining categories
+        for (category, activities) in grouped.sorted(by: { $0.key < $1.key }) {
+            if !categoryOrder.contains(category) {
+                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
+            }
+        }
+
+        return result
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                ForEach(viewModel.activeActivities) { activity in
-                    ActivityRowView(activity: activity)
-                        .onTapGesture {
-                            editingActivity = activity
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            // Delete (leftmost, red)
-                            Button(role: .destructive) {
-                                Task { await viewModel.deleteActivity(activity) }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
+                ForEach(groupedActivities, id: \.category) { group in
+                    Section(header: Text(group.category)) {
+                        ForEach(group.activities) { activity in
+                            ActivityRowView(activity: activity)
+                                .onTapGesture {
+                                    editingActivity = activity
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    // Delete (leftmost, red)
+                                    Button(role: .destructive) {
+                                        Task { await viewModel.deleteActivity(activity) }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
 
-                            // Archive (rightmost, orange)
-                            Button {
-                                Task { await viewModel.archiveActivity(activity) }
-                            } label: {
-                                Label("Archive", systemImage: "archivebox")
-                            }
-                            .tint(.orange)
+                                    // Archive (rightmost, orange)
+                                    Button {
+                                        Task { await viewModel.archiveActivity(activity) }
+                                    } label: {
+                                        Label("Archive", systemImage: "archivebox")
+                                    }
+                                    .tint(.orange)
+                                }
                         }
+                    }
                 }
             }
             .navigationTitle("Activities")

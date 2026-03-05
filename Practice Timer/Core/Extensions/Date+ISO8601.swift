@@ -9,11 +9,24 @@ import Foundation
 
 extension Date {
     func toISO8601String() -> String {
-        return ISO8601DateFormatter().string(from: self)
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter.string(from: self)
     }
 
     init?(iso8601String: String) {
-        guard let date = ISO8601DateFormatter().date(from: iso8601String) else {
+        let formatter = ISO8601DateFormatter()
+        // Support both with and without fractional seconds
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        if let date = formatter.date(from: iso8601String) {
+            self = date
+            return
+        }
+
+        // Fallback: try without fractional seconds
+        formatter.formatOptions = [.withInternetDateTime]
+        guard let date = formatter.date(from: iso8601String) else {
             return nil
         }
         self = date
