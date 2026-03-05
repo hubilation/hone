@@ -14,6 +14,7 @@ struct ActiveSessionView: View {
     @ObservedObject var viewModel: SessionViewModel
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingCompleteConfirmation = false
+    @State private var showingAddActivity = false
 
     var body: some View {
         Group {
@@ -97,11 +98,25 @@ struct ActiveSessionView: View {
                     }
                 )
                 .padding(.horizontal)
+
+                // Add Activity button
+                Button(action: {
+                    showingAddActivity = true
+                }) {
+                    Label("Add Activity", systemImage: "plus.circle")
+                        .frame(maxWidth: .infinity)
+                        .font(.subheadline)
+                }
+                .buttonStyle(.bordered)
+                .padding(.horizontal)
             }
             .padding()
         }
         .navigationTitle("Practice Session")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingAddActivity) {
+            AddActivityToSessionView(userId: viewModel.userId, viewModel: viewModel, isPresented: $showingAddActivity)
+        }
         .alert("Complete Activity?", isPresented: $showingCompleteConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Complete") {

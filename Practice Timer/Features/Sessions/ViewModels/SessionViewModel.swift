@@ -54,7 +54,7 @@ final class SessionViewModel: ObservableObject {
 
     private let repository: SessionRepositoryProtocol
     private let activityRepository: ActivityRepositoryProtocol
-    private let userId: String
+    let userId: String
 
     // MARK: - Timer State (CRITICAL: Date-based, not tick counter)
 
@@ -475,6 +475,35 @@ final class SessionViewModel: ObservableObject {
         )
 
         sessionState = .ended
+    }
+
+    /// Add a new activity to the session
+    /// Can be called during active session to add additional practice items
+    func addActivity(_ activity: Activity) async {
+        guard let activityId = activity.id else { return }
+
+        let nowString = Date().toISO8601String()
+        let newActivity = SessionActivity(
+            activityId: activityId,
+            activityName: activity.name,
+            startTime: nowString,
+            endTime: nil,
+            duration: 0,
+            notes: nil,
+            isInBetweenTime: false,
+            createdAt: nowString,
+            updatedAt: nowString
+        )
+
+        // Add to activities array
+        activities.append(newActivity)
+
+        // Update session in Firestore
+        guard let sessionId = currentSession?.id else { return }
+        let updates: [String: Any] = [
+            "updatedAt": nowString
+        ]
+        try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
     }
 
     /// Refresh timer if needed (for foreground return)
