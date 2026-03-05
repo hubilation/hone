@@ -40,7 +40,7 @@ struct ActivityQueueView: View {
                     .padding()
             } else {
                 List {
-                    ForEach(activities) { activity in
+                    ForEach(activities, id: \.createdAt) { activity in
                         HStack(spacing: 12) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(activity.activityName)

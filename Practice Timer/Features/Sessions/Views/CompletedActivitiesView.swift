@@ -21,7 +21,7 @@ struct CompletedActivitiesView: View {
                     .textCase(.uppercase)
 
                 VStack(spacing: 8) {
-                    ForEach(activities) { activity in
+                    ForEach(activities, id: \.createdAt) { activity in
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)

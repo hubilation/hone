@@ -480,7 +480,8 @@ final class SessionViewModel: ObservableObject {
     /// Add a new activity to the session
     /// Can be called during active session to add additional practice items
     func addActivity(_ activity: Activity) async {
-        guard let activityId = activity.id else { return }
+        guard let activityId = activity.id,
+              let sessionId = currentSession?.id else { return }
 
         let nowString = Date().toISO8601String()
         let newActivity = SessionActivity(
@@ -498,8 +499,14 @@ final class SessionViewModel: ObservableObject {
         // Add to activities array
         activities.append(newActivity)
 
-        // Update session in Firestore
-        guard let sessionId = currentSession?.id else { return }
+        // Persist to Firestore activities subcollection
+        try? await repository.addSessionActivity(
+            userId: userId,
+            sessionId: sessionId,
+            activity: newActivity
+        )
+
+        // Update session timestamp
         let updates: [String: Any] = [
             "updatedAt": nowString
         ]
