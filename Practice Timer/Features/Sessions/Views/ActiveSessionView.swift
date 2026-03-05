@@ -34,6 +34,9 @@ struct ActiveSessionView: View {
     private var activeSessionContent: some View {
         ScrollView {
             VStack(spacing: 30) {
+                // Completed activities (shown above current activity)
+                CompletedActivitiesView(activities: viewModel.completedActivities)
+
                 // Current activity header
                 Text(viewModel.currentActivityName)
                     .font(.title2)

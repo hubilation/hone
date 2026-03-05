@@ -499,6 +499,12 @@ final class SessionViewModel: ObservableObject {
         return Double(currentActivityIndex) / Double(activities.count)
     }
 
+    /// Completed activities (already practiced)
+    var completedActivities: [SessionActivity] {
+        guard currentActivityIndex > 0 else { return [] }
+        return Array(activities[0..<currentActivityIndex])
+    }
+
     /// Upcoming activities (not yet started)
     var upcomingActivities: [SessionActivity] {
         guard currentActivityIndex + 1 < activities.count else { return [] }
