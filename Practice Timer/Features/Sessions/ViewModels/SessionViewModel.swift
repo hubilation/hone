@@ -112,8 +112,10 @@ final class SessionViewModel: ObservableObject {
 
         // Initialize activities array (first activity has startTime, rest are empty)
         // Assign temporary UUIDs so ForEach can render them (will be replaced with Firestore IDs when saved)
+        // Add milliseconds to createdAt to ensure unique identifiers for SwiftUI
         activities = selectedActivities.enumerated().map { index, activity in
-            SessionActivity(
+            let uniqueCreatedAt = now.addingTimeInterval(TimeInterval(index) * 0.001).toISO8601String()
+            return SessionActivity(
                 id: UUID().uuidString,
                 activityId: activity.id,
                 activityName: activity.name,
@@ -122,8 +124,8 @@ final class SessionViewModel: ObservableObject {
                 duration: 0,
                 notes: nil,
                 isInBetweenTime: false,
-                createdAt: nowString,
-                updatedAt: nowString
+                createdAt: uniqueCreatedAt,
+                updatedAt: uniqueCreatedAt
             )
         }
 
@@ -483,7 +485,11 @@ final class SessionViewModel: ObservableObject {
         guard let activityId = activity.id,
               let sessionId = currentSession?.id else { return }
 
-        let nowString = Date().toISO8601String()
+        // Add microseconds to ensure unique createdAt even when adding multiple activities rapidly
+        let now = Date()
+        let uniqueCreatedAt = now.addingTimeInterval(TimeInterval(activities.count) * 0.001).toISO8601String()
+        let nowString = now.toISO8601String()
+
         let newActivity = SessionActivity(
             activityId: activityId,
             activityName: activity.name,
@@ -492,7 +498,7 @@ final class SessionViewModel: ObservableObject {
             duration: 0,
             notes: nil,
             isInBetweenTime: false,
-            createdAt: nowString,
+            createdAt: uniqueCreatedAt,
             updatedAt: nowString
         )
 
