@@ -16,10 +16,12 @@ progress:
 
 # Project State: Practice Timer iOS
 
-**Last Updated:** 2026-03-04
+**Last Updated:** 2026-03-08
 **Current Phase:** 04
 **Current Plan:** 04-03-PLAN.md (complete)
 **Status:** Phase 4 In Progress - Statistics charts complete
+
+Last activity: 2026-03-08 - Completed quick task 1: Fix automatic scroll behavior to keep timer near top
 
 ---
 
@@ -276,6 +278,12 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ### Known Blockers
 
 None currently. Roadmap validated with 100% requirement coverage.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | Fix automatic scroll behavior to keep timer near top | 2026-03-08 | 1c9f081 | [1-fix-automatic-scroll-behavior-to-keep-ti](./ quick/1-fix-automatic-scroll-behavior-to-keep-ti/) |
 
 ### Research Notes
 
