@@ -534,12 +534,15 @@ final class StatisticsRepository: StatisticsRepositoryProtocol {
             // Skip if no recent sessions
             guard !recentSessions.isEmpty else { continue }
 
+            // Get activity name - skip if activity no longer exists (deleted activity)
+            guard let activityName = activityNames[activityId] else {
+                print("📊 Skipping deleted activity with ID: \(activityId) (\(recentSessions.count) sessions)")
+                continue
+            }
+
             // Calculate average
             let totalMinutes = recentSessions.reduce(0) { $0 + $1.minutes }
             let averageMinutes = Double(totalMinutes) / Double(recentSessions.count)
-
-            // Get activity name
-            let activityName = activityNames[activityId] ?? "Unknown Activity"
 
             averageData.append(AverageSessionTimeData(
                 activityName: activityName,
