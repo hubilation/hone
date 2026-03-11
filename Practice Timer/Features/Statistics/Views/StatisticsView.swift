@@ -15,12 +15,17 @@ struct StatisticsView: View {
     private var weekSummary: (totalTime: TimeInterval, sessionCount: Int) {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        let oneWeekAgo = calendar.date(byAdding: .day, value: -7, to: today)!
+
+        // Find the most recent Sunday (start of week)
+        // Sunday = 1, Monday = 2, ... Saturday = 7
+        let weekday = calendar.component(.weekday, from: today)
+        let daysToSubtract = weekday - 1  // 0 if Sunday, 1 if Monday, etc.
+        let startOfWeek = calendar.date(byAdding: .day, value: -daysToSubtract, to: today)!
 
         let weekSessions = sessions.filter { session in
             guard session.state == "ended" else { return false }
             guard let startDate = Date(iso8601String: session.startTime) else { return false }
-            return startDate >= oneWeekAgo
+            return startDate >= startOfWeek
         }
 
         let totalSeconds = weekSessions.reduce(0) { $0 + $1.totalDuration }
