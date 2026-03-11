@@ -37,32 +37,39 @@ struct PracticeNote: Codable, Identifiable {
 }
 
 struct Activity: Codable, Identifiable {
-    @DocumentID var id: String?
+    var id: String?  // Document ID - populated manually from snapshot in repository
     let name: String
     let category: String
     let createdAt: String
     var updatedAt: String
 
-    // Web app compatibility fields
-    var totalPracticeTime: Int      // Total seconds across all sessions
-    var targetTime: Int?             // Target minutes per session
-    var details: String?             // Activity description
-    var active: Bool                 // Soft delete flag (replaces archived)
-    var completed: Bool              // Activity completion marker
-    var completedAt: String?         // ISO 8601 completion date
-    var lastUsed: String?            // ISO 8601 last practice date
-
+    // Web app compatibility fields - all optional for backward compatibility
+    var totalPracticeTime: Int?          // Total seconds across all sessions
+    var targetTime: Int?                 // Target minutes per session
+    var details: String?                 // Activity description
+    var active: Bool?                    // Soft delete flag (replaces archived)
+    var completed: Bool?                 // Activity completion marker
+    var completedAt: String?             // ISO 8601 completion date
+    var lastUsed: String?                // ISO 8601 last practice date
     var practiceNotes: [PracticeNote]?
 
-    // Computed property for backward compatibility
+    // Computed property for backward compatibility - provides non-optional access with defaults
     var archived: Bool {
-        get { !active }
+        get { !(active ?? true) }
         set { active = !newValue }
     }
 
+    // Convenience computed properties for non-optional access with sensible defaults
+    var isActive: Bool { active ?? true }
+    var isCompleted: Bool { completed ?? false }
+    var totalTime: Int { totalPracticeTime ?? 0 }
+
     enum CodingKeys: String, CodingKey {
-        case id, name, category, createdAt, updatedAt
-        case totalPracticeTime, targetTime, details, active, archived
+        // NOTE: 'id' and 'archived' are NOT included
+        // - 'id' is populated manually from snapshot.documentID in repository (not a stored field)
+        // - 'archived' is a computed property (inverse of 'active')
+        case name, category, createdAt, updatedAt
+        case totalPracticeTime, targetTime, details, active
         case completed, completedAt, lastUsed, practiceNotes
     }
 
@@ -71,11 +78,11 @@ struct Activity: Codable, Identifiable {
          category: String,
          createdAt: String,
          updatedAt: String,
-         totalPracticeTime: Int = 0,
+         totalPracticeTime: Int? = 0,
          targetTime: Int? = nil,
          details: String? = nil,
-         active: Bool = true,
-         completed: Bool = false,
+         active: Bool? = true,
+         completed: Bool? = false,
          completedAt: String? = nil,
          lastUsed: String? = nil,
          practiceNotes: [PracticeNote]? = nil) {
@@ -94,61 +101,8 @@ struct Activity: Codable, Identifiable {
         self.practiceNotes = practiceNotes
     }
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        // Decode @DocumentID manually
-        id = try container.decodeIfPresent(String.self, forKey: .id)
-
-        // Required fields
-        name = try container.decode(String.self, forKey: .name)
-        category = try container.decode(String.self, forKey: .category)
-        createdAt = try container.decode(String.self, forKey: .createdAt)
-        updatedAt = try container.decode(String.self, forKey: .updatedAt)
-
-        // Web app fields with defaults
-        totalPracticeTime = try container.decodeIfPresent(Int.self, forKey: .totalPracticeTime) ?? 0
-        targetTime = try container.decodeIfPresent(Int.self, forKey: .targetTime)
-        details = try container.decodeIfPresent(String.self, forKey: .details)
-        completed = try container.decodeIfPresent(Bool.self, forKey: .completed) ?? false
-        completedAt = try container.decodeIfPresent(String.self, forKey: .completedAt)
-        lastUsed = try container.decodeIfPresent(String.self, forKey: .lastUsed)
-
-        // Handle both 'active' and 'archived' fields (backward compatibility)
-        if let activeValue = try? container.decode(Bool.self, forKey: .active) {
-            active = activeValue
-        } else if let archivedValue = try? container.decode(Bool.self, forKey: .archived) {
-            active = !archivedValue
-        } else {
-            active = true  // Default to active
-        }
-
-        // Optional fields
-        practiceNotes = try container.decodeIfPresent([PracticeNote].self, forKey: .practiceNotes)
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        // Encode all fields
-        try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(name, forKey: .name)
-        try container.encode(category, forKey: .category)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(totalPracticeTime, forKey: .totalPracticeTime)
-        try container.encodeIfPresent(targetTime, forKey: .targetTime)
-        try container.encodeIfPresent(details, forKey: .details)
-
-        // Write BOTH active and archived for backward compatibility
-        try container.encode(active, forKey: .active)
-        try container.encode(!active, forKey: .archived)  // Mirror of active for web app
-
-        try container.encode(completed, forKey: .completed)
-        try container.encodeIfPresent(completedAt, forKey: .completedAt)
-        try container.encodeIfPresent(lastUsed, forKey: .lastUsed)
-        try container.encodeIfPresent(practiceNotes, forKey: .practiceNotes)
-    }
+    // NOTE: No custom init(from:) - using synthesized decoder so @DocumentID works
+    // Property defaults handle missing fields, and all Firestore docs have 'active' field
 
     // Path: users/{userId}/activities/{activityId}
 }

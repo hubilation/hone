@@ -261,7 +261,10 @@ final class ActivityRepository: ActivityRepositoryProtocol {
             return nil
         }
 
-        return try snapshot.data(as: Activity.self)
+        var activity = try snapshot.data(as: Activity.self)
+        // Manually populate document ID from snapshot
+        activity.id = snapshot.documentID
+        return activity
     }
 
     // MARK: - Real-time Listeners
@@ -299,8 +302,10 @@ final class ActivityRepository: ActivityRepositoryProtocol {
                 print("DEBUG: Active activities snapshot received \(documents.count) documents")
                 let activities = documents.compactMap { doc -> Activity? in
                     do {
-                        let activity = try doc.data(as: Activity.self)
-                        print("  - Successfully decoded: \(activity.name)")
+                        var activity = try doc.data(as: Activity.self)
+                        // Manually populate document ID from snapshot
+                        activity.id = doc.documentID
+                        print("  - Successfully decoded: \(activity.name) (id: \(activity.id ?? "nil"))")
                         return activity
                     } catch {
                         print("  - ERROR decoding document \(doc.documentID): \(error)")
@@ -345,7 +350,9 @@ final class ActivityRepository: ActivityRepositoryProtocol {
                 print("DEBUG: Archived activities snapshot received \(documents.count) documents")
                 let activities = documents.compactMap { doc -> Activity? in
                     do {
-                        let activity = try doc.data(as: Activity.self)
+                        var activity = try doc.data(as: Activity.self)
+                        // Manually populate document ID from snapshot
+                        activity.id = doc.documentID
                         return activity
                     } catch {
                         print("  - ERROR decoding archived document \(doc.documentID): \(error)")

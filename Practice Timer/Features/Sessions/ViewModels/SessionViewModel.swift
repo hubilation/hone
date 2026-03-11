@@ -44,6 +44,7 @@ final class SessionViewModel: ObservableObject {
     // MARK: - Published State
 
     @Published var elapsedTime: TimeInterval = 0
+    @Published var totalSessionTime: TimeInterval = 0
     @Published var sessionState: SessionState = .setup
     @Published var currentActivityIndex: Int = 0
     @Published var activities: [SessionActivity] = []
@@ -62,6 +63,10 @@ final class SessionViewModel: ObservableObject {
     private var startTime: Date?
     /// Accumulated elapsed time when paused
     private var pausedElapsedTime: TimeInterval = 0
+    /// Session start time for total session duration
+    private var sessionStartTime: Date?
+    /// Accumulated total session time when paused
+    private var pausedSessionTime: TimeInterval = 0
     /// Timer publisher cancellable
     private var timerCancellable: AnyCancellable?
 
@@ -132,6 +137,11 @@ final class SessionViewModel: ObservableObject {
         currentActivityIndex = 0
         sessionState = .active
 
+        // Initialize session timer
+        sessionStartTime = now
+        pausedSessionTime = 0
+        totalSessionTime = 0
+
         // Start timer
         startTimer()
 
@@ -145,6 +155,11 @@ final class SessionViewModel: ObservableObject {
         startTime = start
         sessionState = .active
 
+        // Initialize session start time if not set
+        if sessionStartTime == nil {
+            sessionStartTime = start
+        }
+
         // CRITICAL: Use .common RunLoop mode (not .default) for smooth updates during interaction
         timerCancellable = Timer.publish(every: 0.1, on: .main, in: .common)
             .autoconnect()
@@ -152,6 +167,11 @@ final class SessionViewModel: ObservableObject {
                 guard let self = self, let startTime = self.startTime else { return }
                 // CRITICAL: Date-based calculation survives backgrounding
                 self.elapsedTime = self.pausedElapsedTime + Date().timeIntervalSince(startTime)
+
+                // Update total session time
+                if let sessionStartTime = self.sessionStartTime {
+                    self.totalSessionTime = self.pausedSessionTime + Date().timeIntervalSince(sessionStartTime)
+                }
             }
     }
 
@@ -163,7 +183,9 @@ final class SessionViewModel: ObservableObject {
 
         // Preserve accumulated time
         pausedElapsedTime = elapsedTime
+        pausedSessionTime = totalSessionTime
         startTime = nil
+        sessionStartTime = nil
         sessionState = .paused
 
         // Persist to Firestore for crash recovery
@@ -481,9 +503,16 @@ final class SessionViewModel: ObservableObject {
 
     /// Add a new activity to the session
     /// Can be called during active session to add additional practice items
+    /// If no activities are queued, immediately completes current activity and starts the new one
     func addActivity(_ activity: Activity) async {
         guard let activityId = activity.id,
-              let sessionId = currentSession?.id else { return }
+              let sessionId = currentSession?.id else {
+            print("❌ AddActivity failed - activityId: \(activity.id ?? "nil"), sessionId: \(currentSession?.id ?? "nil")")
+            return
+        }
+
+        // Check if there are no upcoming activities (empty queue)
+        let shouldStartImmediately = upcomingActivities.isEmpty
 
         // Add microseconds to ensure unique createdAt even when adding multiple activities rapidly
         let now = Date()
@@ -493,7 +522,7 @@ final class SessionViewModel: ObservableObject {
         let newActivity = SessionActivity(
             activityId: activityId,
             activityName: activity.name,
-            startTime: nowString,
+            startTime: "",
             endTime: nil,
             duration: 0,
             notes: nil,
@@ -517,6 +546,11 @@ final class SessionViewModel: ObservableObject {
             "updatedAt": nowString
         ]
         try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
+
+        // If queue was empty, immediately move to this new activity
+        if shouldStartImmediately {
+            await completeCurrentActivity()
+        }
     }
 
     /// Refresh timer if needed (for foreground return)
@@ -525,6 +559,27 @@ final class SessionViewModel: ObservableObject {
         if sessionState == .active && timerCancellable == nil {
             startTimer()
         }
+    }
+
+    /// Reset session to setup state (for starting a new session after one has ended)
+    func resetSession() {
+        // Cancel any existing timer
+        timerCancellable?.cancel()
+        timerCancellable = nil
+        sessionListener?.remove()
+
+        // Reset all state
+        elapsedTime = 0
+        totalSessionTime = 0
+        pausedElapsedTime = 0
+        pausedSessionTime = 0
+        startTime = nil
+        sessionStartTime = nil
+        sessionState = .setup
+        currentActivityIndex = 0
+        activities = []
+        currentSession = nil
+        historicalNotes = []
     }
 
     // MARK: - Computed Properties
