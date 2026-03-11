@@ -16,7 +16,7 @@ struct SessionNotesView: View {
 
     @State private var noteText = ""
     @State private var showingAllHistorical = false
-    @FocusState private var isFocused: Bool
+    @FocusState.Binding var isFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -98,6 +98,7 @@ struct SessionNotesView: View {
 }
 
 #Preview {
+    @Previewable @FocusState var isFocused: Bool
     let historicalNotes = [
         PracticeNote(
             notes: "Focused on F major scale",
@@ -117,12 +118,14 @@ struct SessionNotesView: View {
         SessionNotesView(
             notes: nil,
             historicalNotes: [],
-            onAddNote: { print("Note: \($0)") }
+            onAddNote: { print("Note: \($0)") },
+            isFocused: $isFocused
         )
         SessionNotesView(
             notes: nil,
             historicalNotes: historicalNotes,
-            onAddNote: { print("Note: \($0)") }
+            onAddNote: { print("Note: \($0)") },
+            isFocused: $isFocused
         )
     }
 }

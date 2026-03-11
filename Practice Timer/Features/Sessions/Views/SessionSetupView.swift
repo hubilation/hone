@@ -9,49 +9,26 @@ import SwiftUI
 
 struct SessionSetupView: View {
     @StateObject private var activityViewModel: ActivityViewModel
-    @StateObject private var sessionViewModel: SessionViewModel
+    @ObservedObject var sessionViewModel: SessionViewModel
+    @Binding var showActiveSession: Bool
     @State private var selectedActivityIds: Set<String> = []
     @State private var orderedActivities: [Activity] = []
     @State private var isEditMode: EditMode = .inactive
-    @State private var sessionStarted = false
     @State private var showingError = false
     @State private var errorMessage = ""
 
     private let userId: String
 
-    init(userId: String) {
+    init(userId: String, sessionViewModel: SessionViewModel, showActiveSession: Binding<Bool>) {
         self.userId = userId
+        self._sessionViewModel = ObservedObject(wrappedValue: sessionViewModel)
+        self._showActiveSession = showActiveSession
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
-        _sessionViewModel = StateObject(wrappedValue: SessionViewModel(userId: userId))
     }
 
     /// Grouped activities by category with custom order
     private var groupedActivities: [(category: String, activities: [Activity])] {
-        let categoryOrder = ["Warm-up", "Piece", "Technique"]
-
-        // Group activities by category
-        let grouped = Dictionary(grouping: activityViewModel.activeActivities) { activity in
-            activity.category
-        }
-
-        // Sort by custom order
-        var result: [(category: String, activities: [Activity])] = []
-
-        // Add ordered categories first
-        for category in categoryOrder {
-            if let activities = grouped[category], !activities.isEmpty {
-                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
-            }
-        }
-
-        // Add remaining categories alphabetically
-        for (category, activities) in grouped.sorted(by: { $0.key < $1.key }) {
-            if !categoryOrder.contains(category) {
-                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
-            }
-        }
-
-        return result
+        ActivityGrouping.grouped(activityViewModel.activeActivities)
     }
 
     var body: some View {
@@ -152,9 +129,6 @@ struct SessionSetupView: View {
                 }
             }
             .environment(\.editMode, $isEditMode)
-            .navigationDestination(isPresented: $sessionStarted) {
-                ActiveSessionView(viewModel: sessionViewModel)
-            }
         }
         .onAppear {
             activityViewModel.startListening()
@@ -186,7 +160,8 @@ struct SessionSetupView: View {
         Task {
             do {
                 try await sessionViewModel.startSession(selectedActivities: orderedActivities)
-                sessionStarted = true
+                // Show active session immediately - no sheet to dismiss here
+                showActiveSession = true
             } catch {
                 errorMessage = "Failed to start session: \(error.localizedDescription)"
                 showingError = true
@@ -239,5 +214,9 @@ struct SelectableActivityRow: View {
 // MARK: - Preview
 
 #Preview {
-    SessionSetupView(userId: "preview-user-id")
+    SessionSetupView(
+        userId: "preview-user-id",
+        sessionViewModel: SessionViewModel(userId: "preview-user-id"),
+        showActiveSession: .constant(false)
+    )
 }

@@ -21,31 +21,7 @@ struct ActivityListView: View {
 
     /// Grouped activities by category with custom order
     private var groupedActivities: [(category: String, activities: [Activity])] {
-        let categoryOrder = ["Warm-up", "Piece", "Technique"]
-
-        // Group activities by category
-        let grouped = Dictionary(grouping: viewModel.activeActivities) { activity in
-            activity.category
-        }
-
-        // Sort by custom order
-        var result: [(category: String, activities: [Activity])] = []
-
-        // Add ordered categories first
-        for category in categoryOrder {
-            if let activities = grouped[category], !activities.isEmpty {
-                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
-            }
-        }
-
-        // Add remaining categories
-        for (category, activities) in grouped.sorted(by: { $0.key < $1.key }) {
-            if !categoryOrder.contains(category) {
-                result.append((category: category, activities: activities.sorted { $0.name < $1.name }))
-            }
-        }
-
-        return result
+        ActivityGrouping.grouped(viewModel.activeActivities)
     }
 
     var body: some View {

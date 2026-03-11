@@ -31,6 +31,9 @@ struct MainAppView: View {
 
     @StateObject private var activityViewModel: ActivityViewModel
     @StateObject private var sessionHistoryViewModel: SessionHistoryViewModel
+    @StateObject private var sessionViewModel: SessionViewModel
+    @State private var selectedTab = 0
+    @State private var showActiveSession = false
 
     init(user: User) {
         self.user = user
@@ -39,24 +42,38 @@ struct MainAppView: View {
         print("🔍 DEBUG: user.id = \(user.id ?? "nil")")
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
         _sessionHistoryViewModel = StateObject(wrappedValue: SessionHistoryViewModel(userId: userId))
+        _sessionViewModel = StateObject(wrappedValue: SessionViewModel(userId: userId))
     }
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
+            QuickStartView(userId: user.id ?? "", sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession)
+                .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+                .tag(0)
+
             ActivityListView(userId: user.id ?? "")
+                .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("Activities", systemImage: "list.bullet")
                 }
+                .tag(1)
 
-            SessionSetupView(userId: user.id ?? "")
+            SessionSetupView(userId: user.id ?? "", sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession)
+                .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("Practice", systemImage: "play.circle")
                 }
+                .tag(2)
 
             SessionHistoryView(userId: user.id ?? "")
+                .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("History", systemImage: "clock")
                 }
+                .tag(3)
 
             NavigationStack {
                 StatisticsView(
@@ -69,14 +86,23 @@ struct MainAppView: View {
                     sessionHistoryViewModel.startListening()
                 }
             }
+            .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
             .tabItem {
                 Label("Statistics", systemImage: "chart.bar")
             }
+            .tag(4)
 
             SettingsView()
+                .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
+                .tag(5)
+        }
+        .sheet(isPresented: $showActiveSession) {
+            NavigationStack {
+                ActiveSessionView(viewModel: sessionViewModel)
+            }
         }
     }
 }

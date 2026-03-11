@@ -143,6 +143,44 @@ struct ReactiveSessionSummaryView: View {
     }
 }
 
+/// Loader view that fetches activities from Firestore for session summary
+/// Ensures summary always shows accurate data from database, not in-memory array
+struct SessionSummaryViewLoader: View {
+    let session: Session?
+    let userId: String
+    @State private var activities: [SessionActivity] = []
+    @State private var isLoading = true
+
+    var body: some View {
+        Group {
+            if isLoading {
+                ProgressView()
+            } else {
+                SessionSummaryView(session: session, activities: activities)
+            }
+        }
+        .task {
+            await loadActivities()
+        }
+    }
+
+    private func loadActivities() async {
+        guard let sessionId = session?.id else {
+            isLoading = false
+            return
+        }
+
+        do {
+            let repository = SessionRepository()
+            activities = try await repository.getSessionActivities(userId: userId, sessionId: sessionId)
+            isLoading = false
+        } catch {
+            print("Error loading session activities: \(error)")
+            isLoading = false
+        }
+    }
+}
+
 #Preview {
     let session = Session(
         id: "s1",

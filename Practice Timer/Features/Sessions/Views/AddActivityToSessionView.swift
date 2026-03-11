@@ -34,35 +34,68 @@ struct AddActivityToSessionView: View {
         }
     }
 
+    private var groupedActivities: [(category: String, activities: [Activity])] {
+        ActivityGrouping.grouped(filteredActivities)
+    }
+
+    private var activitiesInSession: Set<String> {
+        Set(viewModel.activities.compactMap { $0.activityId })
+    }
+
+    private func isActivityInSession(_ activity: Activity) -> Bool {
+        guard let activityId = activity.id else { return false }
+        return activitiesInSession.contains(activityId)
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                ForEach(filteredActivities) { activity in
-                    Button(action: {
-                        Task {
-                            await viewModel.addActivity(activity)
-                            isPresented = false
-                        }
-                    }) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(activity.name)
-                                    .font(.body)
-                                    .foregroundColor(.primary)
+                ForEach(groupedActivities, id: \.category) { group in
+                    Section(header: Text(group.category)) {
+                        ForEach(group.activities) { activity in
+                            let alreadyAdded = isActivityInSession(activity)
 
-                                Text(activity.category)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                            Button(action: {
+                                guard !alreadyAdded else { return }
+                                Task {
+                                    await viewModel.addActivity(activity)
+                                    isPresented = false
+                                }
+                            }) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: categoryIcon(for: activity))
+                                        .foregroundColor(alreadyAdded ? .gray : .blue)
+                                        .frame(width: 30)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(activity.name)
+                                            .font(.headline)
+                                            .foregroundColor(alreadyAdded ? .secondary : .primary)
+
+                                        Text(activity.category)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+
+                                    Spacer()
+
+                                    if alreadyAdded {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.gray)
+                                            .font(.title3)
+                                    } else {
+                                        Image(systemName: "plus.circle.fill")
+                                            .foregroundColor(.blue)
+                                            .font(.title3)
+                                    }
+                                }
+                                .padding(.vertical, 4)
                             }
-
-                            Spacer()
-
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.blue)
-                                .font(.title3)
+                            .buttonStyle(.plain)
+                            .disabled(alreadyAdded)
+                            .opacity(alreadyAdded ? 0.5 : 1.0)
                         }
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .searchable(text: $searchText, prompt: "Search activities")
@@ -79,6 +112,10 @@ struct AddActivityToSessionView: View {
         .onAppear {
             activityViewModel.startListening()
         }
+    }
+
+    private func categoryIcon(for activity: Activity) -> String {
+        ActivityCategory(rawValue: activity.category)?.icon ?? "ellipsis.circle"
     }
 }
 

@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Safety: Only allow migration for test users
-const ALLOWED_TEST_USERS = ['zackspromos@gmail.com'];
+const ALLOWED_TEST_USERS = ['zackspromos@gmail.com', 'zack.huber@gmail.com'];
 
 // Read project ID from .firebaserc
 let projectId;

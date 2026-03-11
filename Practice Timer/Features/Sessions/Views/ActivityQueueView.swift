@@ -18,33 +18,16 @@ struct ActivityQueueView: View {
 
     @State private var activityToSkipTo: SessionActivity?
     @State private var showingSkipConfirmation = false
-    @State private var editMode: EditMode = .inactive
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Upcoming Activities")
-                    .font(.headline)
-
-                Spacer()
-
-                if !activities.isEmpty {
-                    EditButton()
-                        .environment(\.editMode, $editMode)
-                }
-            }
-
-            if activities.isEmpty {
-                Text("No upcoming activities")
-                    .foregroundColor(.secondary)
-                    .padding()
-            } else {
+        VStack(alignment: .leading, spacing: 0) {
+            if !activities.isEmpty {
                 List {
                     ForEach(activities, id: \.createdAt) { activity in
                         HStack(spacing: 12) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(activity.activityName)
-                                    .font(.title3)
+                                    .font(.body)
                                     .fontWeight(.medium)
                                 if activity.isInBetweenTime {
                                     Text("Break")
@@ -55,33 +38,32 @@ struct ActivityQueueView: View {
 
                             Spacer()
 
-                            // Remove button (only in non-edit mode)
-                            if editMode == .inactive {
-                                Button(action: { onRemove(activity) }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(.plain)
+                            // Remove button
+                            Button(action: { onRemove(activity) }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundColor(.red)
                             }
+                            .buttonStyle(.plain)
                         }
-                        .padding(.vertical, 8)
-                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                        .listRowBackground(Color(uiColor: .secondarySystemGroupedBackground))
+                        .padding()
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .cornerRadius(12)
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            if editMode == .inactive {
-                                activityToSkipTo = activity
-                                showingSkipConfirmation = true
-                            }
+                            activityToSkipTo = activity
+                            showingSkipConfirmation = true
                         }
+                        .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
                     }
                     .onMove(perform: onReorder)
                 }
-                .environment(\.editMode, $editMode)
+                .environment(\.editMode, .constant(.active))
                 .listStyle(.plain)
                 .scrollDisabled(true)
-                .frame(height: CGFloat(activities.count) * 70)
+                .frame(height: CGFloat(activities.count) * 80)
             }
         }
         .alert("Complete Activity?", isPresented: $showingSkipConfirmation) {

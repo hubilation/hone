@@ -181,22 +181,28 @@ final class SessionRepository: SessionRepositoryProtocol {
             .updateData(updates)
     }
 
-    /// Adds activity to session activities subcollection
+    /// Adds or updates activity in session activities subcollection
+    /// Uses createdAt as document ID to prevent duplicates
     /// - Parameters:
     ///   - userId: The user's unique identifier
     ///   - sessionId: The session's document ID
-    ///   - activity: The session activity to add
-    /// - Throws: Firestore error if creation fails
+    ///   - activity: The session activity to add/update
+    /// - Throws: Firestore error if operation fails
     func addSessionActivity(userId: String, sessionId: String, activity: SessionActivity) async throws {
         var newActivity = activity
         newActivity.updatedAt = Date().toISO8601String()
 
-        _ = try db.collection("users")
+        // Use createdAt as document ID to prevent duplicates when updating
+        // This ensures that subsequent saves update the same document instead of creating new ones
+        let docId = activity.createdAt.replacingOccurrences(of: ":", with: "-").replacingOccurrences(of: ".", with: "-")
+
+        try db.collection("users")
             .document(userId)
             .collection("sessions")
             .document(sessionId)
             .collection("activities")
-            .addDocument(from: newActivity)
+            .document(docId)
+            .setData(from: newActivity, merge: false)
     }
 
     // MARK: - Real-time Listeners
