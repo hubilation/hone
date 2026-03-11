@@ -43,12 +43,12 @@ struct StatisticsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Recent practice summary (only show if there are sessions this week)
-                if let summary = weekSummary {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("This Week")
-                            .font(.headline)
+                // Recent practice summary
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("This Week")
+                        .font(.headline)
 
+                    if let summary = weekSummary {
                         HStack(spacing: 24) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Total Time")
@@ -80,12 +80,18 @@ struct StatisticsView: View {
                                     .foregroundColor(.orange)
                             }
                         }
+                    } else {
+                        Text("You haven't practiced this week!")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 20)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .cornerRadius(12)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .cornerRadius(12)
 
                 // Daily practice chart
                 DailyPracticeChartView(
