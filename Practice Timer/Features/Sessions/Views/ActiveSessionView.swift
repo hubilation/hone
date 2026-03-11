@@ -90,6 +90,7 @@ struct ActiveSessionView: View {
                             .font(.title2)
                             .fontWeight(.semibold)
                             .scaleEffect(activityNameScale)
+                            .id("currentActivity")
                             .onChange(of: viewModel.currentActivityIndex) { oldValue, newValue in
                                 // Animate when moving between activities
                                 guard oldValue != newValue else { return }
@@ -191,7 +192,7 @@ struct ActiveSessionView: View {
                     .padding([.vertical, .leading])
                 }
                 .onChange(of: viewModel.completedActivities.count) { oldValue, newValue in
-                    // Auto-scroll to show completed activities when a new one is added
+                    // Auto-scroll to keep current activity/timer near top when activities complete
                     guard newValue > oldValue && newValue > 0 else { return }
 
                     Task { @MainActor in
@@ -199,9 +200,9 @@ struct ActiveSessionView: View {
                         try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
 
                         withAnimation(.easeInOut(duration: 0.4)) {
-                            // Scroll to show the completed activities section
-                            // Using .bottom anchor consistently shows most recent activity fully + partial view of previous
-                            proxy.scrollTo("completedActivities", anchor: .bottom)
+                            // Scroll to current activity but position it slightly down from top
+                            // This shows more completed activities above while keeping timer stable
+                            proxy.scrollTo("currentActivity", anchor: UnitPoint(x: 0.5, y: 0.08))
                         }
                     }
                 }

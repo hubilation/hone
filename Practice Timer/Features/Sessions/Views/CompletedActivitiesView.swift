@@ -11,10 +11,11 @@ import SwiftUI
 /// Shows activities that have already been practiced in the current session
 struct CompletedActivitiesView: View {
     let activities: [SessionActivity]
+    @State private var activitiesWithBackground: Set<String> = []
 
     var body: some View {
-        if !activities.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            if !activities.isEmpty {
                 Text("Completed")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -32,14 +33,59 @@ struct CompletedActivitiesView: View {
                                 .foregroundColor(.secondary)
 
                             Spacer()
+
+                            Text(formatTime(activity.duration))
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                                .padding(.trailing, 8)
                         }
                         .padding()
-                        .background(Color.green.opacity(0.1))
+                        .background(
+                            Color.green.opacity(activitiesWithBackground.contains(activity.createdAt) ? 0.1 : 0.0)
+                        )
                         .cornerRadius(12)
+                        .transition(.asymmetric(
+                            insertion: .opacity.combined(with: .scale(scale: 0.95)).combined(with: .move(edge: .bottom)),
+                            removal: .identity
+                        ))
+                    }
+                }
+                .animation(.easeInOut(duration: 0.4), value: activities.count)
+                .onChange(of: activities.count) { oldValue, newValue in
+                    // When a new activity is added, delay showing its background
+                    if newValue > oldValue, let latestActivity = activities.last {
+                        Task { @MainActor in
+                            try? await Task.sleep(nanoseconds: 400_000_000) // 0.4 seconds (after slide-in completes)
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                activitiesWithBackground.insert(latestActivity.createdAt)
+                            }
+                        }
+                    }
+                }
+                .onAppear {
+                    // Initialize background for any existing activities (like the first one)
+                    Task { @MainActor in
+                        // Small delay to let the view settle
+                        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+
+                        // Fade in background for existing activities
+                        for activity in activities {
+                            try? await Task.sleep(nanoseconds: 400_000_000) // 0.4 seconds per activity
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                activitiesWithBackground.insert(activity.createdAt)
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    private func formatTime(_ seconds: Int) -> String {
+        let totalMinutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%02d:%02d", totalMinutes, remainingSeconds)
     }
 }
 
