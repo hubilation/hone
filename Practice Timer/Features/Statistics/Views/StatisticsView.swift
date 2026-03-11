@@ -12,7 +12,7 @@ struct StatisticsView: View {
     let sessions: [Session]
     let activities: [Activity]
 
-    private var weekSummary: (totalTime: TimeInterval, sessionCount: Int) {
+    private var weekSummary: (totalTime: TimeInterval, sessionCount: Int, averagePerDay: TimeInterval, daysInWeek: Int)? {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
@@ -28,44 +28,64 @@ struct StatisticsView: View {
             return startDate >= startOfWeek
         }
 
+        // Return nil if no sessions this week
+        guard !weekSessions.isEmpty else { return nil }
+
         let totalSeconds = weekSessions.reduce(0) { $0 + $1.totalDuration }
-        return (TimeInterval(totalSeconds), weekSessions.count)
+
+        // Calculate days elapsed in the week (Sunday=1, so daysToSubtract+1 gives us days including today)
+        let daysElapsed = daysToSubtract + 1
+        let averagePerDay = TimeInterval(totalSeconds) / TimeInterval(daysElapsed)
+
+        return (TimeInterval(totalSeconds), weekSessions.count, averagePerDay, daysElapsed)
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Recent practice summary
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("This Week")
-                        .font(.headline)
+                // Recent practice summary (only show if there are sessions this week)
+                if let summary = weekSummary {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("This Week")
+                            .font(.headline)
 
-                    HStack(spacing: 40) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Total Time")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(weekSummary.totalTime.formatted())
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.blue)
-                        }
+                        HStack(spacing: 24) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Total Time")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text(summary.totalTime.formatted())
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                            }
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Sessions")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("\(weekSummary.sessionCount)")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.green)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Sessions")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("\(summary.sessionCount)")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.green)
+                            }
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Time Per Day")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text(summary.averagePerDay.formatted())
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.orange)
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                    .cornerRadius(12)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
-                .cornerRadius(12)
 
                 // Daily practice chart
                 DailyPracticeChartView(
