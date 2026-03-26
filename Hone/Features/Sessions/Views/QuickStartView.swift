@@ -25,13 +25,6 @@ struct QuickStartView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
-                // This Week stats summary
-                WeeklySummaryCard(sessions: sessionHistoryViewModel.sessions)
-                    .padding(.horizontal)
-                    .padding(.top)
-
-                Spacer()
-
                 // Quick Start / Resume Session button - prominent and centered
                 Button(action: {
                     showActiveSession = true
@@ -49,6 +42,7 @@ struct QuickStartView: View {
                 .controlSize(.large)
                 .tint(isSessionActive ? .green : .blue)
                 .padding(.horizontal, 40)
+                .padding(.top)
 
                 Text(isSessionActive ? "Continue your current practice session" : "Select an activity and start practicing immediately")
                     .font(.subheadline)
@@ -70,6 +64,10 @@ struct QuickStartView: View {
                 }
                 .buttonStyle(.bordered)
                 .padding(.horizontal, 40)
+
+                // This Week stats summary
+                WeeklySummaryCard(sessions: sessionHistoryViewModel.sessions)
+                    .padding(.horizontal)
 
                 Spacer()
             }
