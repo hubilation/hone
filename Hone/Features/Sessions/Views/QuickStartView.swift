@@ -22,9 +22,41 @@ struct QuickStartView: View {
         sessionViewModel.sessionState != .setup && sessionViewModel.sessionState != .ended
     }
 
+    private var todaySessionCount: Int {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        return sessionHistoryViewModel.sessions.filter { session in
+            guard session.state == "ended" else { return false }
+            guard let startDate = Date(iso8601String: session.startTime) else { return false }
+            let sessionDay = calendar.startOfDay(for: startDate)
+            return sessionDay == today
+        }.count
+    }
+
+    private var greetingMessage: String {
+        switch todaySessionCount {
+        case 0:
+            return "Time for your daily practice!"
+        case 1:
+            return "You've already practiced once today, how about another session?"
+        default:
+            return "You've practiced \(todaySessionCount) times today, back for more?"
+        }
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
+                // Dynamic greeting based on today's practice count
+                Text(greetingMessage)
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                    .padding(.top, 20)
+
                 // Quick Start / Resume Session button - prominent and centered
                 Button(action: {
                     showActiveSession = true
@@ -42,7 +74,6 @@ struct QuickStartView: View {
                 .controlSize(.large)
                 .tint(isSessionActive ? .green : .blue)
                 .padding(.horizontal, 40)
-                .padding(.top)
 
                 Text(isSessionActive ? "Continue your current practice session" : "Select an activity and start practicing immediately")
                     .font(.subheadline)
