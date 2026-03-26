@@ -1,6 +1,6 @@
-# Roadmap: Practice Timer iOS
+# Roadmap: Hone iOS
 
-**Project:** Practice Timer iOS App
+**Project:** Hone iOS App
 **Created:** 2026-03-01
 **Depth:** Standard (7 phases)
 **Coverage:** 53/53 v1 requirements mapped
@@ -167,6 +167,30 @@ Plans:
 - Composite index (state + startTime) required for session history query
 
 ---
+
+### Phase 04.2: Home screen redesign with Quick Start, Plan Session button, and stats preview (INSERTED)
+
+**Goal:** Redesign Home tab to centralize session initiation and surface practice insights with stats preview, Plan Session button, and streamlined navigation
+
+**Requirements**: None (urgent UX improvement - no specific requirement IDs)
+
+**Depends on:** Phase 4 (requires SessionHistoryViewModel and statistics components)
+
+**Success Criteria** (what must be TRUE):
+1. Home screen shows This Week stats card identical to Statistics tab
+2. User can tap Plan Session button to navigate to SessionSetupView
+3. Practice tab removed from bottom navigation (SessionSetupView only via Home)
+4. Statistics tab moved to position 2 (between Home and Activities)
+5. Bottom navigation has 5 tabs: Home, Statistics, Activities, History, Settings
+6. Stats card reusable component works on both Home and Statistics tabs
+7. Quick Start button remains primary action with prominent styling
+
+**Plans:** 3 plans in 2 waves
+
+Plans:
+- [ ] 04.2-01-PLAN.md — Extract This Week card into WeeklySummaryCard component (Wave 1)
+- [ ] 04.2-02-PLAN.md — Enhance Home screen with stats preview and Plan Session button (Wave 2)
+- [ ] 04.2-03-PLAN.md — Remove Practice tab and reorganize navigation (Wave 2, includes human verification)
 
 ### Phase 5: Smart Features & Polish
 **Goal**: Users experience intelligent suggestions and visual enhancements that differentiate from competitors
