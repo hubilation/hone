@@ -25,23 +25,21 @@ struct QuickStartView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
-                // This Week stats summary at top
-                WeeklySummaryCard(sessions: sessionHistoryViewModel.sessions)
-                    .padding(.horizontal)
-                    .padding(.top)
-
-                Spacer()
-
-                // App title/logo area
-                VStack(spacing: 12) {
+                // App title/logo area at top - smaller
+                VStack(spacing: 8) {
                     Image(systemName: "timer")
-                        .font(.system(size: 80))
+                        .font(.system(size: 40))
                         .foregroundColor(.blue)
 
                     Text("Hone")
-                        .font(.largeTitle)
+                        .font(.title2)
                         .fontWeight(.bold)
                 }
+                .padding(.top)
+
+                // This Week stats summary
+                WeeklySummaryCard(sessions: sessionHistoryViewModel.sessions)
+                    .padding(.horizontal)
 
                 Spacer()
 
