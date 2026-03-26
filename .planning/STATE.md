@@ -3,18 +3,19 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 04
-current_plan: 03
-status: in_progress
-last_updated: "2026-03-04T02:45:00Z"
+current_plan: 04-03-PLAN.md (complete)
+status: executing
+last_updated: "2026-03-26T22:14:12.325Z"
+last_activity: "2026-03-08 - Completed quick task 1: Fix automatic scroll behavior to keep timer near top"
 progress:
-  total_phases: 4
-  completed_phases: 3
-  total_plans: 16
-  completed_plans: 19
-  percent: 100
+  total_phases: 8
+  completed_phases: 4
+  total_plans: 22
+  completed_plans: 21
+  percent: 95
 ---
 
-# Project State: Practice Timer iOS
+# Project State: Hone iOS
 
 **Last Updated:** 2026-03-08
 **Current Phase:** 04
@@ -34,6 +35,7 @@ Musicians can reliably track their practice sessions with accurate timing, notes
 Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan Phase 1 (Foundation & Authentication) to establish Firebase setup, auth flows, data models with subcollections, and security rules.
 
 **Key Constraints:**
+
 - iOS 16+ minimum (modern SwiftUI features)
 - Native SwiftUI (not React Native/Capacitor)
 - Must use existing Firebase backend for cross-platform sync
@@ -49,11 +51,12 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 **Phase:** 04-session-history-statistics
 **Plan:** 04-04-PLAN.md (next)
 **Status:** Phase 4 In Progress - Statistics charts complete
-**Progress:** [████████▒▒] 75% (3/4 plans)
+**Progress:** [██████████] 95%
 
 **Phase 4 Goal:** Users can review past sessions with detailed activity breakdowns and see practice statistics
 
 **Phase 1 Success Criteria:**
+
 1. User can sign up with email/password and immediately access their account
 2. User can sign in with Google OAuth and see their existing data (if migrating from web)
 3. User can sign in with Sign in with Apple and account is created successfully
@@ -68,18 +71,21 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ## Performance Metrics
 
 **Phases:**
+
 - Total: 7
 - Completed: 3 (Phases 1-3)
 - In Progress: 1 (Phase 4)
 - Not Started: 3
 
 **Requirements:**
+
 - Total v1: 53
 - Completed: 37 (Phase 1: 8, Phase 2: 10, Phase 3: 13, Phase 4: 6 in progress)
 - In Progress: 6 (Phase 4)
 - Coverage: 100% (all mapped to phases)
 
 **Velocity:**
+
 - Plans per session: 1-4
 - Average plan completion time: 5 minutes
 - Blockers encountered: 0
@@ -101,6 +107,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 ### Critical Decisions
 
 **Plan 04-03 Decisions:**
+
 - Swift Charts BarMark with gradient (Color.blue.gradient) for visual polish in daily practice chart
 - DailyPracticeChartView filters sessions to last 30 days using Calendar date arithmetic, groups by calendar day with Dictionary(grouping:)
 - Daily chart converts seconds to minutes for better chart scale, sorts ascending for left-to-right chronological display
@@ -113,6 +120,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Fixed SessionHistoryViewModel init to be MainActor-isolated (removed nonisolated) for Swift 6 strict concurrency compliance
 
 **Plan 04-02 Decisions:**
+
 - SessionHistoryViewModel init removed nonisolated keyword to be MainActor-isolated (Swift 6 concurrency fix)
 - Lazy loading activities on row tap prevents N+1 queries on initial list render (100 sessions would cause 101 Firestore reads)
 - Empty array passed to SessionHistoryRow initially - activities loaded only when user taps via async getActivities() method
@@ -124,6 +132,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Sheet presentation for SessionSummaryView reuses unchanged component from Phase 3
 
 **Plan 04-01 Decisions:**
+
 - Extension on TimeInterval (not standalone function) provides dot syntax for duration formatting: `duration.formatted()`
 - getSessions filters by state == "ended" to exclude active/setup sessions from history view
 - Default limit 100 sessions covers 6-12 months for typical user, prevents unbounded queries
@@ -134,6 +143,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - getSessionActivities ordered by createdAt maintains session activity sequence for detail view
 
 **Plan 03-05 Decisions:**
+
 - @ObservedObject (not @StateObject) for SessionViewModel because VM created in SessionSetupView - orchestrator doesn't own the ViewModel
 - ScrollView layout handles keyboard appearance when adding notes and accommodates long activity queues without layout breaks
 - scenePhase .onChange(of:) calls refreshTimerIfNeeded() when returning to foreground (oldPhase == .background && newPhase == .active) - critical for timer survival after iOS backgrounding
@@ -148,6 +158,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - ProgressView with viewModel.progress shows session completion percentage (currentActivityIndex / activities.count) throughout practice
 
 **Plan 03-03 Decisions:**
+
 - Tap-to-select interface achieves 3-tap session creation (tap activity 1, tap activity 2, tap Start) vs web app's 6+ interactions through multi-step form
 - Selection order becomes session order automatically (orderedActivities array appends on selection) - no manual reorder required for typical use
 - EditButton for optional reordering (only shown when activities selected) follows iOS List editing patterns with .onMove modifier
@@ -157,6 +168,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - .contentShape(Rectangle()) makes entire row tappable (large touch target) for faster selection
 
 **Plan 03-04 Decisions:**
+
 - 80pt font size for timer display (readable from 10 feet per PROJECT.md requirement) combined with .monospaced design and .monospacedDigit() prevents width jitter when digits change
 - .controlSize(.large) ensures 60pt+ touch targets necessary for operation while holding instrument (EXEC-14 requirement)
 - State-dependent button display (only show relevant actions based on SessionState) prevents showing irrelevant controls to user
@@ -167,6 +179,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Component Extraction Pattern: < 150 lines per component, single responsibility, clear prop interfaces following research Pattern 4 from 03-RESEARCH.md
 
 **Plan 03-02 Decisions:**
+
 - Date-based timer calculation (pausedElapsedTime + Date().timeIntervalSince(startTime)) survives iOS backgrounding because elapsed time is recalculated from Date difference, not incremented on timer ticks
 - Timer.publish(on: .main, in: .common) uses .common RunLoop mode (not .default) to prevent timer freezing during scrolling, typing, and user interaction (critical for iOS UX)
 - Immediate Firestore persistence on all state changes (pause, skip, note) enables crash recovery - if app crashes, user can resume from last persisted state
@@ -177,6 +190,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - reorderActivities(from: Int, to: Int) uses Int indices (not IndexSet) to avoid SwiftUI dependency in ViewModel (separation of concerns)
 
 **Plan 03-01 Decisions:**
+
 - Used string values for Session.state field ("setup", "active", "paused", "inBetween", "ended") matching web app format for cross-platform sync compatibility
 - Made SessionActivity.activityId optional to support in-between time tracking where activityId=nil and isInBetweenTime=true
 - Denormalized activityName in SessionActivity to enable history display without joining Activity documents
@@ -185,6 +199,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Followed Phase 2 ActivityRepository patterns: return ListenerRegistration for memory management, use compactMap for resilience
 
 **Plan 02-04 Decisions:**
+
 - Used Firestore aggregation queries (.sum, .count) for server-side statistics calculation, saving 99% of reads compared to downloading all session documents
 - Forced .server source for aggregation to ensure accurate calculation from server data, not stale cache
 - Wrapped all listener closure callbacks with MainActor.run to ensure @Published property updates occur on main thread (prevents threading violations)
@@ -193,6 +208,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Added comprehensive debug logging to trace listener lifecycle (attach/detach/deinit) for memory leak detection
 
 **Plan 02-03 Decisions:**
+
 - Used nonisolated init to allow ActivityRepository() default parameter without actor isolation conflicts
 - Created new Activity instance in updateActivity (not mutation) because name and category are immutable let properties
 - Used @StateObject for ActivityViewModel ownership in ActivityListView, @ObservedObject for passed ViewModel in ArchivedActivityListView
@@ -203,6 +219,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Updated ActivityFormView to use onSave closure pattern for clean ViewModel integration
 
 **Plan 02-02 Decisions:**
+
 - Used String rawValues matching web app exactly (Instrument, Piece, Theory, Warm-up with hyphen) for cross-platform sync compatibility
 - Chose SF Symbols over custom icons for native iOS feel and accessibility support
 - Made ActivityCategory conform to Identifiable with id=rawValue for SwiftUI Picker compatibility without manual tagging
@@ -211,6 +228,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Left save action as TODO for Plan 02-03 when ActivityViewModel is created (clear handoff point)
 
 **Plan 02-01 Decisions:**
+
 - Used ListenerRegistration return type (not void) so ViewModels can store handle and call remove() in deinit for proper cleanup
 - Implemented archive/restore as separate methods (not generic update) for clear intent and automatic timestamp updates
 - Used compactMap in listeners to skip malformed documents rather than failing entire query
@@ -219,12 +237,14 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Used mock repository pattern for unit tests (not Firebase emulator) to avoid external dependencies and enable fast CI/CD
 
 **Plan 01-04 Decisions:**
+
 - Used rules_version = '2' for recursive wildcard support (match /{document=**})
 - Implemented field validation helpers (hasRequiredUserFields, etc.) to prevent malicious clients from omitting required fields
 - Configured Firebase Emulator Suite for safe local testing before production deployment
 - Deployed security rules to production after manual testing via human verification checkpoint
 
 **Plan 01-03 Decisions:**
+
 - Added CLIENT_ID and REVERSED_CLIENT_ID to GoogleService-Info.plist for OAuth redirect configuration
 - Used INFOPLIST_KEY_CFBundleURLTypes in project.pbxproj instead of separate Info.plist to avoid build conflicts
 - AuthViewModel inherits from NSObject to conform to ASAuthorizationControllerDelegate for Apple Sign-In
@@ -232,10 +252,12 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Used OAuthProvider.appleCredential with fullName parameter to preserve display name on first sign-in
 
 **Plan 01-02 Decisions:**
+
 - Used Combine import for @Published property wrapper in AuthViewModel (required for ObservableObject)
 - Made User conform to Equatable for SwiftUI onChange compatibility (automatic synthesis)
 
 **Plan 01-01 Decisions:**
+
 - Used @UIApplicationDelegateAdaptor pattern to ensure Firebase configures before SwiftUI view initialization
 - Stored timestamps as ISO 8601 strings (not Date or Firestore Timestamp) to match web app format exactly
 - Designed data models for subcollections (users/{userId}/activities, users/{userId}/sessions) to avoid 1MB document limit
@@ -243,6 +265,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Used async/await throughout (not completion handlers) as Firebase SDK supports it natively
 
 **Architecture Decisions (from research):**
+
 - **Stack:** SwiftUI + Firebase iOS SDK 12.10.0+, Swift 6.x, iOS 16+ minimum
 - **Architecture:** MVVM + Repository pattern for data access
 - **Persistence:** Firestore offline persistence ONLY (no SwiftData/Core Data dual layer)
@@ -250,6 +273,7 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - **Data Model:** Use subcollections for scalable collections (avoid 1MB document limit)
 
 **Phase Structure Rationale:**
+
 - Phase 1 establishes critical foundations (auth, timer architecture, data model, security rules) that are expensive/impossible to retrofit later
 - Phase 2 validates repository pattern and offline sync before complex features
 - Phase 3 delivers core value (timer + sessions) with proper iOS backgrounding
@@ -257,20 +281,27 @@ Roadmap complete with 7 phases derived from 53 v1 requirements. Next step: Plan 
 - Phase 6 adds platform polish (iPad, offline indicators)
 - Phase 7 handles App Store submission requirements
 
+### Roadmap Evolution
+
+- Phase 04.2 inserted after Phase 4: Home screen redesign with Quick Start, Plan Session button, and stats preview (URGENT)
+
 ### Active TODOs
 
 **Immediate (Next Session):**
+
 - [x] Execute Plan 01-02 (Email/password authentication and auth state routing) - COMPLETED
 - [x] Execute Plan 01-03 (Google OAuth and Sign in with Apple) - COMPLETED
 - [x] Execute Plan 01-04 (Firestore security rules, emulator testing, human verification) - COMPLETED
 - [ ] Plan Phase 2 (Activities & Offline Sync)
 
 **Upcoming:**
+
 - [ ] Phase 2: Establish memory management patterns (Firebase listener cleanup)
 - [ ] Phase 3: Timer component architecture (avoid massive view files)
 - [ ] Phase 5: Design smart suggestion algorithm (recency/frequency scoring)
 
 **Backlog:**
+
 - [ ] Phase 6: iPad adaptive layout design
 - [ ] Phase 7: Create privacy policy content
 - [ ] Phase 7: App Store screenshot planning
@@ -288,6 +319,7 @@ None currently. Roadmap validated with 100% requirement coverage.
 ### Research Notes
 
 **Critical Pitfalls to Address (from research):**
+
 1. **Timer backgrounding fails** - Store start time as Date, calculate elapsed from difference (Phase 1)
 2. **Firestore offline persistence misunderstood** - Monitor 100MB cache limit, use keepSynced() for critical collections (Phase 1-2)
 3. **Security rules assume client validation** - Mirror validation in Firestore rules, test with emulator (Phase 1)
@@ -298,6 +330,7 @@ None currently. Roadmap validated with 100% requirement coverage.
 8. **Firestore document size limit** - Use subcollections for arrays that could exceed 20 items (Phase 1)
 
 **Research Flags for Planning:**
+
 - Phase 5 smart suggestions need algorithm design (recency, frequency, time-since-last-practice heuristics)
 - All other phases use standard patterns with comprehensive documentation
 
@@ -306,6 +339,7 @@ None currently. Roadmap validated with 100% requirement coverage.
 ## Session Continuity
 
 **Last Session Summary:**
+
 - Completed Plan 04-03 (Statistics Charts)
 - Created DailyPracticeChartView with Swift Charts bar chart showing practice time per day (last 30 days)
 - Built ActivityBreakdownChartView with horizontal bar chart displaying total hours per activity
@@ -317,11 +351,13 @@ None currently. Roadmap validated with 100% requirement coverage.
 - **Plan 04-03 Complete:** Statistics charts ready for navigation integration in Plan 04-04
 
 **Next Session Start Here:**
+
 1. Execute Plan 04-04 (Navigation Integration)
 2. Add Statistics tab to main navigation
 3. Complete Phase 4 with full session history and statistics feature
 
 **Context for Handoff:**
+
 - Project type: Native iOS app (SwiftUI) with Firebase backend
 - Existing web app with same Firebase backend (must maintain data compatibility)
 - Key differentiation: Simplified session setup, smart suggestions, iOS-native timer optimized for practice use

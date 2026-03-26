@@ -188,8 +188,8 @@ Plans:
 **Plans:** 3 plans in 2 waves
 
 Plans:
-- [ ] 04.2-01-PLAN.md — Extract This Week card into WeeklySummaryCard component (Wave 1)
-- [ ] 04.2-02-PLAN.md — Enhance Home screen with stats preview and Plan Session button (Wave 2)
+- [x] 04.2-01-PLAN.md — Extract This Week card into WeeklySummaryCard component (Wave 1)
+- [x] 04.2-02-PLAN.md — Enhance Home screen with stats preview and Plan Session button (Wave 2)
 - [ ] 04.2-03-PLAN.md — Remove Practice tab and reorganize navigation (Wave 2, includes human verification)
 
 ### Phase 5: Smart Features & Polish
