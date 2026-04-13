@@ -628,7 +628,7 @@ firebase firestore:indexes
 
 ### 4.1 Existing Session Model
 
-**From Practice Timer/Core/Models/Session.swift:**
+**From Hone/Core/Models/Session.swift:**
 
 ```swift
 struct Session: Codable, Identifiable {
@@ -657,7 +657,7 @@ struct Session: Codable, Identifiable {
 
 ### 4.2 Existing SessionActivity Model
 
-**From Practice Timer/Core/Models/Session.swift:**
+**From Hone/Core/Models/Session.swift:**
 
 ```swift
 struct SessionActivity: Codable, Identifiable {
@@ -714,7 +714,7 @@ match /sessions/{sessionId} {
 
 ### 5.1 SessionSummaryView (Existing)
 
-**Location:** Practice Timer/Features/Sessions/Views/SessionSummaryView.swift
+**Location:** Hone/Features/Sessions/Views/SessionSummaryView.swift
 
 **Purpose:** Post-session summary showing total time, activity breakdown, and notes.
 
@@ -744,7 +744,7 @@ match /sessions/{sessionId} {
 
 ### 5.2 formatDuration Helper (Existing)
 
-**Location:** Practice Timer/Features/Sessions/Views/SessionSummaryView.swift (lines 117-129)
+**Location:** Hone/Features/Sessions/Views/SessionSummaryView.swift (lines 117-129)
 
 **Implementation:**
 
@@ -769,7 +769,7 @@ private func formatDuration(_ duration: TimeInterval) -> String {
 1. **Shared extension** (recommended):
 
 ```swift
-// Create Practice Timer/Core/Extensions/TimeInterval+Formatting.swift
+// Create Hone/Core/Extensions/TimeInterval+Formatting.swift
 extension TimeInterval {
     func formatted() -> String {
         let hours = Int(self) / 3600
@@ -798,7 +798,7 @@ Text(TimeInterval(session.totalDuration).formatted())
 
 ### 5.3 String.toDate() Extension (Existing)
 
-**Location:** Practice Timer/Features/Sessions/Views/SessionSummaryView.swift (lines 133-137)
+**Location:** Hone/Features/Sessions/Views/SessionSummaryView.swift (lines 133-137)
 
 **Implementation:**
 
@@ -817,7 +817,7 @@ extension String {
 
 ### 5.4 Date+ISO8601 Extension (Existing)
 
-**Location:** Practice Timer/Core/Extensions/Date+ISO8601.swift
+**Location:** Hone/Core/Extensions/Date+ISO8601.swift
 
 **Implementation:**
 
@@ -849,7 +849,7 @@ if let startDate = Date(iso8601String: session.startTime) {
 
 ### 5.5 ActivityStatisticsView (Existing)
 
-**Location:** Practice Timer/Features/Activities/Views/ActivityStatisticsView.swift
+**Location:** Hone/Features/Activities/Views/ActivityStatisticsView.swift
 
 **Purpose:** Displays activity-level stats using Firestore aggregation.
 
@@ -867,7 +867,7 @@ if let startDate = Date(iso8601String: session.startTime) {
 
 ### 5.6 ActivityListView Patterns (Existing)
 
-**Location:** Practice Timer/Features/Activities/Views/ActivityListView.swift
+**Location:** Hone/Features/Activities/Views/ActivityListView.swift
 
 **Reusable Patterns:**
 

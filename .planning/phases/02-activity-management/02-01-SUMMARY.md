@@ -28,10 +28,10 @@ tech_stack:
     - "Completion handlers for real-time listeners"
 key_files:
   created:
-    - "Practice Timer/Core/Repositories/ActivityRepository.swift (190 lines)"
-    - "Practice Timer Tests/ActivityRepositoryTests.swift (300 lines)"
+    - "Hone/Core/Repositories/ActivityRepository.swift (190 lines)"
+    - "Hone Tests/ActivityRepositoryTests.swift (300 lines)"
   modified:
-    - "Practice Timer/Core/Repositories/UserRepository.swift (added missingDocumentId error case)"
+    - "Hone/Core/Repositories/UserRepository.swift (added missingDocumentId error case)"
 decisions:
   - "Used ListenerRegistration return type (not void) so ViewModels can store handle and call remove() in deinit for proper cleanup"
   - "Implemented archive/restore as separate methods (not generic update) for clear intent and automatic timestamp updates"
@@ -171,7 +171,7 @@ All write operations (create, update, archive, restore) automatically update the
 - **Found during:** Task 1 - Writing updateActivity method
 - **Issue:** Plan specified throwing RepositoryError.missingDocumentId, but this case didn't exist in the shared enum
 - **Fix:** Added `case missingDocumentId` to RepositoryError in UserRepository.swift with error description "Missing document ID"
-- **Files modified:** Practice Timer/Core/Repositories/UserRepository.swift
+- **Files modified:** Hone/Core/Repositories/UserRepository.swift
 - **Commit:** 3984a97 (included in Task 1 commit)
 - **Rationale:** This is a critical error case for all repositories (not just ActivityRepository). Without it, the code wouldn't compile. This falls under Rule 2 (missing critical functionality for correctness).
 
@@ -223,18 +223,18 @@ Firebase integration testing with real Firestore (or emulator) deferred to Phase
 ## Files Changed
 
 ### Created
-- `Practice Timer/Core/Repositories/ActivityRepository.swift` (190 lines)
+- `Hone/Core/Repositories/ActivityRepository.swift` (190 lines)
   - ActivityRepositoryProtocol with 7 methods
   - ActivityRepository implementation
   - Comprehensive documentation on memory management and patterns
 
-- `Practice Timer Tests/ActivityRepositoryTests.swift` (300 lines)
+- `Hone Tests/ActivityRepositoryTests.swift` (300 lines)
   - MockActivityRepository implementation
   - 7 XCTest test cases
   - MockListenerRegistration helper
 
 ### Modified
-- `Practice Timer/Core/Repositories/UserRepository.swift`
+- `Hone/Core/Repositories/UserRepository.swift`
   - Added `case missingDocumentId` to RepositoryError enum
   - Added error description "Missing document ID"
 
@@ -277,8 +277,8 @@ Firebase integration testing with real Firestore (or emulator) deferred to Phase
 Verifying created files exist:
 
 ```bash
-[ -f "Practice Timer/Core/Repositories/ActivityRepository.swift" ] && echo "FOUND" || echo "MISSING"
-[ -f "Practice Timer Tests/ActivityRepositoryTests.swift" ] && echo "FOUND" || echo "MISSING"
+[ -f "Hone/Core/Repositories/ActivityRepository.swift" ] && echo "FOUND" || echo "MISSING"
+[ -f "Hone Tests/ActivityRepositoryTests.swift" ] && echo "FOUND" || echo "MISSING"
 ```
 
 Verifying commits exist:

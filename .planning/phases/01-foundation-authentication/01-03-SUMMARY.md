@@ -26,14 +26,14 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/Practice Timer.entitlements
+    - Hone/Hone.entitlements
   modified:
     - GoogleService-Info.plist
-    - Practice Timer.xcodeproj/project.pbxproj
-    - Practice Timer/Core/Repositories/AuthRepository.swift
-    - Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift
-    - Practice Timer/Features/Auth/Views/SignInView.swift
-    - Practice Timer/Features/Auth/Views/SignUpView.swift
+    - Hone.xcodeproj/project.pbxproj
+    - Hone/Core/Repositories/AuthRepository.swift
+    - Hone/Features/Auth/ViewModels/AuthViewModel.swift
+    - Hone/Features/Auth/Views/SignInView.swift
+    - Hone/Features/Auth/Views/SignUpView.swift
 
 key-decisions:
   - "Added CLIENT_ID and REVERSED_CLIENT_ID to GoogleService-Info.plist for OAuth redirect configuration"
@@ -85,13 +85,13 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `Practice Timer/Practice Timer.entitlements` - Created with Sign in with Apple capability (com.apple.developer.applesignin)
+- `Hone/Hone.entitlements` - Created with Sign in with Apple capability (com.apple.developer.applesignin)
 - `GoogleService-Info.plist` - Added CLIENT_ID and REVERSED_CLIENT_ID for Google OAuth
-- `Practice Timer.xcodeproj/project.pbxproj` - Added URL scheme via INFOPLIST_KEY_CFBundleURLTypes and CODE_SIGN_ENTITLEMENTS
-- `Practice Timer/Core/Repositories/AuthRepository.swift` - Implemented signInWithGoogle() and signInWithApple() methods
-- `Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift` - Added OAuth methods, nonce handling, ASAuthorizationControllerDelegate conformance
-- `Practice Timer/Features/Auth/Views/SignInView.swift` - Enabled Google and Apple OAuth buttons
-- `Practice Timer/Features/Auth/Views/SignUpView.swift` - Enabled Google and Apple OAuth buttons
+- `Hone.xcodeproj/project.pbxproj` - Added URL scheme via INFOPLIST_KEY_CFBundleURLTypes and CODE_SIGN_ENTITLEMENTS
+- `Hone/Core/Repositories/AuthRepository.swift` - Implemented signInWithGoogle() and signInWithApple() methods
+- `Hone/Features/Auth/ViewModels/AuthViewModel.swift` - Added OAuth methods, nonce handling, ASAuthorizationControllerDelegate conformance
+- `Hone/Features/Auth/Views/SignInView.swift` - Enabled Google and Apple OAuth buttons
+- `Hone/Features/Auth/Views/SignUpView.swift` - Enabled Google and Apple OAuth buttons
 
 ## Decisions Made
 
@@ -113,14 +113,14 @@ Each task was committed atomically:
 - **Found during:** Task 1
 - **Issue:** Creating separate Info.plist file caused "Multiple commands produce Info.plist" error because GENERATE_INFOPLIST_FILE=YES was enabled
 - **Fix:** Removed custom Info.plist, added URL scheme via INFOPLIST_KEY_CFBundleURLTypes in project.pbxproj build settings
-- **Files modified:** Practice Timer.xcodeproj/project.pbxproj
+- **Files modified:** Hone.xcodeproj/project.pbxproj
 - **Commit:** 66540e9
 
 **2. [Rule 1 - Bug] NSObject initialization error**
 - **Found during:** Task 2
 - **Issue:** AuthViewModel failed to compile with "'self' used before 'super.init' call" error after adding NSObject inheritance
 - **Fix:** Added super.init() call after repository property initialization in AuthViewModel.init
-- **Files modified:** Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift
+- **Files modified:** Hone/Features/Auth/ViewModels/AuthViewModel.swift
 - **Commit:** a8a0221
 
 **3. [Rule 2 - Missing Critical Functionality] CLIENT_ID missing from GoogleService-Info.plist**
@@ -164,15 +164,15 @@ OAuth authentication complete and ready for Plan 04 (Security Rules):
 ## Self-Check: PASSED
 
 All created files verified to exist:
-- Practice Timer/Practice Timer.entitlements ✓
+- Hone/Hone.entitlements ✓
 - GoogleService-Info.plist (modified) ✓
-- Practice Timer.xcodeproj/project.pbxproj (modified) ✓
+- Hone.xcodeproj/project.pbxproj (modified) ✓
 
 All modified files verified:
-- Practice Timer/Core/Repositories/AuthRepository.swift ✓
-- Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift ✓
-- Practice Timer/Features/Auth/Views/SignInView.swift ✓
-- Practice Timer/Features/Auth/Views/SignUpView.swift ✓
+- Hone/Core/Repositories/AuthRepository.swift ✓
+- Hone/Features/Auth/ViewModels/AuthViewModel.swift ✓
+- Hone/Features/Auth/Views/SignInView.swift ✓
+- Hone/Features/Auth/Views/SignUpView.swift ✓
 
 All commits verified to exist:
 - 66540e9 (Task 1) ✓

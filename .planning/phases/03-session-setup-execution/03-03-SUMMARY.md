@@ -27,9 +27,9 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/Features/Sessions/Views/SessionSetupView.swift
+    - Hone/Features/Sessions/Views/SessionSetupView.swift
   modified:
-    - Practice Timer.xcodeproj/project.pbxproj
+    - Hone.xcodeproj/project.pbxproj
 
 key-decisions:
   - "Tap-to-select interface: Faster than web app's multi-step form (3 taps vs 5+ clicks)"
@@ -85,7 +85,7 @@ SessionSetupView was implemented as part of commit `c3a4f8a` alongside 03-04 UI 
 
 ## Files Created/Modified
 
-- `Practice Timer/Features/Sessions/Views/SessionSetupView.swift` - Session setup UI with tap-to-select and reorder (221 lines)
+- `Hone/Features/Sessions/Views/SessionSetupView.swift` - Session setup UI with tap-to-select and reorder (221 lines)
 
 ## Decisions Made
 

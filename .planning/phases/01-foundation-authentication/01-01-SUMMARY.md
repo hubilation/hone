@@ -22,17 +22,17 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/App/AppDelegate.swift
-    - Practice Timer/App/PracticeTimerApp.swift
-    - Practice Timer/Core/Extensions/Date+ISO8601.swift
-    - Practice Timer/Core/Models/User.swift
-    - Practice Timer/Core/Models/Activity.swift
-    - Practice Timer/Core/Models/Session.swift
-    - Practice Timer/Core/Repositories/AuthRepository.swift
-    - Practice Timer/Core/Repositories/UserRepository.swift
+    - Hone/App/AppDelegate.swift
+    - Hone/App/PracticeTimerApp.swift
+    - Hone/Core/Extensions/Date+ISO8601.swift
+    - Hone/Core/Models/User.swift
+    - Hone/Core/Models/Activity.swift
+    - Hone/Core/Models/Session.swift
+    - Hone/Core/Repositories/AuthRepository.swift
+    - Hone/Core/Repositories/UserRepository.swift
     - GoogleService-Info.plist
   modified:
-    - Practice Timer.xcodeproj/project.pbxproj
+    - Hone.xcodeproj/project.pbxproj
 
 key-decisions:
   - "Used @UIApplicationDelegateAdaptor pattern to ensure Firebase configures before SwiftUI view initialization"
@@ -84,16 +84,16 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `Practice Timer/App/AppDelegate.swift` - Firebase initialization with FirebaseApp.configure() in didFinishLaunchingWithOptions
-- `Practice Timer/App/PracticeTimerApp.swift` - SwiftUI app entry point using @UIApplicationDelegateAdaptor
-- `Practice Timer/Core/Extensions/Date+ISO8601.swift` - ISO 8601 string conversion for web app compatibility
-- `Practice Timer/Core/Models/User.swift` - User model with Codable conformance and Firebase User initializer
-- `Practice Timer/Core/Models/Activity.swift` - Activity model shell with subcollection structure documented
-- `Practice Timer/Core/Models/Session.swift` - Session model shell with subcollection structure documented
-- `Practice Timer/Core/Repositories/AuthRepository.swift` - Auth protocol with async/await signatures (implementations in Plans 02-03)
-- `Practice Timer/Core/Repositories/UserRepository.swift` - User CRUD operations with Firestore integration
+- `Hone/App/AppDelegate.swift` - Firebase initialization with FirebaseApp.configure() in didFinishLaunchingWithOptions
+- `Hone/App/PracticeTimerApp.swift` - SwiftUI app entry point using @UIApplicationDelegateAdaptor
+- `Hone/Core/Extensions/Date+ISO8601.swift` - ISO 8601 string conversion for web app compatibility
+- `Hone/Core/Models/User.swift` - User model with Codable conformance and Firebase User initializer
+- `Hone/Core/Models/Activity.swift` - Activity model shell with subcollection structure documented
+- `Hone/Core/Models/Session.swift` - Session model shell with subcollection structure documented
+- `Hone/Core/Repositories/AuthRepository.swift` - Auth protocol with async/await signatures (implementations in Plans 02-03)
+- `Hone/Core/Repositories/UserRepository.swift` - User CRUD operations with Firestore integration
 - `GoogleService-Info.plist` - Firebase project configuration
-- `Practice Timer.xcodeproj/project.pbxproj` - Xcode project with Firebase packages and folder structure
+- `Hone.xcodeproj/project.pbxproj` - Xcode project with Firebase packages and folder structure
 
 ## Decisions Made
 
@@ -137,14 +137,14 @@ Foundation complete and ready for Plan 02 (Email/Password authentication):
 ## Self-Check: PASSED
 
 All created files verified to exist:
-- Practice Timer/App/AppDelegate.swift ✓
-- Practice Timer/App/PracticeTimerApp.swift ✓
-- Practice Timer/Core/Extensions/Date+ISO8601.swift ✓
-- Practice Timer/Core/Models/User.swift ✓
-- Practice Timer/Core/Models/Activity.swift ✓
-- Practice Timer/Core/Models/Session.swift ✓
-- Practice Timer/Core/Repositories/AuthRepository.swift ✓
-- Practice Timer/Core/Repositories/UserRepository.swift ✓
+- Hone/App/AppDelegate.swift ✓
+- Hone/App/PracticeTimerApp.swift ✓
+- Hone/Core/Extensions/Date+ISO8601.swift ✓
+- Hone/Core/Models/User.swift ✓
+- Hone/Core/Models/Activity.swift ✓
+- Hone/Core/Models/Session.swift ✓
+- Hone/Core/Repositories/AuthRepository.swift ✓
+- Hone/Core/Repositories/UserRepository.swift ✓
 - GoogleService-Info.plist ✓
 
 All commits verified to exist:

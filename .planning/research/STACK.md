@@ -1,6 +1,6 @@
 # Technology Stack
 
-**Project:** Practice Timer iOS
+**Project:** Hone iOS
 **Researched:** 2026-03-01
 **Confidence:** HIGH
 

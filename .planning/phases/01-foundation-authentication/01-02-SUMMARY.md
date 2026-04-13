@@ -15,14 +15,14 @@ tech_stack:
   patterns: [MVVM, Repository, Auth State Listener, Protocol Injection]
 key_files:
   created:
-    - Practice Timer/Core/Repositories/AuthRepository.swift (implementation)
-    - Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift
-    - Practice Timer/Features/Auth/Views/SignInView.swift
-    - Practice Timer/Features/Auth/Views/SignUpView.swift
-    - Practice Timer/Features/Auth/Views/PasswordResetView.swift
+    - Hone/Core/Repositories/AuthRepository.swift (implementation)
+    - Hone/Features/Auth/ViewModels/AuthViewModel.swift
+    - Hone/Features/Auth/Views/SignInView.swift
+    - Hone/Features/Auth/Views/SignUpView.swift
+    - Hone/Features/Auth/Views/PasswordResetView.swift
   modified:
-    - Practice Timer/ContentView.swift (auth routing)
-    - Practice Timer/Core/Models/User.swift (Equatable conformance)
+    - Hone/ContentView.swift (auth routing)
+    - Hone/Core/Models/User.swift (Equatable conformance)
 decisions:
   - title: "Combine import required for @Published"
     rationale: "ObservableObject protocol and @Published property wrapper require Combine framework"
@@ -69,7 +69,7 @@ Implemented complete email/password authentication flow with sign up, sign in, s
 - Auth state listener uses weak self to prevent retain cycles
 
 **Files modified:**
-- Practice Timer/Core/Repositories/AuthRepository.swift
+- Hone/Core/Repositories/AuthRepository.swift
 
 ### Task 2: Create AuthViewModel and auth UI screens
 **Commit:** 2fad000
@@ -94,13 +94,13 @@ Implemented complete email/password authentication flow with sign up, sign in, s
 - **[Rule 1 - Bug] Made User conform to Equatable**: Required for onChange(of:) modifier in SignUpView to detect user state changes
 
 **Files created:**
-- Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift
-- Practice Timer/Features/Auth/Views/SignInView.swift
-- Practice Timer/Features/Auth/Views/SignUpView.swift
-- Practice Timer/Features/Auth/Views/PasswordResetView.swift
+- Hone/Features/Auth/ViewModels/AuthViewModel.swift
+- Hone/Features/Auth/Views/SignInView.swift
+- Hone/Features/Auth/Views/SignUpView.swift
+- Hone/Features/Auth/Views/PasswordResetView.swift
 
 **Files modified:**
-- Practice Timer/Core/Models/User.swift (added Equatable conformance)
+- Hone/Core/Models/User.swift (added Equatable conformance)
 
 ### Task 3: Wire auth state routing in ContentView
 **Commit:** a45cf7f
@@ -118,7 +118,7 @@ Implemented complete email/password authentication flow with sign up, sign in, s
 - App restart shows MainAppView immediately if user was previously signed in
 
 **Files modified:**
-- Practice Timer/ContentView.swift
+- Hone/ContentView.swift
 
 ## Deviations from Plan
 
@@ -128,14 +128,14 @@ Implemented complete email/password authentication flow with sign up, sign in, s
 - **Found during:** Task 2 compilation
 - **Issue:** ObservableObject protocol and @Published property wrapper require Combine framework import
 - **Fix:** Added `import Combine` to AuthViewModel.swift
-- **Files modified:** Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift
+- **Files modified:** Hone/Features/Auth/ViewModels/AuthViewModel.swift
 - **Commit:** 2fad000
 
 **2. [Rule 1 - Bug] Made User conform to Equatable**
 - **Found during:** Task 2 compilation (SignUpView)
 - **Issue:** SwiftUI onChange(of:) modifier requires wrapped type to conform to Equatable
 - **Fix:** Added Equatable conformance to User struct (automatic synthesis via Swift)
-- **Files modified:** Practice Timer/Core/Models/User.swift
+- **Files modified:** Hone/Core/Models/User.swift
 - **Commit:** 2fad000
 
 ## Verification Results
@@ -231,11 +231,11 @@ These will be addressed in subsequent plans or marked as future enhancements.
 ## Self-Check: PASSED
 
 **Files created exist:**
-- ✓ Practice Timer/Core/Repositories/AuthRepository.swift (implementation)
-- ✓ Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift
-- ✓ Practice Timer/Features/Auth/Views/SignInView.swift
-- ✓ Practice Timer/Features/Auth/Views/SignUpView.swift
-- ✓ Practice Timer/Features/Auth/Views/PasswordResetView.swift
+- ✓ Hone/Core/Repositories/AuthRepository.swift (implementation)
+- ✓ Hone/Features/Auth/ViewModels/AuthViewModel.swift
+- ✓ Hone/Features/Auth/Views/SignInView.swift
+- ✓ Hone/Features/Auth/Views/SignUpView.swift
+- ✓ Hone/Features/Auth/Views/PasswordResetView.swift
 
 **Commits exist:**
 - ✓ 054ca49: feat(01-02): implement email/password authentication in AuthRepository

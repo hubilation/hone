@@ -65,7 +65,7 @@ Set up Firebase backend integration and implement all authentication methods (em
 
 ### Reusable Assets
 - None yet - fresh Xcode project with default template only (Practice_TimerApp.swift, ContentView.swift)
-- Web app reference available at `/Users/zackhuber/Documents/Practice Timer/` for data model understanding
+- Web app reference available at `/Users/zackhuber/Documents/Hone/` for data model understanding
 
 ### Established Patterns
 - None yet - Phase 1 establishes the patterns:

@@ -24,11 +24,11 @@ tech-stack:
 
 key-files:
   created:
-    - "Practice Timer/Features/Statistics/Views/DailyPracticeChartView.swift"
-    - "Practice Timer/Features/Statistics/Views/ActivityBreakdownChartView.swift"
-    - "Practice Timer/Features/Statistics/Views/StatisticsView.swift"
+    - "Hone/Features/Statistics/Views/DailyPracticeChartView.swift"
+    - "Hone/Features/Statistics/Views/ActivityBreakdownChartView.swift"
+    - "Hone/Features/Statistics/Views/StatisticsView.swift"
   modified:
-    - "Practice Timer/Features/Sessions/ViewModels/SessionHistoryViewModel.swift"
+    - "Hone/Features/Sessions/ViewModels/SessionHistoryViewModel.swift"
 
 key-decisions:
   - "Swift Charts BarMark with gradient for visual polish (Color.blue.gradient)"
@@ -83,12 +83,12 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 ### Created
-- `Practice Timer/Features/Statistics/Views/DailyPracticeChartView.swift` - Bar chart showing practice minutes per day for last 30 days, filters by ended sessions, groups by calendar day, sorts chronologically
-- `Practice Timer/Features/Statistics/Views/ActivityBreakdownChartView.swift` - Horizontal bar chart showing total hours per activity, uses StatisticsRepository for server-side aggregation, sorts by most-practiced first
-- `Practice Timer/Features/Statistics/Views/StatisticsView.swift` - Container view combining week summary (total time + session count for last 7 days), both charts, and navigation link to ActivityStatisticsView
+- `Hone/Features/Statistics/Views/DailyPracticeChartView.swift` - Bar chart showing practice minutes per day for last 30 days, filters by ended sessions, groups by calendar day, sorts chronologically
+- `Hone/Features/Statistics/Views/ActivityBreakdownChartView.swift` - Horizontal bar chart showing total hours per activity, uses StatisticsRepository for server-side aggregation, sorts by most-practiced first
+- `Hone/Features/Statistics/Views/StatisticsView.swift` - Container view combining week summary (total time + session count for last 7 days), both charts, and navigation link to ActivityStatisticsView
 
 ### Modified
-- `Practice Timer/Features/Sessions/ViewModels/SessionHistoryViewModel.swift` - Removed nonisolated from init to fix Swift 6 strict concurrency error (MainActor isolation required for property assignment)
+- `Hone/Features/Sessions/ViewModels/SessionHistoryViewModel.swift` - Removed nonisolated from init to fix Swift 6 strict concurrency error (MainActor isolation required for property assignment)
 
 ## Decisions Made
 
@@ -123,7 +123,7 @@ Each task was committed atomically:
 - **Found during:** Task 1 build verification
 - **Issue:** SessionHistoryViewModel had nonisolated init trying to assign MainActor-isolated property (repository), causing Swift 6 strict concurrency error: "property can not be mutated from a nonisolated context"
 - **Fix:** Removed nonisolated keyword from init to make it MainActor-isolated
-- **Files modified:** Practice Timer/Features/Sessions/ViewModels/SessionHistoryViewModel.swift
+- **Files modified:** Hone/Features/Sessions/ViewModels/SessionHistoryViewModel.swift
 - **Verification:** Build succeeded after change
 - **Committed in:** ac5b3c1 (included with Task 1 commit)
 

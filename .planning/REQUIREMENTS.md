@@ -1,4 +1,4 @@
-# Requirements: Practice Timer iOS
+# Requirements: Hone iOS
 
 **Defined:** 2026-03-01
 **Core Value:** Musicians can reliably track their practice sessions with accurate timing, notes, and history that syncs seamlessly between web and iOS platforms.

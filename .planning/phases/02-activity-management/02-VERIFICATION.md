@@ -154,7 +154,7 @@ Human verification checkpoint (Plan 02-04, Task 4) remains pending but is non-bl
 
 ### Build Status
 
-**Command:** `xcodebuild -scheme "Practice Timer" -sdk iphonesimulator clean build CODE_SIGNING_ALLOWED=NO`
+**Command:** `xcodebuild -scheme "Hone" -sdk iphonesimulator clean build CODE_SIGNING_ALLOWED=NO`
 **Result:** BUILD SUCCEEDED
 **Timestamp:** 2026-03-03T19:48:00Z
 

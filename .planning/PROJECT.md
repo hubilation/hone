@@ -1,8 +1,8 @@
-# Practice Timer iOS
+# Hone iOS
 
 ## What This Is
 
-A native iOS app for Practice Timer - a practice session tracker for musicians. Users can manage their practice activities (instruments, pieces, techniques), plan timed practice sessions, and track their progress over time. This iOS app provides full feature parity with the existing web application while delivering an iOS-native experience optimized for iPhone and iPad.
+A native iOS app for Hone - a practice session tracker for musicians. Users can manage their practice activities (instruments, pieces, techniques), plan timed practice sessions, and track their progress over time. This iOS app provides full feature parity with the existing web application while delivering an iOS-native experience optimized for iPhone and iPad.
 
 ## Core Value
 
@@ -62,7 +62,7 @@ Musicians can reliably track their practice sessions with accurate timing, notes
 ## Context
 
 **Existing Web Application:**
-The Practice Timer web app is a fully functional React-based SPA with Firebase backend. It has been mapped extensively and includes:
+The Hone web app is a fully functional React-based SPA with Firebase backend. It has been mapped extensively and includes:
 - Authentication (email/password, Google OAuth)
 - Real-time data sync via Firestore
 - Activity management with categories and archiving

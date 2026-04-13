@@ -29,9 +29,9 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/Core/Repositories/SessionRepository.swift
+    - Hone/Core/Repositories/SessionRepository.swift
   modified:
-    - Practice Timer/Core/Models/Session.swift
+    - Hone/Core/Models/Session.swift
 
 key-decisions:
   - "Session.state uses string values for state machine tracking (setup/active/paused/inBetween/ended)"
@@ -82,8 +82,8 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `Practice Timer/Core/Models/Session.swift` - Extended with state/pausedAt/currentActivityIndex fields, added SessionActivity struct
-- `Practice Timer/Core/Repositories/SessionRepository.swift` - SessionRepositoryProtocol and implementation with 7 methods (createSession, updateSessionState, getActiveSession, endSession, addSessionActivity, listenToSession, listenToSessionActivities)
+- `Hone/Core/Models/Session.swift` - Extended with state/pausedAt/currentActivityIndex fields, added SessionActivity struct
+- `Hone/Core/Repositories/SessionRepository.swift` - SessionRepositoryProtocol and implementation with 7 methods (createSession, updateSessionState, getActiveSession, endSession, addSessionActivity, listenToSession, listenToSessionActivities)
 
 ## Decisions Made
 

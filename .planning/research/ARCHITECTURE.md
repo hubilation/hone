@@ -769,7 +769,7 @@ struct PracticeTimerApp: App {
 |---------|---------------------|-------|
 | Firebase Authentication | Wrap in AuthService as @EnvironmentObject | Listen to auth state changes with `addStateDidChangeListener`. Provide user session globally. |
 | Firestore | Access via Repository pattern | Enable offline persistence. Use snapshot listeners for real-time sync. Remove listeners in deinit. |
-| Firebase Storage | Wrap in StorageService (if needed) | For profile images or file uploads. Not needed for Practice Timer v1. |
+| Firebase Storage | Wrap in StorageService (if needed) | For profile images or file uploads. Not needed for Hone v1. |
 | Sign in with Apple | Native AuthenticationServices framework + Firebase | Required by App Store if offering Google OAuth. Link to Firebase with OAuthProvider. |
 | Google Sign-In | GoogleSignIn SDK + Firebase | Follow Firebase documentation for iOS setup. Configure OAuth client ID. |
 
@@ -785,7 +785,7 @@ struct PracticeTimerApp: App {
 
 ## Build Order Recommendations
 
-Based on architecture dependencies, recommended build order for Practice Timer:
+Based on architecture dependencies, recommended build order for Hone:
 
 ### Phase 1: Foundation Layer
 1. **Firebase setup** - Configure Firebase, enable offline persistence

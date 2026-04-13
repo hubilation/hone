@@ -28,9 +28,9 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/Features/Sessions/Views/SessionSummaryView.swift
+    - Hone/Features/Sessions/Views/SessionSummaryView.swift
   modified:
-    - Practice Timer/Features/Sessions/Views/ActiveSessionView.swift
+    - Hone/Features/Sessions/Views/ActiveSessionView.swift
 
 key-decisions:
   - "@ObservedObject (not @StateObject) for SessionViewModel because VM created in SessionSetupView"
@@ -90,10 +90,10 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 **Created:**
-- `Practice Timer/Features/Sessions/Views/SessionSummaryView.swift` - Post-session summary with activity breakdown, notes display, and break time calculation
+- `Hone/Features/Sessions/Views/SessionSummaryView.swift` - Post-session summary with activity breakdown, notes display, and break time calculation
 
 **Modified:**
-- `Practice Timer/Features/Sessions/Views/ActiveSessionView.swift` - Replaced placeholder with full orchestrator implementation composing all session components
+- `Hone/Features/Sessions/Views/ActiveSessionView.swift` - Replaced placeholder with full orchestrator implementation composing all session components
 
 ## Decisions Made
 

@@ -38,14 +38,14 @@ tech_stack:
 
 key_files:
   created:
-    - "Practice Timer/Core/Repositories/StatisticsRepository.swift (115 lines)"
-    - "Practice Timer/Features/Activities/Views/ActivityStatisticsView.swift (95 lines)"
+    - "Hone/Core/Repositories/StatisticsRepository.swift (115 lines)"
+    - "Hone/Features/Activities/Views/ActivityStatisticsView.swift (95 lines)"
     - "firestore.indexes.json (composite indexes for activity queries)"
     - "FIREBASE_SETUP.md (index deployment documentation)"
   modified:
-    - "Practice Timer/Features/Activities/Views/ActivityListView.swift (added statistics navigation)"
-    - "Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift (MainActor listener fixes)"
-    - "Practice Timer/Core/Repositories/ActivityRepository.swift (MainActor listener fixes)"
+    - "Hone/Features/Activities/Views/ActivityListView.swift (added statistics navigation)"
+    - "Hone/Features/Activities/ViewModels/ActivityViewModel.swift (MainActor listener fixes)"
+    - "Hone/Core/Repositories/ActivityRepository.swift (MainActor listener fixes)"
 
 key_decisions:
   - "Used Firestore aggregation queries (.sum, .count) for server-side calculation, saving 99% of reads compared to downloading all session documents"
@@ -113,15 +113,15 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 **Created:**
-- `Practice Timer/Core/Repositories/StatisticsRepository.swift` - Repository with ActivityStatistics model, protocol, and Firestore aggregation query implementation (sum duration, count sessions)
-- `Practice Timer/Features/Activities/Views/ActivityStatisticsView.swift` - Statistics display view with loading/error/empty states, pull-to-refresh, sorted by most-practiced first
+- `Hone/Core/Repositories/StatisticsRepository.swift` - Repository with ActivityStatistics model, protocol, and Firestore aggregation query implementation (sum duration, count sessions)
+- `Hone/Features/Activities/Views/ActivityStatisticsView.swift` - Statistics display view with loading/error/empty states, pull-to-refresh, sorted by most-practiced first
 - `firestore.indexes.json` - Composite index configuration for userId+activityId+archived queries (required for real-time listeners)
 - `FIREBASE_SETUP.md` - Comprehensive Firebase setup documentation including index deployment and verification commands
 
 **Modified:**
-- `Practice Timer/Features/Activities/Views/ActivityListView.swift` - Added chart.bar statistics navigation button in toolbar
-- `Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift` - Fixed MainActor threading, added listener lifecycle debug logging, improved guard checks
-- `Practice Timer/Core/Repositories/ActivityRepository.swift` - Added MainActor.run wrappers to listener callbacks for thread safety
+- `Hone/Features/Activities/Views/ActivityListView.swift` - Added chart.bar statistics navigation button in toolbar
+- `Hone/Features/Activities/ViewModels/ActivityViewModel.swift` - Fixed MainActor threading, added listener lifecycle debug logging, improved guard checks
+- `Hone/Core/Repositories/ActivityRepository.swift` - Added MainActor.run wrappers to listener callbacks for thread safety
 
 ## Decisions Made
 
@@ -150,7 +150,7 @@ Each task was committed atomically:
 - **Found during:** Task 4 (Human verification checkpoint)
 - **Issue:** ActivityViewModel was attaching listeners multiple times if startListening() called repeatedly, causing conflicting updates and state inconsistencies
 - **Fix:** Added `guard !listenerActive else { return }` check at start of startListening() to prevent duplicate attachments
-- **Files modified:** Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift
+- **Files modified:** Hone/Features/Activities/ViewModels/ActivityViewModel.swift
 - **Verification:** Tested navigation away and back to Activities tab - no duplicate listeners, clean state updates
 - **Commit:** e934e4b
 
@@ -158,7 +158,7 @@ Each task was committed atomically:
 - **Found during:** Task 4 (Human verification checkpoint)
 - **Issue:** No visibility into when listeners were being attached/detached, making it impossible to debug lifecycle issues or verify proper cleanup
 - **Fix:** Added print statements to startListening(), stopListening(), and deinit to trace listener lifecycle events in Xcode console
-- **Files modified:** Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift, Practice Timer/Core/Repositories/ActivityRepository.swift
+- **Files modified:** Hone/Features/Activities/ViewModels/ActivityViewModel.swift, Hone/Core/Repositories/ActivityRepository.swift
 - **Verification:** Verified in console logs that listeners attach on view appear, detach on view disappear, and deinit fires on sign-out
 - **Commit:** 716181e
 
@@ -166,7 +166,7 @@ Each task was committed atomically:
 - **Found during:** Task 4 (Human verification checkpoint)
 - **Issue:** Firestore listener callbacks execute on background thread, but updating @Published properties from background threads causes "Publishing changes from background threads is not allowed" runtime warnings and potential crashes
 - **Fix:** Wrapped all listener closure code with `MainActor.run { }` to dispatch property updates to main thread
-- **Files modified:** Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift, Practice Timer/Core/Repositories/ActivityRepository.swift
+- **Files modified:** Hone/Features/Activities/ViewModels/ActivityViewModel.swift, Hone/Core/Repositories/ActivityRepository.swift
 - **Verification:** No threading warnings in console, UI updates smoothly without crashes
 - **Commit:** 3958b84
 
@@ -274,8 +274,8 @@ All commits verified:
 - 57ea69b - docs(02-04): document Firestore index requirements
 
 All files verified:
-- Practice Timer/Core/Repositories/StatisticsRepository.swift (5506 bytes)
-- Practice Timer/Features/Activities/Views/ActivityStatisticsView.swift (4170 bytes)
+- Hone/Core/Repositories/StatisticsRepository.swift (5506 bytes)
+- Hone/Features/Activities/Views/ActivityStatisticsView.swift (4170 bytes)
 - firestore.indexes.json (614 bytes)
 - FIREBASE_SETUP.md (6724 bytes)
 

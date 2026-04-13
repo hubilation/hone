@@ -35,17 +35,17 @@ re_verification: false
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| Practice Timer/App/AppDelegate.swift | Firebase initialization | ✓ VERIFIED | Contains FirebaseApp.configure() on line 15 |
-| Practice Timer/Core/Models/User.swift | Codable User model with ISO timestamps | ✓ VERIFIED | Codable, Identifiable, Equatable. Uses String for timestamps. Exports User type. 36 lines. |
-| Practice Timer/Core/Extensions/Date+ISO8601.swift | ISO timestamp conversion | ✓ VERIFIED | toISO8601String() and init(iso8601String:) present. 22 lines. |
-| Practice Timer/Core/Repositories/AuthRepository.swift | Auth protocol + implementations | ✓ VERIFIED | Protocol + final class with all methods: signIn, signUp, signOut, resetPassword, OAuth. 199 lines. |
-| Practice Timer/Features/Auth/ViewModels/AuthViewModel.swift | Auth state management with ObservableObject | ✓ VERIFIED | @MainActor, @Published user, auth state listener with deinit cleanup. OAuth methods. 211 lines. |
-| Practice Timer/Features/Auth/Views/SignInView.swift | Sign in UI with email/password fields | ✓ VERIFIED | Email/password fields, OAuth buttons, navigation to SignUpView. 128 lines. |
-| Practice Timer/Features/Auth/Views/SignUpView.swift | Sign up UI with confirm password | ✓ VERIFIED | Confirm password validation, OAuth buttons. 121 lines. |
-| Practice Timer/Features/Auth/Views/PasswordResetView.swift | Password reset UI | ✓ VERIFIED | Email input, success state. 105 lines. |
-| Practice Timer/ContentView.swift | Auth state routing | ✓ VERIFIED | @StateObject authViewModel, routes to SignInView/MainAppView based on user state. 64 lines. |
+| Hone/App/AppDelegate.swift | Firebase initialization | ✓ VERIFIED | Contains FirebaseApp.configure() on line 15 |
+| Hone/Core/Models/User.swift | Codable User model with ISO timestamps | ✓ VERIFIED | Codable, Identifiable, Equatable. Uses String for timestamps. Exports User type. 36 lines. |
+| Hone/Core/Extensions/Date+ISO8601.swift | ISO timestamp conversion | ✓ VERIFIED | toISO8601String() and init(iso8601String:) present. 22 lines. |
+| Hone/Core/Repositories/AuthRepository.swift | Auth protocol + implementations | ✓ VERIFIED | Protocol + final class with all methods: signIn, signUp, signOut, resetPassword, OAuth. 199 lines. |
+| Hone/Features/Auth/ViewModels/AuthViewModel.swift | Auth state management with ObservableObject | ✓ VERIFIED | @MainActor, @Published user, auth state listener with deinit cleanup. OAuth methods. 211 lines. |
+| Hone/Features/Auth/Views/SignInView.swift | Sign in UI with email/password fields | ✓ VERIFIED | Email/password fields, OAuth buttons, navigation to SignUpView. 128 lines. |
+| Hone/Features/Auth/Views/SignUpView.swift | Sign up UI with confirm password | ✓ VERIFIED | Confirm password validation, OAuth buttons. 121 lines. |
+| Hone/Features/Auth/Views/PasswordResetView.swift | Password reset UI | ✓ VERIFIED | Email input, success state. 105 lines. |
+| Hone/ContentView.swift | Auth state routing | ✓ VERIFIED | @StateObject authViewModel, routes to SignInView/MainAppView based on user state. 64 lines. |
 | GoogleService-Info.plist | Firebase project configuration | ✓ VERIFIED | File exists (1127 bytes), contains PROJECT_ID |
-| Practice Timer/Practice Timer.entitlements | Sign in with Apple capability | ✓ VERIFIED | File exists, contains com.apple.developer.applesignin |
+| Hone/Hone.entitlements | Sign in with Apple capability | ✓ VERIFIED | File exists, contains com.apple.developer.applesignin |
 | firestore.rules | Security rules with recursive wildcards | ✓ VERIFIED | rules_version = '2', owner-only access, field validation, 61 lines |
 | firebase.json | Firebase Emulator configuration | ✓ VERIFIED | Contains emulators config (Auth 9099, Firestore 8080, UI 4000). 223 bytes. |
 | .firebaserc | Firebase project configuration | ✓ VERIFIED | Contains project ID. 62 bytes. |

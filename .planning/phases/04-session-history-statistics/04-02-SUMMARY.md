@@ -21,9 +21,9 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/Features/Sessions/ViewModels/SessionHistoryViewModel.swift
-    - Practice Timer/Features/Sessions/Views/SessionHistoryRow.swift
-    - Practice Timer/Features/Sessions/Views/SessionHistoryView.swift
+    - Hone/Features/Sessions/ViewModels/SessionHistoryViewModel.swift
+    - Hone/Features/Sessions/Views/SessionHistoryRow.swift
+    - Hone/Features/Sessions/Views/SessionHistoryView.swift
   modified: []
 
 key-decisions:
@@ -76,9 +76,9 @@ Each task was committed atomically:
 **Plan metadata:** (pending)
 
 ## Files Created/Modified
-- `Practice Timer/Features/Sessions/ViewModels/SessionHistoryViewModel.swift` - ViewModel managing sessions array with real-time listener, groupedSessions computed property for day grouping, deleteSession and getActivities methods
-- `Practice Timer/Features/Sessions/Views/SessionHistoryRow.swift` - Compact 2-line row component showing time, duration, activity preview, and notes indicator
-- `Practice Timer/Features/Sessions/Views/SessionHistoryView.swift` - Main view with NavigationStack, day-grouped list, lazy loading, sheet navigation, swipe-to-delete, and empty state
+- `Hone/Features/Sessions/ViewModels/SessionHistoryViewModel.swift` - ViewModel managing sessions array with real-time listener, groupedSessions computed property for day grouping, deleteSession and getActivities methods
+- `Hone/Features/Sessions/Views/SessionHistoryRow.swift` - Compact 2-line row component showing time, duration, activity preview, and notes indicator
+- `Hone/Features/Sessions/Views/SessionHistoryView.swift` - Main view with NavigationStack, day-grouped list, lazy loading, sheet navigation, swipe-to-delete, and empty state
 
 ## Decisions Made
 
@@ -112,7 +112,7 @@ Each task was committed atomically:
 - **Found during:** Task 1 (SessionHistoryViewModel compilation)
 - **Issue:** @Published property wrapper requires Combine module import, build failed with "missing import of defining module 'Combine'"
 - **Fix:** Added `import Combine` to SessionHistoryViewModel.swift
-- **Files modified:** Practice Timer/Features/Sessions/ViewModels/SessionHistoryViewModel.swift
+- **Files modified:** Hone/Features/Sessions/ViewModels/SessionHistoryViewModel.swift
 - **Verification:** Build succeeded after adding import
 - **Committed in:** 7468f15 (Task 1 commit)
 

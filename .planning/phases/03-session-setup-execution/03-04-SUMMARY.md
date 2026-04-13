@@ -22,10 +22,10 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/Features/Sessions/Views/TimerDisplayView.swift
-    - Practice Timer/Features/Sessions/Views/SessionControlsView.swift
-    - Practice Timer/Features/Sessions/Views/SessionNotesView.swift
-    - Practice Timer/Features/Sessions/Views/ActivityQueueView.swift
+    - Hone/Features/Sessions/Views/TimerDisplayView.swift
+    - Hone/Features/Sessions/Views/SessionControlsView.swift
+    - Hone/Features/Sessions/Views/SessionNotesView.swift
+    - Hone/Features/Sessions/Views/ActivityQueueView.swift
   modified: []
 
 key-decisions:
@@ -83,10 +83,10 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `Practice Timer/Features/Sessions/Views/TimerDisplayView.swift` - Large timer display (80pt monospace font) with HH:MM:SS format
-- `Practice Timer/Features/Sessions/Views/SessionControlsView.swift` - State-dependent control buttons (Pause/Resume/End) with 60pt+ touch targets
-- `Practice Timer/Features/Sessions/Views/SessionNotesView.swift` - Notes input and display with validation and append mode
-- `Practice Timer/Features/Sessions/Views/ActivityQueueView.swift` - Upcoming activities list with skip/remove/reorder actions
+- `Hone/Features/Sessions/Views/TimerDisplayView.swift` - Large timer display (80pt monospace font) with HH:MM:SS format
+- `Hone/Features/Sessions/Views/SessionControlsView.swift` - State-dependent control buttons (Pause/Resume/End) with 60pt+ touch targets
+- `Hone/Features/Sessions/Views/SessionNotesView.swift` - Notes input and display with validation and append mode
+- `Hone/Features/Sessions/Views/ActivityQueueView.swift` - Upcoming activities list with skip/remove/reorder actions
 
 ## Decisions Made
 

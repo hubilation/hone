@@ -27,9 +27,9 @@ tech_stack:
     - "Dual-mode views with optional parameter (nil = create, some = edit)"
 key_files:
   created:
-    - "Practice Timer/Core/Models/ActivityCategory.swift (42 lines)"
-    - "Practice Timer/Features/Activities/Views/ActivityFormView.swift (90 lines)"
-    - "Practice Timer Tests/ActivityCategoryTests.swift (89 lines)"
+    - "Hone/Core/Models/ActivityCategory.swift (42 lines)"
+    - "Hone/Features/Activities/Views/ActivityFormView.swift (90 lines)"
+    - "Hone Tests/ActivityCategoryTests.swift (89 lines)"
   modified: []
 decisions:
   - "Used String rawValues matching web app exactly (Instrument, Piece, Theory, Warm-up with hyphen) for cross-platform sync compatibility"
@@ -289,19 +289,19 @@ Once test target is configured:
 ## Files Changed
 
 ### Created
-- **Practice Timer/Core/Models/ActivityCategory.swift** (42 lines)
+- **Hone/Core/Models/ActivityCategory.swift** (42 lines)
   - Enum with 6 cases and String rawValues
   - Codable, CaseIterable, Identifiable, Hashable conformance
   - Icon mapping to SF Symbols
   - Cross-platform sync documentation
 
-- **Practice Timer/Features/Activities/Views/ActivityFormView.swift** (90 lines)
+- **Hone/Features/Activities/Views/ActivityFormView.swift** (90 lines)
   - Dual-mode form (create/edit)
   - Category picker with icons
   - Name validation
   - SwiftUI previews for both modes
 
-- **Practice Timer Tests/ActivityCategoryTests.swift** (89 lines)
+- **Hone Tests/ActivityCategoryTests.swift** (89 lines)
   - 7 test cases covering all enum properties
   - XCTest standard patterns
   - Validation of cross-platform sync requirement
@@ -365,9 +365,9 @@ None. All code is new for this plan.
 Verifying created files exist:
 
 ```bash
-[ -f "Practice Timer/Core/Models/ActivityCategory.swift" ] && echo "FOUND" || echo "MISSING"
-[ -f "Practice Timer/Features/Activities/Views/ActivityFormView.swift" ] && echo "FOUND" || echo "MISSING"
-[ -f "Practice Timer Tests/ActivityCategoryTests.swift" ] && echo "FOUND" || echo "MISSING"
+[ -f "Hone/Core/Models/ActivityCategory.swift" ] && echo "FOUND" || echo "MISSING"
+[ -f "Hone/Features/Activities/Views/ActivityFormView.swift" ] && echo "FOUND" || echo "MISSING"
+[ -f "Hone Tests/ActivityCategoryTests.swift" ] && echo "FOUND" || echo "MISSING"
 ```
 
 Verifying commits exist:

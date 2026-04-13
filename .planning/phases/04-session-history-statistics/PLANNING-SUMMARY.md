@@ -39,8 +39,8 @@ Phase 4 delivers retrospective views of practice sessions through session histor
 **Type:** execute (autonomous)
 **Dependencies:** None
 **Files Modified:**
-- Practice Timer/Core/Extensions/TimeInterval+Formatting.swift (new)
-- Practice Timer/Core/Repositories/SessionRepository.swift
+- Hone/Core/Extensions/TimeInterval+Formatting.swift (new)
+- Hone/Core/Repositories/SessionRepository.swift
 - firestore.indexes.json
 
 **What It Does:**
@@ -64,9 +64,9 @@ Phase 4 delivers retrospective views of practice sessions through session histor
 **Type:** execute (autonomous)
 **Dependencies:** 04-01
 **Files Modified:**
-- Practice Timer/Features/Sessions/ViewModels/SessionHistoryViewModel.swift (new)
-- Practice Timer/Features/Sessions/Views/SessionHistoryView.swift (new)
-- Practice Timer/Features/Sessions/Views/SessionHistoryRow.swift (new)
+- Hone/Features/Sessions/ViewModels/SessionHistoryViewModel.swift (new)
+- Hone/Features/Sessions/Views/SessionHistoryView.swift (new)
+- Hone/Features/Sessions/Views/SessionHistoryRow.swift (new)
 
 **What It Does:**
 - Creates SessionHistoryViewModel with day grouping logic (Today, Yesterday, date)
@@ -92,9 +92,9 @@ Phase 4 delivers retrospective views of practice sessions through session histor
 **Type:** execute (autonomous)
 **Dependencies:** 04-01
 **Files Modified:**
-- Practice Timer/Features/Statistics/Views/DailyPracticeChartView.swift (new)
-- Practice Timer/Features/Statistics/Views/ActivityBreakdownChartView.swift (new)
-- Practice Timer/Features/Statistics/Views/StatisticsView.swift (new)
+- Hone/Features/Statistics/Views/DailyPracticeChartView.swift (new)
+- Hone/Features/Statistics/Views/ActivityBreakdownChartView.swift (new)
+- Hone/Features/Statistics/Views/StatisticsView.swift (new)
 
 **What It Does:**
 - Creates DailyPracticeChartView: bar chart showing practice time per day (last 30 days)
@@ -119,7 +119,7 @@ Phase 4 delivers retrospective views of practice sessions through session histor
 **Type:** execute (requires human verification)
 **Dependencies:** 04-02, 04-03
 **Files Modified:**
-- Practice Timer/ContentView.swift
+- Hone/ContentView.swift
 - firestore.indexes.json (deployment)
 
 **What It Does:**

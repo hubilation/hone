@@ -19,10 +19,10 @@ Extended SessionRepository with session history queries, real-time listeners, ac
 ## What Was Built
 
 ### Files Created (1)
-- `Practice Timer/Core/Extensions/TimeInterval+Formatting.swift` - Shared duration formatting helper
+- `Hone/Core/Extensions/TimeInterval+Formatting.swift` - Shared duration formatting helper
 
 ### Files Modified (2)
-- `Practice Timer/Core/Repositories/SessionRepository.swift` - Added 4 new methods for session history
+- `Hone/Core/Repositories/SessionRepository.swift` - Added 4 new methods for session history
 - `firestore.indexes.json` - Added composite index for session history query
 
 ### New Capabilities

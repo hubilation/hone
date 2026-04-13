@@ -1,13 +1,13 @@
 # Project Research Summary
 
-**Project:** Practice Timer iOS App
+**Project:** Hone iOS App
 **Domain:** Native iOS Practice Tracking App with SwiftUI + Firebase
 **Researched:** 2026-03-01
 **Confidence:** HIGH
 
 ## Executive Summary
 
-Practice Timer is a native iOS app for musicians to track practice sessions with timer functionality, activity management, and offline-first data sync. Expert guidance points to SwiftUI + Firebase as the standard modern stack for this domain, specifically leveraging MVVM architecture with repository pattern for data access. The recommended approach uses Firebase's built-in offline persistence (not dual persistence layers like SwiftData), date-based timer calculations to handle iOS backgrounding, and iOS 16+ as minimum target for broad device support while maintaining modern SwiftUI APIs.
+Hone is a native iOS app for musicians to track practice sessions with timer functionality, activity management, and offline-first data sync. Expert guidance points to SwiftUI + Firebase as the standard modern stack for this domain, specifically leveraging MVVM architecture with repository pattern for data access. The recommended approach uses Firebase's built-in offline persistence (not dual persistence layers like SwiftData), date-based timer calculations to handle iOS backgrounding, and iOS 16+ as minimum target for broad device support while maintaining modern SwiftUI APIs.
 
 The competitive landscape shows table stakes include large readable timers, offline support, session history, and activity management, while differentiators come from smart session suggestions based on history and streamlined session setup. The web app already exists with Firebase backend, making Firebase the natural choice for cross-platform data consistency. Research reveals 8 critical pitfalls that must be addressed from day one: timer backgrounding handling, Firestore offline persistence behavior, security rules validation, memory leaks from Firebase listeners, massive view files, timer RunLoop configuration, Sign in with Apple implementation, and Firestore document size limits.
 
@@ -337,7 +337,7 @@ Stack and architecture recommendations are based on official documentation and v
 
 ### Tertiary (LOW confidence)
 - **App Store Reviews** — User feedback on Modacity, Andante (complaints about auto-start timers, rating prompts, complexity) — Anecdotal but informative
-- **Practice Timer Feature Research** — Web searches for "best music practice tracker apps iOS 2026," habit tracker comparisons — Aggregated but not comprehensive user research
+- **Hone Feature Research** — Web searches for "best music practice tracker apps iOS 2026," habit tracker comparisons — Aggregated but not comprehensive user research
 - **Mood tracking features** — Inferred from Andante app description, not hands-on tested
 
 ---

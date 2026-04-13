@@ -1,6 +1,6 @@
 # Domain Pitfalls
 
-**Domain:** iOS Practice Timer App (SwiftUI + Firebase)
+**Domain:** iOS Hone App (SwiftUI + Firebase)
 **Researched:** 2026-03-01
 **Confidence:** MEDIUM
 
@@ -471,6 +471,6 @@ Phase 2 (Offline & Sync) - After offline persistence working, add user feedback.
 - Apple Developer News: Sign in with Apple Requirements (2026): https://developer.apple.com/news/?id=j9zukcr6
 
 ---
-*Pitfalls research for: iOS Practice Timer App (SwiftUI + Firebase)*
+*Pitfalls research for: iOS Hone App (SwiftUI + Firebase)*
 *Researched: 2026-03-01*
 *Confidence: MEDIUM - Findings based on official Firebase docs (HIGH), Apple Developer forums (MEDIUM), and community sources (MEDIUM). Specific practice timer domain patterns from community (LOW-MEDIUM).*

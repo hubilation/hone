@@ -29,9 +29,9 @@ tech-stack:
 
 key-files:
   created:
-    - Practice Timer/Features/Sessions/ViewModels/SessionViewModel.swift
+    - Hone/Features/Sessions/ViewModels/SessionViewModel.swift
   modified:
-    - Practice Timer.xcodeproj/project.pbxproj
+    - Hone.xcodeproj/project.pbxproj
 
 key-decisions:
   - "Date-based timer calculation: pausedElapsedTime + Date().timeIntervalSince(startTime) survives iOS backgrounding"
@@ -85,8 +85,8 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `Practice Timer/Features/Sessions/ViewModels/SessionViewModel.swift` - SessionViewModel with date-based timer, state machine, and Firestore persistence (371 lines)
-- `Practice Timer.xcodeproj/project.pbxproj` - Added SessionViewModel to build phases
+- `Hone/Features/Sessions/ViewModels/SessionViewModel.swift` - SessionViewModel with date-based timer, state machine, and Firestore persistence (371 lines)
+- `Hone.xcodeproj/project.pbxproj` - Added SessionViewModel to build phases
 
 ## Decisions Made
 
@@ -138,7 +138,7 @@ Each task was committed atomically:
 - **Found during:** Task 1 (SessionViewModel implementation)
 - **Issue:** Plan specified `reorderActivities(from: IndexSet, to: Int)` which requires `activities.move(fromOffsets:toOffset:)` - a SwiftUI-only method. This caused compilation error: "instance method 'move(fromOffsets:toOffset:)' is not available due to missing import of defining module 'SwiftUI'"
 - **Fix:** Changed signature to `reorderActivities(from: Int, to: Int)` and used standard Swift array operations: `remove(at:)` and `insert(at:)`. ViewModels should not import SwiftUI (separation of concerns).
-- **Files modified:** Practice Timer/Features/Sessions/ViewModels/SessionViewModel.swift
+- **Files modified:** Hone/Features/Sessions/ViewModels/SessionViewModel.swift
 - **Verification:** Project builds successfully with no errors
 - **Committed in:** b9a94e2 (Task 1 commit)
 

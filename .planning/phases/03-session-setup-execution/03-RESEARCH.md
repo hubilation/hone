@@ -6,7 +6,7 @@
 
 ## Summary
 
-Phase 3 implements the core value proposition of Practice Timer: accurate timed practice sessions that survive iOS backgrounding. The primary technical challenges are iOS background execution limits (30-second suspension), timer accuracy across app lifecycle transitions, and session state persistence for crash recovery.
+Phase 3 implements the core value proposition of Hone: accurate timed practice sessions that survive iOS backgrounding. The primary technical challenges are iOS background execution limits (30-second suspension), timer accuracy across app lifecycle transitions, and session state persistence for crash recovery.
 
 **Key architectural decisions:**
 - **Timer approach:** Date-based calculation using `Date().timeIntervalSince(startTime)` instead of tick-based counters
@@ -67,7 +67,7 @@ No additional packages needed. All frameworks available via Xcode and Firebase i
 
 ### Recommended Project Structure
 ```
-Practice Timer/
+Hone/
 ├── Features/
 │   └── Sessions/
 │       ├── ViewModels/
@@ -962,8 +962,8 @@ struct SessionNotesView: View {
 |----------|-------|
 | Framework | XCTest (iOS 16+) |
 | Config file | None - standard Xcode test target |
-| Quick run command | `xcodebuild test -scheme "Practice Timer" -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:Practice_TimerTests/SessionViewModelTests` |
-| Full suite command | `xcodebuild test -scheme "Practice Timer" -destination 'platform=iOS Simulator,name=iPhone 15'` |
+| Quick run command | `xcodebuild test -scheme "Hone" -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:Practice_TimerTests/SessionViewModelTests` |
+| Full suite command | `xcodebuild test -scheme "Hone" -destination 'platform=iOS Simulator,name=iPhone 15'` |
 
 ### Phase Requirements → Test Map
 
@@ -991,13 +991,13 @@ struct SessionNotesView: View {
 
 ### Sampling Rate
 - **Per task commit:** `xcodebuild test -only-testing:SessionViewModelTests` (< 10 seconds)
-- **Per wave merge:** `xcodebuild test -scheme "Practice Timer"` (full suite, ~30 seconds)
+- **Per wave merge:** `xcodebuild test -scheme "Hone"` (full suite, ~30 seconds)
 - **Phase gate:** Full suite green + manual UI verification (timer display readability, control sizes) before `/gsd:verify-work`
 
 ### Wave 0 Gaps
-- [ ] `Practice Timer Tests/SessionViewModelTests.swift` — covers EXEC-01, EXEC-03, EXEC-04, EXEC-05, EXEC-07, EXEC-08, EXEC-11, EXEC-12, EXEC-13
-- [ ] `Practice Timer Tests/SessionRepositoryTests.swift` — covers EXEC-15 (persistence)
-- [ ] `Practice Timer Tests/MockSessionRepository.swift` — test double for SessionViewModel tests
+- [ ] `Hone Tests/SessionViewModelTests.swift` — covers EXEC-01, EXEC-03, EXEC-04, EXEC-05, EXEC-07, EXEC-08, EXEC-11, EXEC-12, EXEC-13
+- [ ] `Hone Tests/SessionRepositoryTests.swift` — covers EXEC-15 (persistence)
+- [ ] `Hone Tests/MockSessionRepository.swift` — test double for SessionViewModel tests
 - [ ] Test infrastructure exists (ActivityRepositoryTests pattern), no framework install needed
 
 ## Sources

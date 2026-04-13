@@ -12,13 +12,13 @@ tech_stack:
   patterns: [real-time-listeners, listener-cleanup, weak-self-closures, StateObject-vs-ObservedObject]
 key_files:
   created:
-    - Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift
-    - Practice Timer/Features/Activities/Views/ActivityRowView.swift
-    - Practice Timer/Features/Activities/Views/ActivityListView.swift
-    - Practice Timer/Features/Activities/Views/ArchivedActivityListView.swift
+    - Hone/Features/Activities/ViewModels/ActivityViewModel.swift
+    - Hone/Features/Activities/Views/ActivityRowView.swift
+    - Hone/Features/Activities/Views/ActivityListView.swift
+    - Hone/Features/Activities/Views/ArchivedActivityListView.swift
   modified:
-    - Practice Timer/Features/Activities/Views/ActivityFormView.swift
-    - Practice Timer/ContentView.swift
+    - Hone/Features/Activities/Views/ActivityFormView.swift
+    - Hone/ContentView.swift
 decisions:
   - "Used nonisolated init to allow ActivityRepository() default parameter without actor isolation conflicts"
   - "Created new Activity instance in updateActivity (not mutation) because name and category are immutable let properties"
@@ -115,7 +115,7 @@ Created the complete activity management UI layer connecting repository operatio
 ## Verification Results
 
 ### Automated Verification
-- [x] Project builds successfully (xcodebuild -scheme "Practice Timer" -sdk iphonesimulator build)
+- [x] Project builds successfully (xcodebuild -scheme "Hone" -sdk iphonesimulator build)
 - [x] ActivityViewModel compiles with @MainActor and listener cleanup
 - [x] All view files compile with swipe actions and navigation
 - [x] ContentView integrates ActivityListView in TabView
@@ -148,36 +148,36 @@ Created the complete activity management UI layer connecting repository operatio
 
 ## Files Created
 
-1. **Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift** (170 lines)
+1. **Hone/Features/Activities/ViewModels/ActivityViewModel.swift** (170 lines)
    - @MainActor class with @Published state
    - Real-time listener management
    - CRUD operations with error handling
    - deinit cleanup for memory management
 
-2. **Practice Timer/Features/Activities/Views/ActivityRowView.swift** (60 lines)
+2. **Hone/Features/Activities/Views/ActivityRowView.swift** (60 lines)
    - Reusable row component
    - Category icon display
    - Consistent formatting
 
-3. **Practice Timer/Features/Activities/Views/ActivityListView.swift** (106 lines)
+3. **Hone/Features/Activities/Views/ActivityListView.swift** (106 lines)
    - Active activities list
    - Create/edit/archive/delete actions
    - Sheet presentations for forms
    - Empty state view
 
-4. **Practice Timer/Features/Activities/Views/ArchivedActivityListView.swift** (48 lines)
+4. **Hone/Features/Activities/Views/ArchivedActivityListView.swift** (48 lines)
    - Archived activities list
    - Restore swipe action
    - Empty state view
 
 ## Files Modified
 
-1. **Practice Timer/Features/Activities/Views/ActivityFormView.swift**
+1. **Hone/Features/Activities/Views/ActivityFormView.swift**
    - Added onSave closure parameter
    - Removed TODO comment
    - Updated previews
 
-2. **Practice Timer/ContentView.swift**
+2. **Hone/ContentView.swift**
    - Replaced placeholder with TabView
    - Added ActivityListView as first tab
    - Created SettingsView with sign out
@@ -202,16 +202,16 @@ Verified all claims:
 
 **Created files exist:**
 ```
-FOUND: Practice Timer/Features/Activities/ViewModels/ActivityViewModel.swift
-FOUND: Practice Timer/Features/Activities/Views/ActivityRowView.swift
-FOUND: Practice Timer/Features/Activities/Views/ActivityListView.swift
-FOUND: Practice Timer/Features/Activities/Views/ArchivedActivityListView.swift
+FOUND: Hone/Features/Activities/ViewModels/ActivityViewModel.swift
+FOUND: Hone/Features/Activities/Views/ActivityRowView.swift
+FOUND: Hone/Features/Activities/Views/ActivityListView.swift
+FOUND: Hone/Features/Activities/Views/ArchivedActivityListView.swift
 ```
 
 **Modified files exist:**
 ```
-FOUND: Practice Timer/Features/Activities/Views/ActivityFormView.swift
-FOUND: Practice Timer/ContentView.swift
+FOUND: Hone/Features/Activities/Views/ActivityFormView.swift
+FOUND: Hone/ContentView.swift
 ```
 
 **Commits exist:**

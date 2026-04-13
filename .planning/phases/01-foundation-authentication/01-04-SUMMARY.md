@@ -88,9 +88,9 @@ Plan 01-04 completed successfully with comprehensive Firestore security rules de
 - Created `firebase.json` with Firestore rules path and emulator configuration (Auth on 9099, Firestore on 8080, UI on 4000)
 
 **Files created:**
-- `/Users/zackhuber/Documents/git/Practice Timer/firestore.rules` (50 lines)
-- `/Users/zackhuber/Documents/git/Practice Timer/.firebaserc`
-- `/Users/zackhuber/Documents/git/Practice Timer/firebase.json`
+- `/Users/zackhuber/Documents/git/Hone/firestore.rules` (50 lines)
+- `/Users/zackhuber/Documents/git/Hone/.firebaserc`
+- `/Users/zackhuber/Documents/git/Hone/firebase.json`
 
 **Why this matters:** Security rules are server-side enforcement - cannot be bypassed by malicious clients. Field validation prevents clients from omitting required fields (e.g., timestamps). Recursive wildcards ensure all future subcollections inherit security constraints.
 
@@ -264,17 +264,17 @@ Emulator UI on localhost:4000 provides visual interface for testing:
 ### Created Files
 
 **firestore.rules** (50 lines)
-- Path: `/Users/zackhuber/Documents/git/Practice Timer/firestore.rules`
+- Path: `/Users/zackhuber/Documents/git/Hone/firestore.rules`
 - Purpose: Server-side security rules preventing unauthorized data access
 - Key patterns: rules_version = '2', recursive wildcards, field validation helpers, owner-only access
 
 **.firebaserc**
-- Path: `/Users/zackhuber/Documents/git/Practice Timer/.firebaserc`
+- Path: `/Users/zackhuber/Documents/git/Hone/.firebaserc`
 - Purpose: Links local project to Firebase project ID for CLI deployment
 - Content: Firebase project ID extracted from GoogleService-Info.plist
 
 **firebase.json**
-- Path: `/Users/zackhuber/Documents/git/Practice Timer/firebase.json`
+- Path: `/Users/zackhuber/Documents/git/Hone/firebase.json`
 - Purpose: Configures Firebase CLI and emulator suite
 - Content: Firestore rules path, emulator ports (Auth 9099, Firestore 8080, UI 4000)
 
@@ -318,9 +318,9 @@ Phase 2 will implement:
 
 **Files verification:**
 ```
-FOUND: /Users/zackhuber/Documents/git/Practice Timer/firestore.rules
-FOUND: /Users/zackhuber/Documents/git/Practice Timer/.firebaserc
-FOUND: /Users/zackhuber/Documents/git/Practice Timer/firebase.json
+FOUND: /Users/zackhuber/Documents/git/Hone/firestore.rules
+FOUND: /Users/zackhuber/Documents/git/Hone/.firebaserc
+FOUND: /Users/zackhuber/Documents/git/Hone/firebase.json
 ```
 
 **Commits verification:**

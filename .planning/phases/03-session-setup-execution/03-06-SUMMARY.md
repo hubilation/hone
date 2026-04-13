@@ -35,12 +35,12 @@ tech-stack:
 key-files:
   created: []
   modified:
-    - Practice Timer/ContentView.swift
-    - Practice Timer/Features/Sessions/Views/SessionSetupView.swift
-    - Practice Timer/Features/Sessions/Views/ActiveSessionView.swift
-    - Practice Timer/Features/Sessions/Views/ActivityQueueView.swift
-    - Practice Timer/Features/Sessions/Views/TimerDisplayView.swift
-    - Practice Timer/Features/Sessions/ViewModels/SessionViewModel.swift
+    - Hone/ContentView.swift
+    - Hone/Features/Sessions/Views/SessionSetupView.swift
+    - Hone/Features/Sessions/Views/ActiveSessionView.swift
+    - Hone/Features/Sessions/Views/ActivityQueueView.swift
+    - Hone/Features/Sessions/Views/TimerDisplayView.swift
+    - Hone/Features/Sessions/ViewModels/SessionViewModel.swift
 
 key-decisions:
   - "Sessions tab placed between Activities and Settings (central position for primary feature)"

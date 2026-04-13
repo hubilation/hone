@@ -73,11 +73,11 @@ Users can review past practice sessions in a chronological history list, see det
 ## Existing Code Insights
 
 ### Reusable Assets
-- **SessionSummaryView** (Practice Timer/Features/Sessions/Views/SessionSummaryView.swift): Already displays post-session breakdown with total time, per-activity times, notes, and break time. Reuse unchanged for session detail view.
+- **SessionSummaryView** (Hone/Features/Sessions/Views/SessionSummaryView.swift): Already displays post-session breakdown with total time, per-activity times, notes, and break time. Reuse unchanged for session detail view.
 - **formatDuration helper** (in SessionSummaryView): Converts TimeInterval to human-readable format ("1h 15m 30s"). Use for history row durations.
-- **ActivityListView pattern** (Practice Timer/Features/Activities/Views/ActivityListView.swift): NavigationStack + List + swipe actions + empty state with ContentUnavailableView. Follow same pattern for history list.
-- **ActivityStatisticsView** (Practice Timer/Features/Activities/Views/ActivityStatisticsView.swift): Already displays activity-level stats using Firestore aggregation. Continue using for activity statistics.
-- **Date+ISO8601 extension** (Practice Timer/Core/Extensions/Date+ISO8601.swift): Converts ISO 8601 strings to Date for display formatting.
+- **ActivityListView pattern** (Hone/Features/Activities/Views/ActivityListView.swift): NavigationStack + List + swipe actions + empty state with ContentUnavailableView. Follow same pattern for history list.
+- **ActivityStatisticsView** (Hone/Features/Activities/Views/ActivityStatisticsView.swift): Already displays activity-level stats using Firestore aggregation. Continue using for activity statistics.
+- **Date+ISO8601 extension** (Hone/Core/Extensions/Date+ISO8601.swift): Converts ISO 8601 strings to Date for display formatting.
 - **String.toDate() extension** (in SessionSummaryView): Parses ISO 8601 timestamps for date formatting.
 
 ### Established Patterns
