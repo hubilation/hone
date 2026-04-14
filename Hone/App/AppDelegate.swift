@@ -22,7 +22,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     /// SessionViewModel manages the activity during normal use; this handles the crash/kill case.
     private func endOrphanedLiveActivities() {
         guard #available(iOS 16.2, *) else { return }
-        for activity in Activity<HoneLiveActivityAttributes>.activities {
+        for activity in ActivityKit.Activity<HoneLiveActivityAttributes>.activities {
             Task { await activity.end(dismissalPolicy: .immediate) }
         }
     }
