@@ -206,12 +206,18 @@ Plans:
 4. Visual progress indicators show session completion percentage throughout practice
 5. Session setup flow is faster than web app (fewer taps, pre-selected suggestions)
 
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
+
+Plans:
+- [ ] 05-01-PLAN.md — SuggestionsService: scoring algorithm + streak computation (Wave 1, TDD)
+- [ ] 05-02-PLAN.md — Suggested section in SessionSetupView and AddActivityToSessionView (Wave 2)
+- [ ] 05-03-PLAN.md — Streak display in WeeklySummaryCard + human verification (Wave 2)
 
 **Notes**:
-- Research flag: Smart suggestion algorithm needs design during planning
-- Differentiators from PROJECT.md: Simplified session setup, smart suggestions
-- Algorithm approach: Recency (when last practiced), frequency (how often), time-since-last-practice heuristics
+- SuggestionsService is a stateless struct (follows ActivityGrouping.swift pattern) — pure functions, synchronous, no new Firestore reads
+- Suggestions use Activity.lastUsed as recency signal — no sessionActivities async dependency
+- Streak walks backward from yesterday when today has no session (preserves alive streaks)
+- Suggested section is always-open (not collapsible) per 05-RESEARCH.md recommendation
 
 ---
 
