@@ -25,6 +25,12 @@ struct StatisticsView: View {
                     activities: activities
                 )
 
+                // Weekly practice chart
+                WeeklyPracticeChartView(
+                    userId: userId,
+                    activities: activities
+                )
+
                 // Activity breakdown chart
                 ActivityBreakdownChartView(userId: userId, activities: activities)
 

@@ -67,12 +67,19 @@ struct AverageSessionTimeData: Identifiable {
     let sessionCount: Int
 }
 
+struct WeeklyPracticeData: Identifiable {
+    let id = UUID()
+    let weekStart: Date
+    let minutes: Int
+}
+
 protocol StatisticsRepositoryProtocol {
     func getActivityStatistics(userId: String, activityId: String, activityName: String) async throws -> ActivityStatistics
     func getAllActivityStatistics(userId: String, activities: [Activity]) async throws -> [ActivityStatistics]
     func getActivitySessionHistory(userId: String, activityId: String) async throws -> [SessionPracticeData]
     func getDailyCategoryData(userId: String, activities: [Activity], days: Int) async throws -> [DailyCategoryPracticeData]
     func getAverageSessionTimes(userId: String, activities: [Activity], days: Int) async throws -> [AverageSessionTimeData]
+    func getWeeklyData(userId: String, activities: [Activity], weeks: Int) async throws -> [WeeklyPracticeData]
     func invalidateCache()
 }
 
@@ -269,6 +276,25 @@ final class StatisticsRepository: StatisticsRepositoryProtocol {
         }
 
         return averageData.sorted { $0.averageMinutes > $1.averageMinutes }
+    }
+
+    func getWeeklyData(userId: String, activities: [Activity], weeks: Int = 16) async throws -> [WeeklyPracticeData] {
+        if activities.isEmpty { return [] }
+        if !isCacheValid || cachedDailyCategoryData.isEmpty {
+            _ = try await getAllActivityStatistics(userId: userId, activities: activities)
+        }
+
+        let calendar = Calendar.current
+        let cutoffDate = calendar.date(byAdding: .weekOfYear, value: -weeks, to: Date())!
+
+        var weeklyDict: [Date: Int] = [:]
+        for data in cachedDailyCategoryData where data.date >= cutoffDate {
+            let weekStart = calendar.dateInterval(of: .weekOfYear, for: data.date)?.start ?? data.date
+            weeklyDict[weekStart, default: 0] += data.minutes
+        }
+
+        return weeklyDict.map { WeeklyPracticeData(weekStart: $0.key, minutes: $0.value) }
+            .sorted { $0.weekStart < $1.weekStart }
     }
 
     func invalidateCache() {
