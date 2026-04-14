@@ -1,17 +1,16 @@
 //
 //  HoneLiveActivityAttributes.swift
-//  Hone
+//  HoneLiveActivity
 //
-//  Created by Claude on 4/13/26.
+//  This file is a copy of Hone/Core/LiveActivity/HoneLiveActivityAttributes.swift.
+//  Both targets must define the same struct independently because the widget extension
+//  and app compile into separate binaries. The struct definition must be identical.
 //
 
 import ActivityKit
 import Foundation
 
 /// Shared data model for the Hone Live Activity.
-///
-/// This file must be added to BOTH the Hone app target AND the HoneLiveActivity
-/// widget extension target via Target Membership in Xcode.
 ///
 /// Attributes hold static data set once at Activity.request() and never changed.
 /// ContentState holds dynamic data updated on each Activity.update() call.

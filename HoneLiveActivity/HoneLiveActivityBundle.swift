@@ -11,6 +11,6 @@ import SwiftUI
 @main
 struct HoneLiveActivityBundle: WidgetBundle {
     var body: some Widget {
-        // HoneLiveActivityWidget will be added in Plan 02
+        HoneLiveActivityWidget()
     }
 }
