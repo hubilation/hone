@@ -209,8 +209,8 @@ Plans:
 **Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 05-01-PLAN.md — SuggestionsService: scoring algorithm + streak computation (Wave 1, TDD)
-- [ ] 05-02-PLAN.md — Suggested section in SessionSetupView and AddActivityToSessionView (Wave 2)
+- [x] 05-01-PLAN.md — SuggestionsService: scoring algorithm + streak computation (Wave 1, TDD)
+- [x] 05-02-PLAN.md — Suggested section in SessionSetupView and AddActivityToSessionView (Wave 2)
 - [ ] 05-03-PLAN.md — Streak display in WeeklySummaryCard + human verification (Wave 2)
 
 **Notes**:

@@ -33,7 +33,7 @@ Requirements for initial App Store release. Each maps to roadmap phases.
 
 - [ ] **SETUP-01**: User can view list of activities to select for practice session
 - [ ] **SETUP-02**: User can select multiple activities for practice session
-- [ ] **SETUP-03**: User sees smart suggestions of activities based on practice history
+- [x] **SETUP-03**: User sees smart suggestions of activities based on practice history
 - [ ] **SETUP-04**: User can start practice session with selected activities in fewer steps than web app
 - [ ] **SETUP-05**: User can reorder activities before starting session
 
@@ -156,7 +156,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ACT-09 | Phase 2 | Complete |
 | SETUP-01 | Phase 3 | Pending |
 | SETUP-02 | Phase 3 | Pending |
-| SETUP-03 | Phase 5 | Pending |
+| SETUP-03 | Phase 5 | Complete |
 | SETUP-04 | Phase 3 | Pending |
 | SETUP-05 | Phase 3 | Pending |
 | EXEC-01 | Phase 3 | Complete |
