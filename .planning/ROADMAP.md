@@ -344,9 +344,43 @@ Phase 7: App Store Preparation
 - Phase 6: iPad adaptive layouts, offline indicators (standard iOS patterns)
 - Phase 7: App Store submission (Apple guidelines comprehensive)
 
+### Phase 8: iOS Live Activity — current activity with timer
+
+**Goal:** Display current practice activity name and running timer on lock screen and Dynamic Island during active sessions, with automatic start/end tied to session lifecycle
+
+**Requirements**: D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10 (from 08-CONTEXT.md)
+
+**Depends on:** Phase 3 (requires SessionViewModel and session state machine)
+
+**Success Criteria** (what must be TRUE):
+1. Lock screen shows activity name and running elapsed timer during active sessions
+2. Dynamic Island compact shows timer, expanded shows activity name + timer
+3. Timer uses iOS timerInterval directive (system-rendered, no polling)
+4. Live Activity starts automatically when session goes active
+5. Live Activity ends immediately when session ends
+6. Pause freezes timer display, resume restores live counting
+7. Tapping Live Activity deep-links to active session in app
+8. App updates only on state changes (no periodic updates)
+9. Permission denied handled gracefully without affecting session functionality
+
+**Plans:** 3 plans in 2 waves
+
+Plans:
+- [ ] 08-01-PLAN.md — Shared ActivityAttributes struct, Info.plist config, Widget Extension target setup (Wave 1)
+- [ ] 08-02-PLAN.md — Lock screen and Dynamic Island SwiftUI views in widget extension (Wave 2)
+- [ ] 08-03-PLAN.md — SessionViewModel integration, deep link handling, human verification (Wave 2)
+
+**Notes**:
+- Widget Extension target must be created manually in Xcode (cannot be scripted)
+- HoneLiveActivityAttributes.swift shared between main app and widget extension via target membership
+- Uses ActivityKit timerInterval for battery-efficient system-rendered timer
+- Physical device required for testing (simulator cannot display Live Activities)
+- Wave 2 plans (02, 03) can execute in parallel — different file sets
+
 ---
 
 *Roadmap created: 2026-03-01*
 *Phase 1 planned: 2026-03-02*
 *Phase 2 planned: 2026-03-02*
-*Ready for execution: Phase 2*
+*Phase 8 planned: 2026-04-13*
+*Ready for execution: Phase 8*
