@@ -366,9 +366,9 @@ Phase 7: App Store Preparation
 **Plans:** 3 plans in 2 waves
 
 Plans:
-- [ ] 08-01-PLAN.md — Shared ActivityAttributes struct, Info.plist config, Widget Extension target setup (Wave 1)
-- [ ] 08-02-PLAN.md — Lock screen and Dynamic Island SwiftUI views in widget extension (Wave 2)
-- [ ] 08-03-PLAN.md — SessionViewModel integration, deep link handling, human verification (Wave 2)
+- [x] 08-01-PLAN.md — Shared ActivityAttributes struct, Info.plist config, Widget Extension target setup (Wave 1)
+- [x] 08-02-PLAN.md — Lock screen and Dynamic Island SwiftUI views in widget extension (Wave 2)
+- [x] 08-03-PLAN.md — SessionViewModel integration, deep link handling, human verification (Wave 2)
 
 **Notes**:
 - Widget Extension target must be created manually in Xcode (cannot be scripted)

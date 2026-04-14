@@ -15,8 +15,9 @@
 		3D5027122F567F5900D21FEB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D5027112F567F5900D21FEB /* GoogleService-Info.plist */; };
 		3DC9A0222F8E9DE600089986 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC9A0212F8E9DE600089986 /* WidgetKit.framework */; };
 		3DC9A0242F8E9DE600089986 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC9A0232F8E9DE600089986 /* SwiftUI.framework */; };
-		3DC9B0022F8F000000089986 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC9B0012F8F000000089986 /* ActivityKit.framework */; };
 		3DC9A0332F8E9DE900089986 /* HoneLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3DC9A0202F8E9DE600089986 /* HoneLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3DC9A2592F8EC8E100089986 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC9B0012F8F000000089986 /* ActivityKit.framework */; };
+		3DC9B0022F8F000000089986 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC9B0012F8F000000089986 /* ActivityKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,10 +54,10 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3DC9A0372F8E9DE900089986 /* Exceptions for "HoneLiveActivity" folder in "HoneLiveActivityExtension" target */ = {
+		3DC9A2582F8EC07F00089986 /* Exceptions for "Hone" folder in "HoneLiveActivityExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Core/LiveActivity/HoneLiveActivityAttributes.swift,
 			);
 			target = 3DC9A01F2F8E9DE600089986 /* HoneLiveActivityExtension */;
 		};
@@ -65,14 +66,14 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3D50266B2F550CC800D21FEB /* Hone */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3DC9A2582F8EC07F00089986 /* Exceptions for "Hone" folder in "HoneLiveActivityExtension" target */,
+			);
 			path = Hone;
 			sourceTree = "<group>";
 		};
 		3DC9A0252F8E9DE600089986 /* HoneLiveActivity */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				3DC9A0372F8E9DE900089986 /* Exceptions for "HoneLiveActivity" folder in "HoneLiveActivityExtension" target */,
-			);
 			path = HoneLiveActivity;
 			sourceTree = "<group>";
 		};
@@ -96,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DC9A2592F8EC8E100089986 /* ActivityKit.framework in Frameworks */,
 				3DC9A0242F8E9DE600089986 /* SwiftUI.framework in Frameworks */,
 				3DC9A0222F8E9DE600089986 /* WidgetKit.framework in Frameworks */,
 			);
@@ -137,6 +139,7 @@
 		3D836B402F57B35700D1C3D3 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
+				3DC9B0012F8F000000089986 /* ActivityKit.framework */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -203,7 +206,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2640;
-				LastUpgradeCheck = 2620;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					3D5026682F550CC800D21FEB = {
 						CreatedOnToolsVersion = 26.2;
@@ -340,6 +343,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -397,6 +401,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -478,11 +483,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8Y29B24Y28;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = HoneLiveActivity/Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "HoneLiveActivity-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = HoneLiveActivity;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -509,11 +514,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8Y29B24Y28;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = HoneLiveActivity/Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "HoneLiveActivity-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = HoneLiveActivity;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

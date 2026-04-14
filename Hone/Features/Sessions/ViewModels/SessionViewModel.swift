@@ -673,7 +673,7 @@ final class SessionViewModel: ObservableObject {
                 content: ActivityContent(state: initialState, staleDate: nil)
             )
         } catch {
-            print("Failed to start Live Activity: \(error)")
+            // Live Activity failed silently — session continues without it
         }
     }
 
