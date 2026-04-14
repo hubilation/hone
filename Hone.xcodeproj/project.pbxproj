@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A14A1D9F1E16D6AAE4180D4 /* SuggestionsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425BFF179CCC4ED7B0E677C1 /* SuggestionsServiceTests.swift */; };
+		325AC785302598097B98A5A2 /* ActivityCategoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07EC0B0E61CAE151334F9EB /* ActivityCategoryTests.swift */; };
 		3D50269C2F56119900D21FEB /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3D50269B2F56119900D21FEB /* FirebaseCore */; };
 		3D50269E2F5611FC00D21FEB /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3D50269D2F5611FC00D21FEB /* FirebaseAuth */; };
 		3D5026A02F56120700D21FEB /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 3D50269F2F56120700D21FEB /* FirebaseFirestore */; };
@@ -18,6 +20,7 @@
 		3DC9A0332F8E9DE900089986 /* HoneLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3DC9A0202F8E9DE600089986 /* HoneLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3DC9A2592F8EC8E100089986 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC9B0012F8F000000089986 /* ActivityKit.framework */; };
 		3DC9B0022F8F000000089986 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DC9B0012F8F000000089986 /* ActivityKit.framework */; };
+		93E77E25BFA15803A67258F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0DF8B8135CB464430EC83BF /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,6 +30,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3DC9A01F2F8E9DE600089986;
 			remoteInfo = HoneLiveActivityExtension;
+		};
+		B2F5833263288B16E7DAB85B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3D5026612F550CC800D21FEB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D5026682F550CC800D21FEB;
+			remoteInfo = Hone;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -51,6 +61,11 @@
 		3DC9A0212F8E9DE600089986 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		3DC9A0232F8E9DE600089986 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		3DC9B0012F8F000000089986 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		425BFF179CCC4ED7B0E677C1 /* SuggestionsServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuggestionsServiceTests.swift; sourceTree = "<group>"; };
+		B07EC0B0E61CAE151334F9EB /* ActivityCategoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActivityCategoryTests.swift; sourceTree = "<group>"; };
+		E7A8706C536D1F86E4F871B3 /* Hone Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "Hone Tests.xctest"; path = "Hone Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0DF8B8135CB464430EC83BF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		F454ED4089BB996CAA7ADB94 /* ActivityRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActivityRepositoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -74,6 +89,8 @@
 		};
 		3DC9A0252F8E9DE600089986 /* HoneLiveActivity */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = HoneLiveActivity;
 			sourceTree = "<group>";
 		};
@@ -103,9 +120,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		998E2F273D633AF8E279B122 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93E77E25BFA15803A67258F4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1FDA9DA6478710E33B24B677 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				F0DF8B8135CB464430EC83BF /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 		3D5026602F550CC800D21FEB = {
 			isa = PBXGroup;
 			children = (
@@ -115,6 +148,7 @@
 				3D50269A2F56119900D21FEB /* Frameworks */,
 				3D50266A2F550CC800D21FEB /* Products */,
 				3D836B402F57B35700D1C3D3 /* Recovered References */,
+				68E40C8AAA70F015CF67D5ED /* Hone Tests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -123,6 +157,7 @@
 			children = (
 				3D5026692F550CC800D21FEB /* Hone.app */,
 				3DC9A0202F8E9DE600089986 /* HoneLiveActivityExtension.appex */,
+				E7A8706C536D1F86E4F871B3 /* Hone Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -132,6 +167,7 @@
 			children = (
 				3DC9A0212F8E9DE600089986 /* WidgetKit.framework */,
 				3DC9A0232F8E9DE600089986 /* SwiftUI.framework */,
+				1FDA9DA6478710E33B24B677 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -144,9 +180,37 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
+		68E40C8AAA70F015CF67D5ED /* Hone Tests */ = {
+			isa = PBXGroup;
+			children = (
+				B07EC0B0E61CAE151334F9EB /* ActivityCategoryTests.swift */,
+				F454ED4089BB996CAA7ADB94 /* ActivityRepositoryTests.swift */,
+				425BFF179CCC4ED7B0E677C1 /* SuggestionsServiceTests.swift */,
+			);
+			path = "Hone Tests";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		27F04BEA77C71B351717197B /* Hone Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7207773924C3CB00CB0C0520 /* Build configuration list for PBXNativeTarget "Hone Tests" */;
+			buildPhases = (
+				CC026F7409D73EB325F899B8 /* Sources */,
+				998E2F273D633AF8E279B122 /* Frameworks */,
+				7F0E2BFBDBB482396A3A0599 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9C8D31968E433CDACED334D2 /* PBXTargetDependency */,
+			);
+			name = "Hone Tests";
+			productName = "Hone Tests";
+			productReference = E7A8706C536D1F86E4F871B3 /* Hone Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3D5026682F550CC800D21FEB /* Hone */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3D5026742F550CCB00D21FEB /* Build configuration list for PBXNativeTarget "Hone" */;
@@ -192,8 +256,6 @@
 				3DC9A0252F8E9DE600089986 /* HoneLiveActivity */,
 			);
 			name = HoneLiveActivityExtension;
-			packageProductDependencies = (
-			);
 			productName = HoneLiveActivityExtension;
 			productReference = 3DC9A0202F8E9DE600089986 /* HoneLiveActivityExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -236,6 +298,7 @@
 			targets = (
 				3D5026682F550CC800D21FEB /* Hone */,
 				3DC9A01F2F8E9DE600089986 /* HoneLiveActivityExtension */,
+				27F04BEA77C71B351717197B /* Hone Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -250,6 +313,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3DC9A01E2F8E9DE600089986 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7F0E2BFBDBB482396A3A0599 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -273,6 +343,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CC026F7409D73EB325F899B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				325AC785302598097B98A5A2 /* ActivityCategoryTests.swift in Sources */,
+				0A14A1D9F1E16D6AAE4180D4 /* SuggestionsServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -280,6 +359,12 @@
 			isa = PBXTargetDependency;
 			target = 3DC9A01F2F8E9DE600089986 /* HoneLiveActivityExtension */;
 			targetProxy = 3DC9A0312F8E9DE900089986 /* PBXContainerItemProxy */;
+		};
+		9C8D31968E433CDACED334D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Hone;
+			target = 3D5026682F550CC800D21FEB /* Hone */;
+			targetProxy = B2F5833263288B16E7DAB85B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -537,6 +622,47 @@
 			};
 			name = Release;
 		};
+		B63116521C537024D3DE5B08 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8Y29B24Y28;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "huber.Practice-Timer.Tests";
+				PRODUCT_NAME = "Hone Tests";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hone.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Hone";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C78604C4EEDDC3D425FCF7CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8Y29B24Y28;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "huber.Practice-Timer.Tests";
+				PRODUCT_NAME = "Hone Tests";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hone.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Hone";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -563,6 +689,15 @@
 			buildConfigurations = (
 				3DC9A0352F8E9DE900089986 /* Debug */,
 				3DC9A0362F8E9DE900089986 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7207773924C3CB00CB0C0520 /* Build configuration list for PBXNativeTarget "Hone Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B63116521C537024D3DE5B08 /* Release */,
+				C78604C4EEDDC3D425FCF7CE /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

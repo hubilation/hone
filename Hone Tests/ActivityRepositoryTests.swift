@@ -7,7 +7,7 @@
 
 import XCTest
 import FirebaseFirestore
-@testable import Practice_Timer
+@testable import Hone
 
 // MARK: - Mock Repository
 

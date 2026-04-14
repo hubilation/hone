@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Practice_Timer
+@testable import Hone
 
 final class ActivityCategoryTests: XCTestCase {
 
