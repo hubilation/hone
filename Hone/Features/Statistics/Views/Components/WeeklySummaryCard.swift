@@ -9,6 +9,15 @@ import SwiftUI
 
 struct WeeklySummaryCard: View {
     let sessions: [Session]
+    /// Consecutive practice-day streak. Default 0 keeps Statistics tab call site unchanged.
+    /// Note: streak only displays inside `if let summary = weekSummary`, so a user with a streak
+    /// but no sessions THIS week will not see it — acceptable for v1 (the no-sessions message shows instead).
+    let streak: Int
+
+    init(sessions: [Session], streak: Int = 0) {
+        self.sessions = sessions
+        self.streak = streak
+    }
 
     private var weekSummary: (totalTime: TimeInterval, sessionCount: Int, averagePerDay: TimeInterval, daysInWeek: Int)? {
         let calendar = Calendar.current
@@ -74,6 +83,22 @@ struct WeeklySummaryCard: View {
                             .fontWeight(.bold)
                             .foregroundColor(.orange)
                     }
+
+                    if streak > 0 {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Streak")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack(spacing: 2) {
+                                Image(systemName: "flame.fill")
+                                    .foregroundColor(.orange)
+                                Text("\(streak)d")
+                            }
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.orange)
+                        }
+                    }
                 }
             } else {
                 Text("You haven't practiced this week!")
@@ -91,5 +116,5 @@ struct WeeklySummaryCard: View {
 }
 
 #Preview {
-    WeeklySummaryCard(sessions: [])
+    WeeklySummaryCard(sessions: [], streak: 5)
 }

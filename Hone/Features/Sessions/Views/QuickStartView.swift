@@ -98,8 +98,11 @@ struct QuickStartView: View {
                 .padding(.horizontal, 40)
 
                 // This Week stats summary
-                WeeklySummaryCard(sessions: sessionHistoryViewModel.sessions)
-                    .padding(.horizontal)
+                WeeklySummaryCard(
+                    sessions: sessionHistoryViewModel.sessions,
+                    streak: SuggestionsService.currentStreak(sessions: sessionHistoryViewModel.sessions)
+                )
+                .padding(.horizontal)
 
                 Spacer()
             }
