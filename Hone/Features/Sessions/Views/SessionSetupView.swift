@@ -18,9 +18,11 @@ struct SessionSetupView: View {
     @State private var errorMessage = ""
 
     private let userId: String
+    private let sessions: [Session]
 
-    init(userId: String, sessionViewModel: SessionViewModel, showActiveSession: Binding<Bool>) {
+    init(userId: String, sessionViewModel: SessionViewModel, showActiveSession: Binding<Bool>, sessions: [Session] = []) {
         self.userId = userId
+        self.sessions = sessions
         self._sessionViewModel = ObservedObject(wrappedValue: sessionViewModel)
         self._showActiveSession = showActiveSession
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
@@ -29,6 +31,14 @@ struct SessionSetupView: View {
     /// Grouped activities by category with custom order
     private var groupedActivities: [(category: String, activities: [Activity])] {
         ActivityGrouping.grouped(activityViewModel.activeActivities)
+    }
+
+    /// Top suggested activities ranked by SuggestionsService
+    private var suggestedActivities: [Activity] {
+        SuggestionsService.suggestedActivities(
+            activities: activityViewModel.activeActivities,
+            sessions: sessions
+        )
     }
 
     var body: some View {
@@ -44,6 +54,22 @@ struct SessionSetupView: View {
                     )
                 } else {
                     List {
+                        // Suggested section - shown only when SuggestionsService returns non-empty
+                        if !suggestedActivities.isEmpty {
+                            Section(header: Text("Suggested")) {
+                                ForEach(suggestedActivities) { activity in
+                                    SelectableActivityRow(
+                                        activity: activity,
+                                        isSelected: selectedActivityIds.contains(activity.id ?? "")
+                                    )
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        toggleSelection(activity)
+                                    }
+                                }
+                            }
+                        }
+
                         // Activity selection section - grouped by category
                         ForEach(groupedActivities, id: \.category) { group in
                             Section(header: Text(group.category)) {

@@ -17,11 +17,22 @@ struct AddActivityToSessionView: View {
     @StateObject private var activityViewModel: ActivityViewModel
     @State private var searchText = ""
 
-    init(userId: String, viewModel: SessionViewModel, isPresented: Binding<Bool>) {
+    private let sessions: [Session]
+
+    init(userId: String, viewModel: SessionViewModel, isPresented: Binding<Bool>, sessions: [Session] = []) {
         self.userId = userId
         self.viewModel = viewModel
+        self.sessions = sessions
         self._isPresented = isPresented
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
+    }
+
+    /// Top suggested activities ranked by SuggestionsService
+    private var suggestedActivities: [Activity] {
+        SuggestionsService.suggestedActivities(
+            activities: activityViewModel.activeActivities,
+            sessions: sessions
+        )
     }
 
     var filteredActivities: [Activity] {
@@ -50,6 +61,53 @@ struct AddActivityToSessionView: View {
     var body: some View {
         NavigationStack {
             List {
+                // Suggested section - shown only when SuggestionsService returns non-empty
+                if !suggestedActivities.isEmpty {
+                    Section(header: Text("Suggested")) {
+                        ForEach(suggestedActivities) { activity in
+                            let alreadyAdded = isActivityInSession(activity)
+                            Button(action: {
+                                guard !alreadyAdded else { return }
+                                Task {
+                                    await viewModel.addActivity(activity)
+                                    isPresented = false
+                                }
+                            }) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: categoryIcon(for: activity))
+                                        .foregroundColor(alreadyAdded ? .gray : .blue)
+                                        .frame(width: 30)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(activity.name)
+                                            .font(.headline)
+                                            .foregroundColor(alreadyAdded ? .secondary : .primary)
+                                        Text(activity.category)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+
+                                    Spacer()
+
+                                    if alreadyAdded {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.gray)
+                                            .font(.title3)
+                                    } else {
+                                        Image(systemName: "plus.circle.fill")
+                                            .foregroundColor(.blue)
+                                            .font(.title3)
+                                    }
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(alreadyAdded)
+                            .opacity(alreadyAdded ? 0.5 : 1.0)
+                        }
+                    }
+                }
+
                 ForEach(groupedActivities, id: \.category) { group in
                     Section(header: Text(group.category)) {
                         ForEach(group.activities) { activity in

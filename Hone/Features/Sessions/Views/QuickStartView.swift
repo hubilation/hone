@@ -86,7 +86,8 @@ struct QuickStartView: View {
                     SessionSetupView(
                         userId: userId,
                         sessionViewModel: sessionViewModel,
-                        showActiveSession: $showActiveSession
+                        showActiveSession: $showActiveSession,
+                        sessions: sessionHistoryViewModel.sessions
                     )
                 } label: {
                     Label("Plan Session", systemImage: "list.bullet")
