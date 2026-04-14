@@ -21,7 +21,6 @@ struct SignInView: View {
 
                 Spacer()
 
-                // Email/Password fields
                 VStack(spacing: 15) {
                     TextField("Email", text: $viewModel.email)
                         .textContentType(.emailAddress)
@@ -34,7 +33,6 @@ struct SignInView: View {
                 }
                 .padding(.horizontal, 40)
 
-                // Error message
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
@@ -43,11 +41,8 @@ struct SignInView: View {
                         .padding(.horizontal, 40)
                 }
 
-                // Sign In button
                 Button(action: {
-                    Task {
-                        await viewModel.signIn()
-                    }
+                    Task { await viewModel.signIn() }
                 }) {
                     if viewModel.isLoading {
                         ProgressView()
@@ -65,7 +60,6 @@ struct SignInView: View {
                 .padding(.horizontal, 40)
                 .disabled(viewModel.isLoading)
 
-                // Password reset link
                 Button("Forgot password?") {
                     viewModel.showPasswordReset = true
                 }
@@ -75,12 +69,9 @@ struct SignInView: View {
                     .padding(.horizontal, 40)
                     .padding(.vertical, 10)
 
-                // OAuth buttons
                 VStack(spacing: 10) {
                     Button(action: {
-                        Task {
-                            await viewModel.signInWithGoogle()
-                        }
+                        Task { await viewModel.signInWithGoogle() }
                     }) {
                         HStack {
                             Image(systemName: "globe")
@@ -112,7 +103,6 @@ struct SignInView: View {
 
                 Spacer()
 
-                // Sign up link
                 NavigationLink(destination: SignUpView()) {
                     Text("Don't have an account? Sign up")
                         .font(.caption)

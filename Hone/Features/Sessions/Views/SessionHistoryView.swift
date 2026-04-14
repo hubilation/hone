@@ -67,7 +67,7 @@ struct SessionHistoryView: View {
             }
         }
         .onAppear {
-            print("🔍 DEBUG: SessionHistoryView.onAppear called with userId: '\(userId)'")
+            print("DEBUG: SessionHistoryView.onAppear called with userId: '\(userId)'")
             viewModel.startListening()
         }
     }

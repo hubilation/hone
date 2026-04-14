@@ -102,6 +102,18 @@ struct MainAppView: View {
                 ActiveSessionView(viewModel: sessionViewModel)
             }
         }
+        .onOpenURL { url in
+            // Handle hone://session/active deep link from Live Activity tap
+            guard url.scheme == "hone",
+                  url.host == "session",
+                  url.path == "/active" else { return }
+
+            // Only navigate if a session is currently active or paused
+            let state = sessionViewModel.sessionState
+            if state == .active || state == .paused || state == .inBetween {
+                showActiveSession = true
+            }
+        }
     }
 }
 

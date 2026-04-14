@@ -66,9 +66,7 @@ struct PasswordResetView: View {
                         }
 
                         Button(action: {
-                            Task {
-                                await viewModel.resetPassword()
-                            }
+                            Task { await viewModel.resetPassword() }
                         }) {
                             if viewModel.isLoading {
                                 ProgressView()

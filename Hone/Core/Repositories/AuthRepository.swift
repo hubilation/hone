@@ -50,7 +50,6 @@ final class AuthRepository: AuthRepositoryProtocol {
             let result = try await Auth.auth().createUser(withEmail: email, password: password)
             let user = User(from: result.user)
 
-            // Save user profile to Firestore
             let userRepo = UserRepository()
             try await userRepo.saveUser(user)
 
@@ -108,7 +107,6 @@ final class AuthRepository: AuthRepositoryProtocol {
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
 
-        // Get root view controller for presenting Google Sign-In
         guard let windowScene = await UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootViewController = await windowScene.windows.first?.rootViewController else {
             throw AuthError.unknown("No root view controller found")
@@ -137,7 +135,6 @@ final class AuthRepository: AuthRepositoryProtocol {
                         let result = try await Auth.auth().signIn(with: credential)
                         let user = User(from: result.user)
 
-                        // Save user profile to Firestore (auto-creates if new)
                         let userRepo = UserRepository()
                         try await userRepo.saveUser(user)
 
@@ -151,8 +148,6 @@ final class AuthRepository: AuthRepositoryProtocol {
     }
 
     func signInWithApple(idToken: String, nonce: String, fullName: PersonNameComponents?) async throws -> User {
-        // CRITICAL: Use OAuthProvider.appleCredential with fullName parameter
-        // This preserves display name on first sign-in (Apple only provides it once)
         let credential = OAuthProvider.appleCredential(
             withIDToken: idToken,
             rawNonce: nonce,
@@ -163,7 +158,6 @@ final class AuthRepository: AuthRepositoryProtocol {
             let result = try await Auth.auth().signIn(with: credential)
             let user = User(from: result.user)
 
-            // Save user profile to Firestore
             let userRepo = UserRepository()
             try await userRepo.saveUser(user)
 
@@ -172,8 +166,6 @@ final class AuthRepository: AuthRepositoryProtocol {
             throw mapFirebaseError(error)
         }
     }
-
-    // MARK: - Private Helpers
 
     private func mapFirebaseError(_ error: NSError) -> AuthError {
         guard let errorCode = AuthErrorCode(rawValue: error.code) else {

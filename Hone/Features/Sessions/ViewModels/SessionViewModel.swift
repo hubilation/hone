@@ -2,7 +2,7 @@
 //  SessionViewModel.swift
 //  Hone
 //
-//  Created by Claude on 3/3/26.
+//  Created by Zack Huber on 3/3/26.
 //
 
 import Foundation
@@ -70,6 +70,7 @@ final class SessionViewModel: ObservableObject {
     private var pausedSessionTime: TimeInterval = 0
     /// Timer publisher cancellable
     private var timerCancellable: AnyCancellable?
+
     /// Live Activity reference for updates and dismissal
     private var liveActivity: ActivityKit.Activity<HoneLiveActivityAttributes>?
 
@@ -92,6 +93,7 @@ final class SessionViewModel: ObservableObject {
     deinit {
         timerCancellable?.cancel()
         sessionListener?.remove()
+        // Live Activity cleanup handled by endLiveActivity() in endSession()/resetSession()
     }
 
     // MARK: - Session Lifecycle
@@ -150,6 +152,8 @@ final class SessionViewModel: ObservableObject {
 
         // Load historical notes for first activity
         await loadHistoricalNotes()
+
+        // Start Live Activity (D-06: auto-start when session becomes .active)
         startLiveActivity()
     }
 
@@ -199,6 +203,8 @@ final class SessionViewModel: ObservableObject {
             "pausedAt": Date().toISO8601String()
         ]
         try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
+
+        // Update Live Activity to paused state with frozen timer (D-08)
         updateLiveActivityPaused()
     }
 
@@ -214,6 +220,8 @@ final class SessionViewModel: ObservableObject {
             "pausedAt": NSNull()
         ]
         try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
+
+        // Update Live Activity back to active/running state (D-08)
         updateLiveActivityResumed()
     }
 
@@ -259,6 +267,8 @@ final class SessionViewModel: ObservableObject {
 
             // Load historical notes for new activity
             await loadHistoricalNotes()
+
+            // Update Live Activity with new activity name (D-10)
             updateLiveActivityNewActivity()
         } else {
             // All activities complete
@@ -308,6 +318,8 @@ final class SessionViewModel: ObservableObject {
 
         // Load historical notes for new activity
         await loadHistoricalNotes()
+
+        // Update Live Activity with new activity name (D-10)
         updateLiveActivityNewActivity()
     }
 
@@ -351,6 +363,8 @@ final class SessionViewModel: ObservableObject {
 
             // Load historical notes for new activity
             await loadHistoricalNotes()
+
+            // Update Live Activity with new activity name (D-10)
             updateLiveActivityNewActivity()
         } else {
             // All activities complete
@@ -508,6 +522,8 @@ final class SessionViewModel: ObservableObject {
         )
 
         sessionState = .ended
+
+        // End Live Activity immediately (D-07)
         endLiveActivity()
     }
 
@@ -558,6 +574,7 @@ final class SessionViewModel: ObservableObject {
         try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
 
         // If queue was empty, immediately move to this new activity
+        // completeCurrentActivity() will call updateLiveActivityNewActivity() internally
         if shouldStartImmediately {
             await completeCurrentActivity()
         }
@@ -577,6 +594,8 @@ final class SessionViewModel: ObservableObject {
         timerCancellable?.cancel()
         timerCancellable = nil
         sessionListener?.remove()
+
+        // End Live Activity before resetting state
         endLiveActivity()
 
         // Reset all state
@@ -629,14 +648,18 @@ final class SessionViewModel: ObservableObject {
 
     /// Start a new Live Activity when session becomes active (D-06)
     private func startLiveActivity() {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        // Guard: Live Activities must be available and enabled
+        guard #available(iOS 16.2, *),
+              ActivityAuthorizationInfo().areActivitiesEnabled else {
+            return
+        }
 
         let attributes = HoneLiveActivityAttributes(
             sessionId: currentSession?.id ?? UUID().uuidString
         )
         let now = Date()
         let initialState = HoneLiveActivityAttributes.ContentState(
-            activityStartDate: now,
+            activityStartDate: now,  // session just started, elapsed is 0
             isPaused: false,
             pausedElapsedSeconds: 0,
             activityName: currentActivityName,
@@ -645,11 +668,10 @@ final class SessionViewModel: ObservableObject {
         )
 
         do {
-            let activity = try ActivityKit.Activity<HoneLiveActivityAttributes>.request(
+            liveActivity = try ActivityKit.Activity.request(
                 attributes: attributes,
                 content: ActivityContent(state: initialState, staleDate: nil)
             )
-            liveActivity = activity
         } catch {
             print("Failed to start Live Activity: \(error)")
         }
@@ -657,7 +679,7 @@ final class SessionViewModel: ObservableObject {
 
     /// Update Live Activity to paused state with frozen timer (D-08)
     private func updateLiveActivityPaused() {
-        guard let activity = liveActivity else { return }
+        guard #available(iOS 16.2, *) else { return }
         let state = HoneLiveActivityAttributes.ContentState(
             activityStartDate: Date(),  // not used when isPaused=true
             isPaused: true,
@@ -667,13 +689,13 @@ final class SessionViewModel: ObservableObject {
             totalPausedSessionSeconds: totalSessionTime
         )
         Task {
-            await activity.update(ActivityContent(state: state, staleDate: nil))
+            await liveActivity?.update(ActivityContent(state: state, staleDate: nil))
         }
     }
 
     /// Update Live Activity to resumed/active state with live timer (D-08)
     private func updateLiveActivityResumed() {
-        guard let activity = liveActivity else { return }
+        guard #available(iOS 16.2, *) else { return }
         let state = HoneLiveActivityAttributes.ContentState(
             activityStartDate: Date() - pausedElapsedTime,
             isPaused: false,
@@ -683,13 +705,13 @@ final class SessionViewModel: ObservableObject {
             totalPausedSessionSeconds: 0
         )
         Task {
-            await activity.update(ActivityContent(state: state, staleDate: nil))
+            await liveActivity?.update(ActivityContent(state: state, staleDate: nil))
         }
     }
 
     /// Update Live Activity when switching to a new activity (D-10)
     private func updateLiveActivityNewActivity() {
-        guard let activity = liveActivity else { return }
+        guard #available(iOS 16.2, *) else { return }
         let state = HoneLiveActivityAttributes.ContentState(
             activityStartDate: Date(),  // new activity just started, elapsed is 0
             isPaused: false,
@@ -699,16 +721,16 @@ final class SessionViewModel: ObservableObject {
             totalPausedSessionSeconds: 0
         )
         Task {
-            await activity.update(ActivityContent(state: state, staleDate: nil))
+            await liveActivity?.update(ActivityContent(state: state, staleDate: nil))
         }
     }
 
     /// End Live Activity immediately (D-07)
     private func endLiveActivity() {
-        guard let activity = liveActivity else { return }
-        liveActivity = nil
+        guard #available(iOS 16.2, *) else { return }
         Task {
-            await activity.end(dismissalPolicy: .immediate)
+            await liveActivity?.end(dismissalPolicy: .immediate)
+            liveActivity = nil
         }
     }
 }

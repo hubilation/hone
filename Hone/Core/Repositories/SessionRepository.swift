@@ -32,11 +32,6 @@ protocol SessionRepositoryProtocol {
     func addSessionActivity(userId: String, sessionId: String, activity: SessionActivity) async throws
 
     /// Get historical notes for an activity from previous sessions
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - activityId: The activity to get notes for
-    ///   - limit: Maximum number of notes to return (default 10)
-    /// - Returns: Array of SessionActivity with notes, sorted by most recent first
     func getHistoricalNotes(userId: String, activityId: String, limit: Int) async throws -> [SessionActivity]
 
     // Real-time listener methods (return ListenerRegistration for cleanup)
@@ -44,72 +39,23 @@ protocol SessionRepositoryProtocol {
     func listenToSessionActivities(userId: String, sessionId: String, completion: @escaping ([SessionActivity]) -> Void) -> ListenerRegistration
 
     /// Get ended sessions ordered by most recent first
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - limit: Maximum number of sessions to return (default 100)
-    /// - Returns: Array of ended sessions sorted by startTime descending
     func getSessions(userId: String, limit: Int) async throws -> [Session]
 
     /// Listen to ended sessions with real-time updates
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - limit: Maximum number of sessions to return (default 100)
-    ///   - completion: Closure called with updated sessions array
-    /// - Returns: ListenerRegistration for cleanup
     func listenToSessions(userId: String, limit: Int, completion: @escaping ([Session]) -> Void) -> ListenerRegistration
 
     /// Get all activities for a specific session
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's unique identifier
-    /// - Returns: Array of SessionActivity ordered by createdAt
     func getSessionActivities(userId: String, sessionId: String) async throws -> [SessionActivity]
 
     /// Delete session and all associated activities
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's unique identifier
     func deleteSession(userId: String, sessionId: String) async throws
 }
 
 // MARK: - Implementation
 
-/// Repository for managing Session data in Firestore
-///
-/// **Path Structure:**
-/// - Sessions: users/{userId}/sessions/{sessionId}
-/// - Activities: users/{userId}/sessions/{sessionId}/activities/{activityId}
-///
-/// **State Management:**
-/// Sessions track state for crash recovery and pause/resume:
-/// - "setup": Session created, activities being selected
-/// - "active": Practice timer running
-/// - "paused": Timer paused (pausedAt timestamp set)
-/// - "inBetween": Break between activities
-/// - "ended": Session completed
-///
-/// **Crash Recovery:**
-/// Use getActiveSession() to find sessions where state != "ended" on app launch.
-/// This enables resuming interrupted sessions after crashes or force-quit.
-///
-/// **Timestamp Updates:**
-/// All write operations automatically update updatedAt using Date().toISO8601String()
-/// to maintain accurate modification tracking.
-///
-/// **Listener Memory Management:**
-/// CRITICAL - Store returned ListenerRegistration in ViewModel property and call
-/// remove() in deinit to prevent memory leaks.
 final class SessionRepository: SessionRepositoryProtocol {
     private let db = Firestore.firestore()
 
-    // MARK: - CRUD Operations
-
-    /// Creates a new session in Firestore
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - session: The session to create (id will be generated)
-    /// - Returns: The created session with generated id
-    /// - Throws: Firestore error if creation fails
     func createSession(userId: String, session: Session) async throws -> Session {
         var newSession = session
         newSession.updatedAt = Date().toISO8601String()
@@ -123,12 +69,6 @@ final class SessionRepository: SessionRepositoryProtocol {
         return newSession
     }
 
-    /// Updates session state atomically (state, pausedAt, currentActivityIndex)
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's document ID
-    ///   - updates: Dictionary of fields to update
-    /// - Throws: RepositoryError.missingDocumentId if sessionId is nil
     func updateSessionState(userId: String, sessionId: String, updates: [String: Any]) async throws {
         var mutableUpdates = updates
         mutableUpdates["updatedAt"] = Date().toISO8601String()
@@ -140,10 +80,6 @@ final class SessionRepository: SessionRepositoryProtocol {
             .updateData(mutableUpdates)
     }
 
-    /// Finds active session for crash recovery
-    /// - Parameter userId: The user's unique identifier
-    /// - Returns: Session where state != "ended", or nil if none found
-    /// - Throws: Firestore error if query fails
     func getActiveSession(userId: String) async throws -> Session? {
         let snapshot = try await db.collection("users")
             .document(userId)
@@ -159,13 +95,6 @@ final class SessionRepository: SessionRepositoryProtocol {
         return try document.data(as: Session.self)
     }
 
-    /// Marks session as complete
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's document ID
-    ///   - endTime: ISO 8601 timestamp when session ended
-    ///   - totalDuration: Total elapsed seconds
-    /// - Throws: Firestore error if update fails
     func endSession(userId: String, sessionId: String, endTime: String, totalDuration: Int) async throws {
         let updates: [String: Any] = [
             "state": "ended",
@@ -181,19 +110,10 @@ final class SessionRepository: SessionRepositoryProtocol {
             .updateData(updates)
     }
 
-    /// Adds or updates activity in session activities subcollection
-    /// Uses createdAt as document ID to prevent duplicates
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's document ID
-    ///   - activity: The session activity to add/update
-    /// - Throws: Firestore error if operation fails
     func addSessionActivity(userId: String, sessionId: String, activity: SessionActivity) async throws {
         var newActivity = activity
         newActivity.updatedAt = Date().toISO8601String()
 
-        // Use createdAt as document ID to prevent duplicates when updating
-        // This ensures that subsequent saves update the same document instead of creating new ones
         let docId = activity.createdAt.replacingOccurrences(of: ":", with: "-").replacingOccurrences(of: ".", with: "-")
 
         try db.collection("users")
@@ -205,14 +125,6 @@ final class SessionRepository: SessionRepositoryProtocol {
             .setData(from: newActivity, merge: false)
     }
 
-    // MARK: - Real-time Listeners
-
-    /// Listens to a specific session in real-time
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's document ID
-    ///   - completion: Called with updated session whenever data changes
-    /// - Returns: ListenerRegistration that MUST be stored and removed in deinit
     func listenToSession(userId: String, sessionId: String, completion: @escaping (Session?) -> Void) -> ListenerRegistration {
         return db.collection("users")
             .document(userId)
@@ -240,12 +152,6 @@ final class SessionRepository: SessionRepositoryProtocol {
             }
     }
 
-    /// Listens to session activities in real-time
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's document ID
-    ///   - completion: Called with updated activity list whenever data changes
-    /// - Returns: ListenerRegistration that MUST be stored and removed in deinit
     func listenToSessionActivities(userId: String, sessionId: String, completion: @escaping ([SessionActivity]) -> Void) -> ListenerRegistration {
         return db.collection("users")
             .document(userId)
@@ -277,15 +183,7 @@ final class SessionRepository: SessionRepositoryProtocol {
             }
     }
 
-    /// Get historical notes for an activity from previous sessions
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - activityId: The activity to get notes for
-    ///   - limit: Maximum number of notes to return
-    /// - Returns: Array of SessionActivity with notes, sorted by most recent first
     func getHistoricalNotes(userId: String, activityId: String, limit: Int = 10) async throws -> [SessionActivity] {
-        // NOTE: This method is deprecated - we now use Activity.practiceNotes instead
-        // Kept for backwards compatibility but not actively used
         let snapshot = try await db.collectionGroup("activities")
             .whereField("activityId", isEqualTo: activityId)
             .order(by: "createdAt", descending: true)
@@ -295,7 +193,6 @@ final class SessionRepository: SessionRepositoryProtocol {
         let activities = snapshot.documents.compactMap { doc -> SessionActivity? in
             do {
                 let activity = try doc.data(as: SessionActivity.self)
-                // Filter: only return activities with notes and not in-between time
                 guard let notes = activity.notes,
                       !notes.isEmpty,
                       !activity.isInBetweenTime else {
@@ -311,13 +208,6 @@ final class SessionRepository: SessionRepositoryProtocol {
         return activities
     }
 
-    // MARK: - Session History
-
-    /// Get ended sessions ordered by most recent first
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - limit: Maximum number of sessions to return
-    /// - Returns: Array of ended sessions sorted by startTime descending
     func getSessions(userId: String, limit: Int = 100) async throws -> [Session] {
         let snapshot = try await db.collection("users")
             .document(userId)
@@ -337,14 +227,7 @@ final class SessionRepository: SessionRepositoryProtocol {
         }
     }
 
-    /// Listen to ended sessions with real-time updates
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - limit: Maximum number of sessions to return
-    ///   - completion: Closure called with updated sessions array
-    /// - Returns: ListenerRegistration for cleanup
     func listenToSessions(userId: String, limit: Int = 100, completion: @escaping ([Session]) -> Void) -> ListenerRegistration {
-        print("🔍 DEBUG: SessionRepository.listenToSessions called for userId: '\(userId)'")
         return db.collection("users")
             .document(userId)
             .collection("sessions")
@@ -353,25 +236,21 @@ final class SessionRepository: SessionRepositoryProtocol {
             .limit(to: limit)
             .addSnapshotListener { snapshot, error in
                 if let error = error {
-                    print("🔍 ERROR in sessions listener: \(error.localizedDescription)")
+                    print("ERROR in sessions listener: \(error.localizedDescription)")
                     completion([])
                     return
                 }
 
                 guard let documents = snapshot?.documents else {
-                    print("🔍 DEBUG: Sessions snapshot has no documents")
                     completion([])
                     return
                 }
 
-                print("🔍 DEBUG: Sessions snapshot received \(documents.count) documents")
                 let sessions = documents.compactMap { doc -> Session? in
                     do {
-                        let session = try doc.data(as: Session.self)
-                        print("🔍 DEBUG: Successfully decoded session \(doc.documentID)")
-                        return session
+                        return try doc.data(as: Session.self)
                     } catch {
-                        print("🔍 ERROR decoding session \(doc.documentID): \(error)")
+                        print("ERROR decoding session \(doc.documentID): \(error)")
                         return nil
                     }
                 }
@@ -379,11 +258,6 @@ final class SessionRepository: SessionRepositoryProtocol {
             }
     }
 
-    /// Get all activities for a specific session
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's unique identifier
-    /// - Returns: Array of SessionActivity ordered by createdAt
     func getSessionActivities(userId: String, sessionId: String) async throws -> [SessionActivity] {
         let snapshot = try await db.collection("users")
             .document(userId)
@@ -403,17 +277,12 @@ final class SessionRepository: SessionRepositoryProtocol {
         }
     }
 
-    /// Delete session and all associated activities
-    /// - Parameters:
-    ///   - userId: The user's unique identifier
-    ///   - sessionId: The session's unique identifier
     func deleteSession(userId: String, sessionId: String) async throws {
         let sessionRef = db.collection("users")
             .document(userId)
             .collection("sessions")
             .document(sessionId)
 
-        // 1. Delete all activities subcollection documents
         let activitiesSnapshot = try await sessionRef
             .collection("activities")
             .getDocuments()
@@ -423,10 +292,7 @@ final class SessionRepository: SessionRepositoryProtocol {
             batch.deleteDocument(doc.reference)
         }
 
-        // 2. Delete session document
         batch.deleteDocument(sessionRef)
-
-        // Commit batch atomically
         try await batch.commit()
     }
 }

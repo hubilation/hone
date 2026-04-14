@@ -32,7 +32,6 @@ final class AuthViewModel: NSObject, ObservableObject, ASAuthorizationController
         self.repository = repository
         super.init()
 
-        // Listen for auth state changes
         authStateHandle = repository.addAuthStateListener { [weak self] user in
             self?.user = user
         }
@@ -125,8 +124,6 @@ final class AuthViewModel: NSObject, ObservableObject, ASAuthorizationController
         errorMessage = nil
     }
 
-    // MARK: - OAuth Methods
-
     func signInWithGoogle() async {
         isLoading = true
         errorMessage = nil
@@ -152,8 +149,6 @@ final class AuthViewModel: NSObject, ObservableObject, ASAuthorizationController
         controller.delegate = self
         controller.performRequests()
     }
-
-    // MARK: - ASAuthorizationControllerDelegate
 
     nonisolated func authorizationController(controller: ASAuthorizationController,
                                   didCompleteWithAuthorization authorization: ASAuthorization) {
@@ -194,8 +189,6 @@ final class AuthViewModel: NSObject, ObservableObject, ASAuthorizationController
             errorMessage = error.localizedDescription
         }
     }
-
-    // MARK: - Private Helpers
 
     private func randomNonceString(length: Int = 32) -> String {
         let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")

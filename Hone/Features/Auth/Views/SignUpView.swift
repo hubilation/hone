@@ -21,7 +21,6 @@ struct SignUpView: View {
 
             Spacer()
 
-            // Email/Password fields
             VStack(spacing: 15) {
                 TextField("Email", text: $viewModel.email)
                     .textContentType(.emailAddress)
@@ -38,7 +37,6 @@ struct SignUpView: View {
             }
             .padding(.horizontal, 40)
 
-            // Error message
             if let errorMessage = viewModel.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
@@ -47,11 +45,8 @@ struct SignUpView: View {
                     .padding(.horizontal, 40)
             }
 
-            // Sign Up button
             Button(action: {
-                Task {
-                    await viewModel.signUp()
-                }
+                Task { await viewModel.signUp() }
             }) {
                 if viewModel.isLoading {
                     ProgressView()
@@ -73,12 +68,9 @@ struct SignUpView: View {
                 .padding(.horizontal, 40)
                 .padding(.vertical, 10)
 
-            // OAuth buttons
             VStack(spacing: 10) {
                 Button(action: {
-                    Task {
-                        await viewModel.signInWithGoogle()
-                    }
+                    Task { await viewModel.signInWithGoogle() }
                 }) {
                     HStack {
                         Image(systemName: "globe")
