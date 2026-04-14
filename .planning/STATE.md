@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04.2
-current_plan: 04.2-03-PLAN.md (complete)
+current_phase: 05-smart-features-polish
+current_plan: 05-01-PLAN.md (complete)
 status: executing
-last_updated: "2026-04-14T00:00:00.000Z"
-last_activity: "2026-04-14 - Completed Phase 04 Plan 04-04: Navigation integration human verified; Phase 4 (Session History & Statistics) fully complete"
+last_updated: "2026-04-14T23:31:17Z"
+last_activity: "2026-04-14 - Completed Phase 05 Plan 05-01: SuggestionsService with recency+frequency scoring and streak computation, all 10 tests passing"
 progress:
   total_phases: 8
   completed_phases: 4
@@ -340,21 +340,17 @@ None currently. Roadmap validated with 100% requirement coverage.
 
 **Last Session Summary:**
 
-- Completed Plan 04-04 (Navigation Integration) - Phase 4 fully complete
-- Added History tab (SessionHistoryView + clock icon) and Statistics tab (StatisticsView + chart.bar icon) to MainAppView TabView
-- Created shared ActivityViewModel and SessionHistoryViewModel as @StateObject in MainAppView for cross-tab data efficiency
-- Fixed "0 activities" preview bug: added sessionActivities dictionary with parallel preloading in SessionHistoryViewModel
-- Deployed Firestore composite index (state ASC + startTime DESC) for session history queries
-- Human verification approved: day grouping, swipe-to-delete, session detail sheet, and statistics charts all confirmed working
-- Added scripts/copy-user-data.js for seeding test accounts with realistic session data
-- **Phase 4 Complete:** All 7 requirements delivered (POST-01, POST-02, POST-03, POST-04, POST-06, PLAT-04, PLAT-05)
+- Completed Plan 05-01 (SuggestionsService) - Phase 5 Plan 1 complete
+- Added Hone Tests target to Xcode project (was orphaned — no test target existed after rename)
+- Created SuggestionsService.swift (80 lines): suggestedActivities() with D-01 scoring, currentStreak() with backward walk
+- All 10 SuggestionsServiceTests pass: suggestion ranking, limit, active-only filter, streak zero/continuous/reset/preserved/dedup
+- Deviations: fixed @testable import (Practice_Timer → Hone), added missing test target, excluded broken ActivityRepositoryTests from build
+- TDD cycle: RED (271c308) → GREEN (70419c6)
 
 **Next Session Start Here:**
 
-1. Phase 4 is fully complete
-2. Phase 04.2 (Home screen redesign) is also complete
-3. Phase 8 (iOS Live Activity) is complete
-4. Next: Plan Phase 5 (Smart Features & Polish) or continue with any remaining work
+1. Phase 5 Plan 1 (SuggestionsService) is complete
+2. Next: Phase 5 Plan 2 — wire SuggestionsService into SessionSetupView (Suggested section) and QuickStartView (streak display)
 
 **Context for Handoff:**
 
