@@ -235,48 +235,39 @@ final class SessionViewModel: ObservableObject {
         guard currentActivityIndex < activities.count else { return }
         guard let sessionId = currentSession?.id else { return }
 
-        // End current activity
         let nowString = Date().toISO8601String()
         let duration = Int(elapsedTime)
         activities[currentActivityIndex].endTime = nowString
         activities[currentActivityIndex].duration = duration
+        let completedActivity = activities[currentActivityIndex]
 
-        // Save current activity to Firestore
-        try? await repository.addSessionActivity(
-            userId: userId,
-            sessionId: sessionId,
-            activity: activities[currentActivityIndex]
-        )
-
-        // Update Activity.totalPracticeTime and lastUsed
-        if let activityId = activities[currentActivityIndex].activityId {
-            try? await activityRepository.updateActivityStats(
-                userId: userId,
-                activityId: activityId,
-                additionalTime: duration,
-                lastUsed: nowString
-            )
+        // Persist to Firestore in background — updateActivityStats uses async updateData which
+        // hangs offline; fire-and-forget so state transitions happen immediately.
+        Task { [weak self] in
+            guard let self else { return }
+            try? await self.repository.addSessionActivity(userId: self.userId, sessionId: sessionId, activity: completedActivity)
+            if let activityId = completedActivity.activityId {
+                try? await self.activityRepository.updateActivityStats(
+                    userId: self.userId,
+                    activityId: activityId,
+                    additionalTime: duration,
+                    lastUsed: nowString
+                )
+            }
         }
 
-        // Move to next activity
+        // Move to next activity immediately
         currentActivityIndex += 1
 
-        // Check if session is complete
         if currentActivityIndex < activities.count {
-            // Reset timer for next activity
             activityPausedElapsed = 0
             elapsedTime = 0
             sessionState = .active
             activities[currentActivityIndex].startTime = nowString
             startTimer()
-
-            // Load historical notes for new activity
             await loadHistoricalNotes()
-
-            // Update Live Activity with new activity name (D-10)
             updateLiveActivityNewActivity()
         } else {
-            // All activities complete
             await endSession()
         }
     }
@@ -286,45 +277,36 @@ final class SessionViewModel: ObservableObject {
         guard currentActivityIndex < activities.count else { return }
         guard let sessionId = currentSession?.id else { return }
 
-        // Find the target activity's index
         guard let targetIndex = activities.firstIndex(where: { $0.id == targetActivity.id }) else { return }
 
-        // End current activity and save it
         let nowString = Date().toISO8601String()
         let duration = Int(elapsedTime)
         activities[currentActivityIndex].endTime = nowString
         activities[currentActivityIndex].duration = duration
+        let completedActivity = activities[currentActivityIndex]
 
-        try? await repository.addSessionActivity(
-            userId: userId,
-            sessionId: sessionId,
-            activity: activities[currentActivityIndex]
-        )
-
-        // Update Activity.totalPracticeTime and lastUsed
-        if let activityId = activities[currentActivityIndex].activityId {
-            try? await activityRepository.updateActivityStats(
-                userId: userId,
-                activityId: activityId,
-                additionalTime: duration,
-                lastUsed: nowString
-            )
+        // Persist in background — same offline-safe pattern as completeCurrentActivity
+        Task { [weak self] in
+            guard let self else { return }
+            try? await self.repository.addSessionActivity(userId: self.userId, sessionId: sessionId, activity: completedActivity)
+            if let activityId = completedActivity.activityId {
+                try? await self.activityRepository.updateActivityStats(
+                    userId: self.userId,
+                    activityId: activityId,
+                    additionalTime: duration,
+                    lastUsed: nowString
+                )
+            }
         }
 
-        // Jump to target activity
+        // Jump to target activity immediately
         currentActivityIndex = targetIndex
-
-        // Reset timer for new activity
         activityPausedElapsed = 0
         elapsedTime = 0
         sessionState = .active
         activities[currentActivityIndex].startTime = nowString
         startTimer()
-
-        // Load historical notes for new activity
         await loadHistoricalNotes()
-
-        // Update Live Activity with new activity name (D-10)
         updateLiveActivityNewActivity()
     }
 
@@ -568,21 +550,15 @@ final class SessionViewModel: ObservableObject {
         // Add to activities array
         activities.append(newActivity)
 
-        // Persist to Firestore activities subcollection
-        try? await repository.addSessionActivity(
-            userId: userId,
-            sessionId: sessionId,
-            activity: newActivity
-        )
-
-        // Update session timestamp
-        let updates: [String: Any] = [
-            "updatedAt": nowString
-        ]
-        try? await repository.updateSessionState(userId: userId, sessionId: sessionId, updates: updates)
+        // Persist to Firestore in background — updateSessionState uses async updateData which
+        // hangs offline and would prevent completeCurrentActivity from being called.
+        Task { [weak self] in
+            guard let self else { return }
+            try? await self.repository.addSessionActivity(userId: self.userId, sessionId: sessionId, activity: newActivity)
+            try? await self.repository.updateSessionState(userId: self.userId, sessionId: sessionId, updates: ["updatedAt": nowString])
+        }
 
         // If queue was empty, immediately move to this new activity
-        // completeCurrentActivity() will call updateLiveActivityNewActivity() internally
         if shouldStartImmediately {
             await completeCurrentActivity()
         }
