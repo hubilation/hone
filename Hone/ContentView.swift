@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var authViewModel = AuthViewModel()
+    @StateObject private var networkMonitor = NetworkMonitor()
+    @StateObject private var syncStateService = SyncStateService()
 
     var body: some View {
         Group {
@@ -16,10 +18,14 @@ struct ContentView: View {
                 // User is signed in - show main app
                 MainAppView(user: user)
                     .environmentObject(authViewModel)
+                    .environmentObject(networkMonitor)
+                    .environmentObject(syncStateService)
             } else {
                 // User not signed in - show auth
                 SignInView()
                     .environmentObject(authViewModel)
+                    .environmentObject(networkMonitor)
+                    .environmentObject(syncStateService)
             }
         }
     }
@@ -28,6 +34,8 @@ struct ContentView: View {
 struct MainAppView: View {
     let user: User
     @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    @EnvironmentObject var syncStateService: SyncStateService
 
     @StateObject private var activityViewModel: ActivityViewModel
     @StateObject private var sessionHistoryViewModel: SessionHistoryViewModel
@@ -53,6 +61,7 @@ struct MainAppView: View {
                 sessionHistoryViewModel: sessionHistoryViewModel,
                 showActiveSession: $showActiveSession
             )
+                .modifier(OfflineBannerModifier())
                 .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
@@ -70,6 +79,7 @@ struct MainAppView: View {
                     sessionHistoryViewModel.startListening()
                 }
             }
+            .modifier(OfflineBannerModifier())
             .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
             .tabItem {
                 Label("Statistics", systemImage: "chart.bar")
@@ -77,6 +87,7 @@ struct MainAppView: View {
             .tag(1)
 
             ActivityListView(userId: user.id ?? "")
+                .modifier(OfflineBannerModifier())
                 .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("Activities", systemImage: "list.bullet")
@@ -84,6 +95,7 @@ struct MainAppView: View {
                 .tag(2)
 
             SessionHistoryView(userId: user.id ?? "")
+                .modifier(OfflineBannerModifier())
                 .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("History", systemImage: "clock")
@@ -91,11 +103,15 @@ struct MainAppView: View {
                 .tag(3)
 
             SettingsView()
+                .modifier(OfflineBannerModifier())
                 .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
                 .tag(4)
+        }
+        .onAppear {
+            syncStateService.startListening(userId: user.id ?? "")
         }
         .sheet(isPresented: $showActiveSession) {
             NavigationStack {
