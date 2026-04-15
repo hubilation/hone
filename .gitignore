@@ -27,3 +27,4 @@ serviceAccountKey.json
 # Planning (already gitignored via GSD)
 .planning/
 .clone/
+build/
