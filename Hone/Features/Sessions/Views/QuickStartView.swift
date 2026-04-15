@@ -97,12 +97,26 @@ struct QuickStartView: View {
                 .buttonStyle(.bordered)
                 .padding(.horizontal, 40)
 
+                // Streak — own element, only shown when > 0
+                let streak = SuggestionsService.currentStreak(sessions: sessionHistoryViewModel.sessions)
+                if streak > 0 {
+                    HStack(spacing: 6) {
+                        Image(systemName: "flame.fill")
+                            .foregroundColor(.orange)
+                        Text("\(streak) day streak")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.orange.opacity(0.12))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                }
+
                 // This Week stats summary
-                WeeklySummaryCard(
-                    sessions: sessionHistoryViewModel.sessions,
-                    streak: SuggestionsService.currentStreak(sessions: sessionHistoryViewModel.sessions)
-                )
-                .padding(.horizontal)
+                WeeklySummaryCard(sessions: sessionHistoryViewModel.sessions)
+                    .padding(.horizontal)
 
                 Spacer()
             }

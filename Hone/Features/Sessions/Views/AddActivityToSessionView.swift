@@ -27,14 +27,6 @@ struct AddActivityToSessionView: View {
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
     }
 
-    /// Top suggested activities ranked by SuggestionsService
-    private var suggestedActivities: [Activity] {
-        SuggestionsService.suggestedActivities(
-            activities: activityViewModel.activeActivities,
-            sessions: sessions
-        )
-    }
-
     var filteredActivities: [Activity] {
         if searchText.isEmpty {
             return activityViewModel.activeActivities
@@ -46,7 +38,17 @@ struct AddActivityToSessionView: View {
     }
 
     private var groupedActivities: [(category: String, activities: [Activity])] {
-        ActivityGrouping.grouped(filteredActivities)
+        ActivityGrouping.grouped(filteredActivities).map { group in
+            let sorted = group.activities.sorted { a, b in
+                switch (a.lastUsed, b.lastUsed) {
+                case (nil, nil): return false
+                case (nil, _): return true
+                case (_, nil): return false
+                case (let la?, let lb?): return la < lb
+                }
+            }
+            return (category: group.category, activities: sorted)
+        }
     }
 
     private var activitiesInSession: Set<String> {
@@ -61,53 +63,6 @@ struct AddActivityToSessionView: View {
     var body: some View {
         NavigationStack {
             List {
-                // Suggested section - shown only when SuggestionsService returns non-empty
-                if !suggestedActivities.isEmpty {
-                    Section(header: Text("Suggested")) {
-                        ForEach(suggestedActivities) { activity in
-                            let alreadyAdded = isActivityInSession(activity)
-                            Button(action: {
-                                guard !alreadyAdded else { return }
-                                Task {
-                                    await viewModel.addActivity(activity)
-                                    isPresented = false
-                                }
-                            }) {
-                                HStack(spacing: 12) {
-                                    Image(systemName: categoryIcon(for: activity))
-                                        .foregroundColor(alreadyAdded ? .gray : .blue)
-                                        .frame(width: 30)
-
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(activity.name)
-                                            .font(.headline)
-                                            .foregroundColor(alreadyAdded ? .secondary : .primary)
-                                        Text(activity.category)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-
-                                    Spacer()
-
-                                    if alreadyAdded {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundColor(.gray)
-                                            .font(.title3)
-                                    } else {
-                                        Image(systemName: "plus.circle.fill")
-                                            .foregroundColor(.blue)
-                                            .font(.title3)
-                                    }
-                                }
-                                .padding(.vertical, 4)
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(alreadyAdded)
-                            .opacity(alreadyAdded ? 0.5 : 1.0)
-                        }
-                    }
-                }
-
                 ForEach(groupedActivities, id: \.category) { group in
                     Section(header: Text(group.category)) {
                         ForEach(group.activities) { activity in
@@ -125,12 +80,11 @@ struct AddActivityToSessionView: View {
                                         .foregroundColor(alreadyAdded ? .gray : .blue)
                                         .frame(width: 30)
 
-                                    VStack(alignment: .leading, spacing: 4) {
+                                    VStack(alignment: .leading, spacing: 2) {
                                         Text(activity.name)
                                             .font(.headline)
                                             .foregroundColor(alreadyAdded ? .secondary : .primary)
-
-                                        Text(activity.category)
+                                        Text(lastPracticedText(activity.lastUsed))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -174,6 +128,20 @@ struct AddActivityToSessionView: View {
 
     private func categoryIcon(for activity: Activity) -> String {
         ActivityCategory(rawValue: activity.category)?.icon ?? "ellipsis.circle"
+    }
+
+    private func lastPracticedText(_ lastUsed: String?) -> String {
+        guard let str = lastUsed, let date = Date(iso8601String: str) else {
+            return "Never practiced"
+        }
+        let days = Calendar.current.dateComponents([.day],
+            from: Calendar.current.startOfDay(for: date),
+            to: Calendar.current.startOfDay(for: Date())).day ?? 0
+        switch days {
+        case 0: return "Practiced today"
+        case 1: return "Practiced yesterday"
+        default: return "Practiced \(days) days ago"
+        }
     }
 }
 

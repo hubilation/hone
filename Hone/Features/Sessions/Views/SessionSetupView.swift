@@ -28,17 +28,19 @@ struct SessionSetupView: View {
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
     }
 
-    /// Grouped activities by category with custom order
+    /// Grouped activities by category, each group sorted by recency (least recently practiced first)
     private var groupedActivities: [(category: String, activities: [Activity])] {
-        ActivityGrouping.grouped(activityViewModel.activeActivities)
-    }
-
-    /// Top suggested activities ranked by SuggestionsService
-    private var suggestedActivities: [Activity] {
-        SuggestionsService.suggestedActivities(
-            activities: activityViewModel.activeActivities,
-            sessions: sessions
-        )
+        ActivityGrouping.grouped(activityViewModel.activeActivities).map { group in
+            let sorted = group.activities.sorted { a, b in
+                switch (a.lastUsed, b.lastUsed) {
+                case (nil, nil): return false
+                case (nil, _): return true
+                case (_, nil): return false
+                case (let la?, let lb?): return la < lb
+                }
+            }
+            return (category: group.category, activities: sorted)
+        }
     }
 
     var body: some View {
@@ -54,23 +56,7 @@ struct SessionSetupView: View {
                     )
                 } else {
                     List {
-                        // Suggested section - shown only when SuggestionsService returns non-empty
-                        if !suggestedActivities.isEmpty {
-                            Section(header: Text("Suggested")) {
-                                ForEach(suggestedActivities) { activity in
-                                    SelectableActivityRow(
-                                        activity: activity,
-                                        isSelected: selectedActivityIds.contains(activity.id ?? "")
-                                    )
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        toggleSelection(activity)
-                                    }
-                                }
-                            }
-                        }
-
-                        // Activity selection section - grouped by category
+                        // Activity selection section - grouped by category, sorted by recency
                         ForEach(groupedActivities, id: \.category) { group in
                             Section(header: Text(group.category)) {
                                 ForEach(group.activities) { activity in
@@ -213,10 +199,10 @@ struct SelectableActivityRow: View {
                 .foregroundColor(.blue)
                 .frame(width: 30)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(activity.name)
                     .font(.headline)
-                Text(activity.category)
+                Text(lastPracticedText(activity.lastUsed))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -234,6 +220,20 @@ struct SelectableActivityRow: View {
 
     private var categoryIcon: String {
         ActivityCategory(rawValue: activity.category)?.icon ?? "ellipsis.circle"
+    }
+
+    private func lastPracticedText(_ lastUsed: String?) -> String {
+        guard let str = lastUsed, let date = Date(iso8601String: str) else {
+            return "Never practiced"
+        }
+        let days = Calendar.current.dateComponents([.day],
+            from: Calendar.current.startOfDay(for: date),
+            to: Calendar.current.startOfDay(for: Date())).day ?? 0
+        switch days {
+        case 0: return "Practiced today"
+        case 1: return "Practiced yesterday"
+        default: return "Practiced \(days) days ago"
+        }
     }
 }
 
