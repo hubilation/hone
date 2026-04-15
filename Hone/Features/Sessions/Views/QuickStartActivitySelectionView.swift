@@ -37,7 +37,29 @@ struct QuickStartActivitySelectionView: View {
     }
 
     private var groupedActivities: [(category: String, activities: [Activity])] {
-        ActivityGrouping.grouped(filteredActivities)
+        ActivityGrouping.grouped(filteredActivities).map { group in
+            let sorted = group.activities.sorted { a, b in
+                switch (a.lastUsed, b.lastUsed) {
+                case (nil, nil): return false
+                case (nil, _): return true
+                case (_, nil): return false
+                case (let la?, let lb?): return la < lb
+                }
+            }
+            return (category: group.category, activities: sorted)
+        }
+    }
+
+    private func lastPracticedText(_ lastUsed: String?) -> String {
+        guard let str = lastUsed, let date = Date(iso8601String: str) else { return "Never practiced" }
+        let days = Calendar.current.dateComponents([.day],
+            from: Calendar.current.startOfDay(for: date),
+            to: Calendar.current.startOfDay(for: Date())).day ?? 0
+        switch days {
+        case 0: return "Practiced today"
+        case 1: return "Practiced yesterday"
+        default: return "Practiced \(days) days ago"
+        }
     }
 
     var body: some View {
@@ -64,12 +86,11 @@ struct QuickStartActivitySelectionView: View {
                                                 .foregroundColor(.blue)
                                                 .frame(width: 30)
 
-                                            VStack(alignment: .leading, spacing: 4) {
+                                            VStack(alignment: .leading, spacing: 2) {
                                                 Text(activity.name)
                                                     .font(.headline)
                                                     .foregroundColor(.primary)
-
-                                                Text(activity.category)
+                                                Text(lastPracticedText(activity.lastUsed))
                                                     .font(.caption)
                                                     .foregroundColor(.secondary)
                                             }

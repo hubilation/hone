@@ -34,6 +34,10 @@ struct QuickStartView: View {
         }.count
     }
 
+    private var streak: Int {
+        SuggestionsService.currentStreak(sessions: sessionHistoryViewModel.sessions)
+    }
+
     private var greetingMessage: String {
         switch todaySessionCount {
         case 0:
@@ -98,7 +102,6 @@ struct QuickStartView: View {
                 .padding(.horizontal, 40)
 
                 // Streak — own element, only shown when > 0
-                let streak = SuggestionsService.currentStreak(sessions: sessionHistoryViewModel.sessions)
                 if streak > 0 {
                     HStack(spacing: 6) {
                         Image(systemName: "flame.fill")
