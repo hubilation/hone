@@ -63,7 +63,7 @@
 		3DC9B0012F8F000000089986 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		425BFF179CCC4ED7B0E677C1 /* SuggestionsServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuggestionsServiceTests.swift; sourceTree = "<group>"; };
 		B07EC0B0E61CAE151334F9EB /* ActivityCategoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActivityCategoryTests.swift; sourceTree = "<group>"; };
-		E7A8706C536D1F86E4F871B3 /* Hone Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "Hone Tests.xctest"; path = "Hone Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7A8706C536D1F86E4F871B3 /* Hone Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Hone Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DF8B8135CB464430EC83BF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		F454ED4089BB996CAA7ADB94 /* ActivityRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActivityRepositoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -89,8 +89,6 @@
 		};
 		3DC9A0252F8E9DE600089986 /* HoneLiveActivity */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = HoneLiveActivity;
 			sourceTree = "<group>";
 		};

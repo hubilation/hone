@@ -11,34 +11,28 @@ import SwiftUI
 /// Shows list of active activities, tap to add
 struct AddActivityToSessionView: View {
     let userId: String
-    @ObservedObject var viewModel: SessionViewModel
+    /// Snapshot of activity IDs already in the session — captured at sheet-open time.
+    /// Passed as a value so this view never observes SessionViewModel (whose timer
+    /// fires 10×/s and would cause constant re-renders).
+    let sessionActivityIds: Set<String>
+    let onAdd: (Activity) async -> Void
     @Binding var isPresented: Bool
 
     @StateObject private var activityViewModel: ActivityViewModel
     @State private var searchText = ""
+    /// Frozen on first load — never re-sorted mid-session to avoid list instability
+    @State private var frozenGroupedActivities: [(category: String, activities: [Activity])] = []
 
-    private let sessions: [Session]
-
-    init(userId: String, viewModel: SessionViewModel, isPresented: Binding<Bool>, sessions: [Session] = []) {
+    init(userId: String, sessionActivityIds: Set<String>, onAdd: @escaping (Activity) async -> Void, isPresented: Binding<Bool>) {
         self.userId = userId
-        self.viewModel = viewModel
-        self.sessions = sessions
+        self.sessionActivityIds = sessionActivityIds
+        self.onAdd = onAdd
         self._isPresented = isPresented
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
     }
 
-    var filteredActivities: [Activity] {
-        if searchText.isEmpty {
-            return activityViewModel.activeActivities
-        } else {
-            return activityViewModel.activeActivities.filter {
-                $0.name.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-    }
-
-    private var groupedActivities: [(category: String, activities: [Activity])] {
-        ActivityGrouping.grouped(filteredActivities).map { group in
+    private func buildGroupedActivities(_ activities: [Activity]) -> [(category: String, activities: [Activity])] {
+        ActivityGrouping.grouped(activities).map { group in
             let sorted = group.activities.sorted { a, b in
                 switch (a.lastUsed, b.lastUsed) {
                 case (nil, nil): return false
@@ -51,61 +45,21 @@ struct AddActivityToSessionView: View {
         }
     }
 
-    private var activitiesInSession: Set<String> {
-        Set(viewModel.activities.compactMap { $0.activityId })
-    }
-
-    private func isActivityInSession(_ activity: Activity) -> Bool {
-        guard let activityId = activity.id else { return false }
-        return activitiesInSession.contains(activityId)
+    private var displayedGroups: [(category: String, activities: [Activity])] {
+        guard !searchText.isEmpty else { return frozenGroupedActivities }
+        return frozenGroupedActivities.compactMap { group in
+            let filtered = group.activities.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            return filtered.isEmpty ? nil : (category: group.category, activities: filtered)
+        }
     }
 
     var body: some View {
         NavigationStack {
             List {
-                ForEach(groupedActivities, id: \.category) { group in
+                ForEach(displayedGroups, id: \.category) { group in
                     Section(header: Text(group.category)) {
                         ForEach(group.activities) { activity in
-                            let alreadyAdded = isActivityInSession(activity)
-
-                            Button(action: {
-                                guard !alreadyAdded else { return }
-                                Task {
-                                    await viewModel.addActivity(activity)
-                                    isPresented = false
-                                }
-                            }) {
-                                HStack(spacing: 12) {
-                                    Image(systemName: categoryIcon(for: activity))
-                                        .foregroundColor(alreadyAdded ? .gray : .blue)
-                                        .frame(width: 30)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(activity.name)
-                                            .font(.headline)
-                                            .foregroundColor(alreadyAdded ? .secondary : .primary)
-                                        Text(lastPracticedText(activity.lastUsed))
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-
-                                    Spacer()
-
-                                    if alreadyAdded {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundColor(.gray)
-                                            .font(.title3)
-                                    } else {
-                                        Image(systemName: "plus.circle.fill")
-                                            .foregroundColor(.blue)
-                                            .font(.title3)
-                                    }
-                                }
-                                .padding(.vertical, 4)
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(alreadyAdded)
-                            .opacity(alreadyAdded ? 0.5 : 1.0)
+                            activityRow(activity)
                         }
                     }
                 }
@@ -124,6 +78,46 @@ struct AddActivityToSessionView: View {
         .onAppear {
             activityViewModel.startListening()
         }
+        .onChange(of: activityViewModel.activeActivities) { newActivities in
+            guard frozenGroupedActivities.isEmpty else { return }
+            frozenGroupedActivities = buildGroupedActivities(newActivities)
+        }
+    }
+
+    @ViewBuilder
+    private func activityRow(_ activity: Activity) -> some View {
+        let alreadyAdded = activity.id.map { sessionActivityIds.contains($0) } ?? false
+        let iconName = alreadyAdded ? "checkmark.circle.fill" : "plus.circle.fill"
+        let iconColor: Color = alreadyAdded ? .gray : .blue
+        Button(action: {
+            guard !alreadyAdded else { return }
+            Task {
+                await onAdd(activity)
+                isPresented = false
+            }
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: categoryIcon(for: activity))
+                    .foregroundColor(alreadyAdded ? .gray : .blue)
+                    .frame(width: 30)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(activity.name)
+                        .font(.headline)
+                        .foregroundColor(alreadyAdded ? .secondary : .primary)
+                    Text(lastPracticedText(activity.lastUsed))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: iconName)
+                    .foregroundColor(iconColor)
+                    .font(.title3)
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+        .disabled(alreadyAdded)
+        .opacity(alreadyAdded ? 0.5 : 1.0)
     }
 
     private func categoryIcon(for activity: Activity) -> String {
@@ -148,7 +142,8 @@ struct AddActivityToSessionView: View {
 #Preview {
     AddActivityToSessionView(
         userId: "preview-user",
-        viewModel: SessionViewModel(userId: "preview-user"),
+        sessionActivityIds: [],
+        onAdd: { _ in },
         isPresented: .constant(true)
     )
 }

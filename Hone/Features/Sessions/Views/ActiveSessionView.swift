@@ -114,7 +114,8 @@ struct ActiveSessionView: View {
                         // Large timer display - tap to pause/resume
                         VStack(spacing: 8) {
                             TimerDisplayView(
-                                elapsedTime: viewModel.elapsedTime,
+                                startDate: viewModel.activityStartDate,
+                                pausedElapsed: viewModel.activityPausedElapsed,
                                 isPaused: viewModel.sessionState == .paused
                             )
                             .contentShape(Rectangle())
@@ -212,7 +213,8 @@ struct ActiveSessionView: View {
             // Hide when keyboard is visible to prevent confusion with save note button
             if !isNotesFocused {
                 SessionHeaderView(
-                    totalSessionTime: viewModel.totalSessionTime,
+                    sessionStartDate: viewModel.sessionTimerStartDate,
+                    sessionPausedElapsed: viewModel.sessionPausedElapsed,
                     isPaused: viewModel.sessionState == .paused,
                     currentActivityName: nil,
                     hasNextActivity: !viewModel.upcomingActivities.isEmpty,
@@ -231,7 +233,12 @@ struct ActiveSessionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .sheet(isPresented: $showingAddActivity) {
-            AddActivityToSessionView(userId: viewModel.userId, viewModel: viewModel, isPresented: $showingAddActivity)
+            AddActivityToSessionView(
+                userId: viewModel.userId,
+                sessionActivityIds: Set(viewModel.activities.compactMap { $0.activityId }),
+                onAdd: { activity in await viewModel.addActivity(activity) },
+                isPresented: $showingAddActivity
+            )
         }
         .alert("Complete Activity?", isPresented: $showingCompleteConfirmation) {
             Button("Cancel", role: .cancel) { }

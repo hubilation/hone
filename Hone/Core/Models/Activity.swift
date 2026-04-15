@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct PracticeNote: Codable, Identifiable {
+struct PracticeNote: Codable, Identifiable, Equatable {
     var id: String { timestamp }
     let notes: String
     let sessionId: String
@@ -36,7 +36,7 @@ struct PracticeNote: Codable, Identifiable {
     }
 }
 
-struct Activity: Codable, Identifiable {
+struct Activity: Codable, Identifiable, Equatable {
     var id: String?  // Document ID - populated manually from snapshot in repository
     let name: String
     let category: String

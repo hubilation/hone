@@ -1,0 +1,49 @@
+{
+  "" : {
+    "diagnostics" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityExtension-primary.dia",
+    "emit-module-dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityExtension-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityExtension-primary-emit-module.dia",
+    "pch" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityExtension-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityExtension-primary.swiftdeps"
+  },
+  "/Users/zackhuber/Documents/git/Hone/Hone/Core/LiveActivity/HoneLiveActivityAttributes.swift" : {
+    "const-values" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes.swiftconstvalues",
+    "dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes.d",
+    "diagnostics" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes.dia",
+    "index-unit-output-path" : "/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes.o",
+    "llvm-bc" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes.bc",
+    "object" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes.o",
+    "swift-dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes.swiftdeps",
+    "swiftmodule" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityAttributes~partial.swiftmodule"
+  },
+  "/Users/zackhuber/Documents/git/Hone/HoneLiveActivity/HoneLiveActivityBundle.swift" : {
+    "const-values" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle.swiftconstvalues",
+    "dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle.d",
+    "diagnostics" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle.dia",
+    "index-unit-output-path" : "/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle.o",
+    "llvm-bc" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle.bc",
+    "object" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle.o",
+    "swift-dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle.swiftdeps",
+    "swiftmodule" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityBundle~partial.swiftmodule"
+  },
+  "/Users/zackhuber/Documents/git/Hone/HoneLiveActivity/HoneLiveActivityWidget.swift" : {
+    "const-values" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget.swiftconstvalues",
+    "dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget.d",
+    "diagnostics" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget.dia",
+    "index-unit-output-path" : "/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget.o",
+    "llvm-bc" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget.bc",
+    "object" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget.o",
+    "swift-dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget.swiftdeps",
+    "swiftmodule" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/HoneLiveActivityWidget~partial.swiftmodule"
+  },
+  "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/zackhuber/Documents/git/Hone/build/Hone.build/Debug-iphoneos/HoneLiveActivityExtension.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

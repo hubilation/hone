@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
+import Combine
 
 /// Docked session header showing total time with pause and complete controls
-/// Supports two modes: compact (top of other views) and full (bottom of active session)
+/// Self-ticking: owns its local timer so SessionViewModel timer ticks
+/// do NOT cause parent view re-renders.
 struct SessionHeaderView: View {
-    let totalSessionTime: TimeInterval
+    /// When the overall session timer started. Nil when paused.
+    let sessionStartDate: Date?
+    /// Session elapsed time accumulated before the current run started.
+    let sessionPausedElapsed: TimeInterval
     let isPaused: Bool
     let currentActivityName: String?
     let hasNextActivity: Bool
@@ -21,15 +26,15 @@ struct SessionHeaderView: View {
     let onTap: (() -> Void)?
     let onAddActivity: (() -> Void)?
 
+    @State private var displayed: TimeInterval = 0
+
+    private let ticker = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     var body: some View {
         HStack(spacing: 12) {
             // Pause/Resume button (icon only)
             Button(action: {
-                if isPaused {
-                    onResume()
-                } else {
-                    onPause()
-                }
+                if isPaused { onResume() } else { onPause() }
             }) {
                 Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
                     .font(.title2)
@@ -49,7 +54,7 @@ struct SessionHeaderView: View {
                     Text(currentActivityName != nil ? "Session" : "Session Time")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Text(formatTime(totalSessionTime))
+                    Text(formatTime(displayed))
                         .font(currentActivityName != nil ? .caption : .title2)
                         .fontWeight(currentActivityName != nil ? .regular : .semibold)
                         .monospacedDigit()
@@ -57,9 +62,7 @@ struct SessionHeaderView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
-            .onTapGesture {
-                onTap?()
-            }
+            .onTapGesture { onTap?() }
 
             // Add activity button
             if let addActivity = onAddActivity {
@@ -97,13 +100,28 @@ struct SessionHeaderView: View {
                 .background(Color(uiColor: .separator)),
             alignment: currentActivityName != nil ? .bottom : .top
         )
+        .onAppear { updateDisplayed() }
+        .onReceive(ticker) { _ in
+            guard !isPaused else { return }
+            updateDisplayed()
+        }
+        .onChange(of: isPaused) { _, _ in updateDisplayed() }
+        .onChange(of: sessionStartDate) { _, _ in updateDisplayed() }
+        .onChange(of: sessionPausedElapsed) { _, _ in updateDisplayed() }
+    }
+
+    private func updateDisplayed() {
+        if let sessionStartDate, !isPaused {
+            displayed = sessionPausedElapsed + Date().timeIntervalSince(sessionStartDate)
+        } else {
+            displayed = sessionPausedElapsed
+        }
     }
 
     private func formatTime(_ time: TimeInterval) -> String {
         let hours = Int(time) / 3600
         let minutes = (Int(time) % 3600) / 60
         let seconds = Int(time) % 60
-
         if hours > 0 {
             return String(format: "%d:%02d:%02d", hours, minutes, seconds)
         } else {
@@ -114,32 +132,31 @@ struct SessionHeaderView: View {
 
 #Preview {
     VStack(spacing: 20) {
-        // Compact mode (shown at top of other views)
         SessionHeaderView(
-            totalSessionTime: 3725,
+            sessionStartDate: Date().addingTimeInterval(-3725),
+            sessionPausedElapsed: 0,
             isPaused: false,
             currentActivityName: "Scales Practice",
             hasNextActivity: true,
-            onPause: { print("Pause") },
-            onResume: { print("Resume") },
-            onComplete: { print("Complete") },
-            onSkipNext: { print("Skip") },
-            onTap: { print("Tap to open session") },
-            onAddActivity: { print("Add activity") }
+            onPause: {},
+            onResume: {},
+            onComplete: {},
+            onSkipNext: {},
+            onTap: { print("Tap") },
+            onAddActivity: {}
         )
-
-        // Full mode (shown at bottom of active session)
         SessionHeaderView(
-            totalSessionTime: 125,
+            sessionStartDate: nil,
+            sessionPausedElapsed: 125,
             isPaused: true,
             currentActivityName: nil,
             hasNextActivity: false,
-            onPause: { print("Pause") },
-            onResume: { print("Resume") },
-            onComplete: { print("Complete") },
+            onPause: {},
+            onResume: {},
+            onComplete: {},
             onSkipNext: nil,
             onTap: nil,
-            onAddActivity: { print("Add activity") }
+            onAddActivity: {}
         )
     }
 }

@@ -21,7 +21,8 @@ struct CompactSessionHeader: ViewModifier {
             // Show header if session is active (not in setup or ended state)
             if sessionViewModel.sessionState != .setup && sessionViewModel.sessionState != .ended {
                 SessionHeaderView(
-                    totalSessionTime: sessionViewModel.totalSessionTime,
+                    sessionStartDate: sessionViewModel.sessionTimerStartDate,
+                    sessionPausedElapsed: sessionViewModel.sessionPausedElapsed,
                     isPaused: sessionViewModel.sessionState == .paused,
                     currentActivityName: sessionViewModel.currentActivityName,
                     hasNextActivity: !sessionViewModel.upcomingActivities.isEmpty,
@@ -74,7 +75,8 @@ struct CompactSessionHeader: ViewModifier {
         .sheet(isPresented: $showingAddActivity) {
             AddActivityToSessionView(
                 userId: sessionViewModel.userId,
-                viewModel: sessionViewModel,
+                sessionActivityIds: Set(sessionViewModel.activities.compactMap { $0.activityId }),
+                onAdd: { activity in await sessionViewModel.addActivity(activity) },
                 isPresented: $showingAddActivity
             )
         }

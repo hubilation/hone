@@ -18,7 +18,6 @@ private func formattedTime(_ seconds: TimeInterval) -> String {
 
 // MARK: - Widget
 
-@available(iOSApplicationExtension 16.2, *)
 struct HoneLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: HoneLiveActivityAttributes.self) { context in

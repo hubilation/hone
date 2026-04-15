@@ -16,6 +16,8 @@ struct SessionSetupView: View {
     @State private var isEditMode: EditMode = .inactive
     @State private var showingError = false
     @State private var errorMessage = ""
+    /// Frozen on first load — never re-sorted mid-session to avoid list instability
+    @State private var frozenGroupedActivities: [(category: String, activities: [Activity])] = []
 
     private let userId: String
     private let sessions: [Session]
@@ -28,9 +30,8 @@ struct SessionSetupView: View {
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
     }
 
-    /// Grouped activities by category, each group sorted by recency (least recently practiced first)
-    private var groupedActivities: [(category: String, activities: [Activity])] {
-        ActivityGrouping.grouped(activityViewModel.activeActivities).map { group in
+    private func buildGroupedActivities(_ activities: [Activity]) -> [(category: String, activities: [Activity])] {
+        ActivityGrouping.grouped(activities).map { group in
             let sorted = group.activities.sorted { a, b in
                 switch (a.lastUsed, b.lastUsed) {
                 case (nil, nil): return false
@@ -57,7 +58,7 @@ struct SessionSetupView: View {
                 } else {
                     List {
                         // Activity selection section - grouped by category, sorted by recency
-                        ForEach(groupedActivities, id: \.category) { group in
+                        ForEach(frozenGroupedActivities, id: \.category) { group in
                             Section(header: Text(group.category)) {
                                 ForEach(group.activities) { activity in
                                     SelectableActivityRow(
@@ -144,6 +145,10 @@ struct SessionSetupView: View {
         }
         .onAppear {
             activityViewModel.startListening()
+        }
+        .onChange(of: activityViewModel.activeActivities) { newActivities in
+            guard frozenGroupedActivities.isEmpty else { return }
+            frozenGroupedActivities = buildGroupedActivities(newActivities)
         }
         .alert("Error", isPresented: $showingError) {
             Button("OK") { }

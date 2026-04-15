@@ -1,0 +1,4 @@
+module GoogleUtilities_UserDefaults {
+umbrella "/Users/zackhuber/Library/Developer/Xcode/DerivedData/Hone-cozehypufwqkktcupzvyqgjnelek/SourcePackages/checkouts/GoogleUtilities/GoogleUtilities/UserDefaults/Public"
+export *
+}
