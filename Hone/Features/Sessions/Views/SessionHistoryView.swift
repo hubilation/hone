@@ -5,6 +5,7 @@ struct SessionHistoryView: View {
     @State private var selectedSession: Session?
     @State private var sessionToDelete: Session?
     @State private var showingDeleteConfirmation = false
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private let userId: String
 
@@ -14,61 +15,100 @@ struct SessionHistoryView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(viewModel.groupedSessions) { group in
-                    Section(header: Text(group.dayHeader)) {
-                        ForEach(group.sessions) { session in
-                            SessionHistoryRow(
-                                session: session,
-                                activities: viewModel.sessionActivities[session.id ?? ""] ?? []
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                selectedSession = session
+        Group {
+            if horizontalSizeClass == .regular {
+                // iPad: two-column NavigationSplitView
+                NavigationSplitView {
+                    sessionList
+                        .navigationTitle("History")
+                        .overlay {
+                            if viewModel.sessions.isEmpty && !viewModel.isLoading {
+                                ContentUnavailableView(
+                                    "No Practice History",
+                                    systemImage: "calendar",
+                                    description: Text("Start a practice session to see your history")
+                                )
                             }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    sessionToDelete = session
-                                    showingDeleteConfirmation = true
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
+                        }
+                } detail: {
+                    if let session = selectedSession {
+                        ReactiveSessionSummaryView(
+                            session: session,
+                            viewModel: viewModel
+                        )
+                    } else {
+                        ContentUnavailableView(
+                            "Select a Session",
+                            systemImage: "calendar",
+                            description: Text("Choose a session from the sidebar to view details")
+                        )
+                    }
+                }
+            } else {
+                // iPhone: standard NavigationStack with sheet presentation
+                NavigationStack {
+                    sessionList
+                        .navigationTitle("History")
+                        .overlay {
+                            if viewModel.sessions.isEmpty && !viewModel.isLoading {
+                                ContentUnavailableView(
+                                    "No Practice History",
+                                    systemImage: "calendar",
+                                    description: Text("Start a practice session to see your history")
+                                )
+                            }
+                        }
+                        .sheet(item: $selectedSession) { session in
+                            ReactiveSessionSummaryView(
+                                session: session,
+                                viewModel: viewModel
+                            )
+                        }
+                }
+            }
+        }
+        .alert("Delete Session?", isPresented: $showingDeleteConfirmation, presenting: sessionToDelete) { session in
+            Button("Delete", role: .destructive) {
+                Task {
+                    await viewModel.deleteSession(session)
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: { _ in
+            Text("This will permanently delete this practice session. This action cannot be undone.")
+        }
+        .onAppear {
+            print("DEBUG: SessionHistoryView.onAppear called with userId: '\(userId)'")
+            viewModel.startListening()
+        }
+    }
+
+    // MARK: - Shared List Content
+
+    private var sessionList: some View {
+        List {
+            ForEach(viewModel.groupedSessions) { group in
+                Section(header: Text(group.dayHeader)) {
+                    ForEach(group.sessions) { session in
+                        SessionHistoryRow(
+                            session: session,
+                            activities: viewModel.sessionActivities[session.id ?? ""] ?? []
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedSession = session
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                sessionToDelete = session
+                                showingDeleteConfirmation = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("History")
-            .overlay {
-                if viewModel.sessions.isEmpty && !viewModel.isLoading {
-                    ContentUnavailableView(
-                        "No Practice History",
-                        systemImage: "calendar",
-                        description: Text("Start a practice session to see your history")
-                    )
-                }
-            }
-            .sheet(item: $selectedSession) { session in
-                ReactiveSessionSummaryView(
-                    session: session,
-                    viewModel: viewModel
-                )
-            }
-            .alert("Delete Session?", isPresented: $showingDeleteConfirmation, presenting: sessionToDelete) { session in
-                Button("Delete", role: .destructive) {
-                    Task {
-                        await viewModel.deleteSession(session)
-                    }
-                }
-                Button("Cancel", role: .cancel) { }
-            } message: { _ in
-                Text("This will permanently delete this practice session. This action cannot be undone.")
-            }
-        }
-        .onAppear {
-            print("DEBUG: SessionHistoryView.onAppear called with userId: '\(userId)'")
-            viewModel.startListening()
         }
     }
 }

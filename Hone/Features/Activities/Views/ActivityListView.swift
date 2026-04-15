@@ -11,6 +11,7 @@ struct ActivityListView: View {
     @StateObject private var viewModel: ActivityViewModel
     @State private var showingCreateSheet = false
     @State private var editingActivity: Activity?
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private let userId: String
 
@@ -25,91 +26,167 @@ struct ActivityListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(groupedActivities, id: \.category) { group in
-                    Section(header: Text(group.category)) {
-                        ForEach(group.activities) { activity in
-                            ActivityRowView(activity: activity)
-                                .onTapGesture {
-                                    editingActivity = activity
+        Group {
+            if horizontalSizeClass == .regular {
+                // iPad: two-column NavigationSplitView
+                NavigationSplitView {
+                    activityList
+                        .navigationTitle("Activities")
+                        .toolbar {
+                            ToolbarItem(placement: .primaryAction) {
+                                Button {
+                                    showingCreateSheet = true
+                                } label: {
+                                    Image(systemName: "plus")
                                 }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    // Delete (leftmost, red)
-                                    Button(role: .destructive) {
-                                        Task { await viewModel.deleteActivity(activity) }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
+                            }
 
-                                    // Archive (rightmost, orange)
-                                    Button {
-                                        Task { await viewModel.archiveActivity(activity) }
-                                    } label: {
-                                        Label("Archive", systemImage: "archivebox")
-                                    }
-                                    .tint(.orange)
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                NavigationLink {
+                                    ArchivedActivityListView(viewModel: viewModel)
+                                } label: {
+                                    Label("Archived", systemImage: "archivebox")
                                 }
+                            }
+
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                NavigationLink {
+                                    ActivityStatisticsView(
+                                        userId: userId,
+                                        activities: viewModel.activeActivities
+                                    )
+                                } label: {
+                                    Label("Statistics", systemImage: "chart.bar")
+                                }
+                            }
                         }
-                    }
-                }
-            }
-            .navigationTitle("Activities")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showingCreateSheet = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink {
-                        ArchivedActivityListView(viewModel: viewModel)
-                    } label: {
-                        Label("Archived", systemImage: "archivebox")
-                    }
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink {
-                        ActivityStatisticsView(
-                            userId: userId,
-                            activities: viewModel.activeActivities
+                        .sheet(isPresented: $showingCreateSheet) {
+                            ActivityFormView(activity: nil, onSave: { name, category in
+                                Task {
+                                    await viewModel.createActivity(name: name, category: category)
+                                }
+                            })
+                        }
+                        .overlay {
+                            if viewModel.activeActivities.isEmpty && !viewModel.isLoading {
+                                ContentUnavailableView(
+                                    "No Activities",
+                                    systemImage: "music.note.list",
+                                    description: Text("Tap + to create your first practice activity")
+                                )
+                            }
+                        }
+                } detail: {
+                    if let activity = editingActivity {
+                        ActivityFormView(activity: activity, onSave: { name, category in
+                            Task {
+                                await viewModel.updateActivity(activity, name: name, category: category)
+                                editingActivity = nil
+                            }
+                        })
+                    } else {
+                        ContentUnavailableView(
+                            "Select an Activity",
+                            systemImage: "music.note",
+                            description: Text("Choose an activity from the sidebar to edit")
                         )
-                    } label: {
-                        Label("Statistics", systemImage: "chart.bar")
                     }
                 }
-            }
-            .sheet(isPresented: $showingCreateSheet) {
-                ActivityFormView(activity: nil, onSave: { name, category in
-                    Task {
-                        await viewModel.createActivity(name: name, category: category)
-                    }
-                })
-            }
-            .sheet(item: $editingActivity) { activity in
-                ActivityFormView(activity: activity, onSave: { name, category in
-                    Task {
-                        await viewModel.updateActivity(activity, name: name, category: category)
-                    }
-                })
-            }
-            .overlay {
-                if viewModel.activeActivities.isEmpty && !viewModel.isLoading {
-                    ContentUnavailableView(
-                        "No Activities",
-                        systemImage: "music.note.list",
-                        description: Text("Tap + to create your first practice activity")
-                    )
+            } else {
+                // iPhone: standard NavigationStack
+                NavigationStack {
+                    activityList
+                        .navigationTitle("Activities")
+                        .toolbar {
+                            ToolbarItem(placement: .primaryAction) {
+                                Button {
+                                    showingCreateSheet = true
+                                } label: {
+                                    Image(systemName: "plus")
+                                }
+                            }
+
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                NavigationLink {
+                                    ArchivedActivityListView(viewModel: viewModel)
+                                } label: {
+                                    Label("Archived", systemImage: "archivebox")
+                                }
+                            }
+
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                NavigationLink {
+                                    ActivityStatisticsView(
+                                        userId: userId,
+                                        activities: viewModel.activeActivities
+                                    )
+                                } label: {
+                                    Label("Statistics", systemImage: "chart.bar")
+                                }
+                            }
+                        }
+                        .sheet(isPresented: $showingCreateSheet) {
+                            ActivityFormView(activity: nil, onSave: { name, category in
+                                Task {
+                                    await viewModel.createActivity(name: name, category: category)
+                                }
+                            })
+                        }
+                        .sheet(item: $editingActivity) { activity in
+                            ActivityFormView(activity: activity, onSave: { name, category in
+                                Task {
+                                    await viewModel.updateActivity(activity, name: name, category: category)
+                                }
+                            })
+                        }
+                        .overlay {
+                            if viewModel.activeActivities.isEmpty && !viewModel.isLoading {
+                                ContentUnavailableView(
+                                    "No Activities",
+                                    systemImage: "music.note.list",
+                                    description: Text("Tap + to create your first practice activity")
+                                )
+                            }
+                        }
                 }
             }
         }
         .onAppear {
             print("DEBUG: ActivityListView.onAppear called")
             viewModel.startListening()
+        }
+    }
+
+    // MARK: - Shared List Content
+
+    private var activityList: some View {
+        List {
+            ForEach(groupedActivities, id: \.category) { group in
+                Section(header: Text(group.category)) {
+                    ForEach(group.activities) { activity in
+                        ActivityRowView(activity: activity)
+                            .onTapGesture {
+                                editingActivity = activity
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                // Delete (leftmost, red)
+                                Button(role: .destructive) {
+                                    Task { await viewModel.deleteActivity(activity) }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+
+                                // Archive (rightmost, orange)
+                                Button {
+                                    Task { await viewModel.archiveActivity(activity) }
+                                } label: {
+                                    Label("Archive", systemImage: "archivebox")
+                                }
+                                .tint(.orange)
+                            }
+                    }
+                }
+            }
         }
     }
 }
