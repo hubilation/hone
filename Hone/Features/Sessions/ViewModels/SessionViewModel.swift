@@ -44,13 +44,27 @@ enum SessionState: String {
 final class SessionViewModel: ObservableObject {
     // MARK: - Published State
 
-    @Published var elapsedTime: TimeInterval = 0
-    @Published var totalSessionTime: TimeInterval = 0
+    /// NOT @Published — updated 10×/s by timer but views must NOT observe directly.
+    /// Use activityStartDate + activityPausedElapsed in TimerDisplayView instead.
+    var elapsedTime: TimeInterval = 0
+    /// NOT @Published — same reason. Use sessionTimerStartDate + sessionPausedElapsed instead.
+    var totalSessionTime: TimeInterval = 0
     @Published var sessionState: SessionState = .setup
     @Published var currentActivityIndex: Int = 0
     @Published var activities: [SessionActivity] = []
     @Published var currentSession: Session?
     @Published var historicalNotes: [PracticeNote] = []
+
+    // MARK: - Timer Config (Published — change only on start/pause/resume, not every tick)
+
+    /// When the current activity timer started. Nil when paused.
+    @Published private(set) var activityStartDate: Date?
+    /// Accumulated activity elapsed time at last pause.
+    @Published private(set) var activityPausedElapsed: TimeInterval = 0
+    /// When the overall session timer started. Nil when paused.
+    @Published private(set) var sessionTimerStartDate: Date?
+    /// Accumulated session elapsed time at last pause.
+    @Published private(set) var sessionPausedElapsed: TimeInterval = 0
 
     // MARK: - Dependencies
 
@@ -60,14 +74,6 @@ final class SessionViewModel: ObservableObject {
 
     // MARK: - Timer State (CRITICAL: Date-based, not tick counter)
 
-    /// Start time as Date for backgrounding survival
-    private var startTime: Date?
-    /// Accumulated elapsed time when paused
-    private var pausedElapsedTime: TimeInterval = 0
-    /// Session start time for total session duration
-    private var sessionStartTime: Date?
-    /// Accumulated total session time when paused
-    private var pausedSessionTime: TimeInterval = 0
     /// Timer publisher cancellable
     private var timerCancellable: AnyCancellable?
 
@@ -143,8 +149,8 @@ final class SessionViewModel: ObservableObject {
         sessionState = .active
 
         // Initialize session timer
-        sessionStartTime = now
-        pausedSessionTime = 0
+        sessionTimerStartDate = now
+        sessionPausedElapsed = 0
         totalSessionTime = 0
 
         // Start timer
@@ -160,25 +166,24 @@ final class SessionViewModel: ObservableObject {
     /// Start date-based timer with .common RunLoop mode
     private func startTimer() {
         let start = Date()
-        startTime = start
+        activityStartDate = start
         sessionState = .active
 
         // Initialize session start time if not set
-        if sessionStartTime == nil {
-            sessionStartTime = start
+        if sessionTimerStartDate == nil {
+            sessionTimerStartDate = start
         }
 
         // CRITICAL: Use .common RunLoop mode (not .default) for smooth updates during interaction
+        // Updates elapsedTime/totalSessionTime for internal calculations (endSession, Live Activity)
+        // but these are NOT @Published so they do NOT trigger view re-renders.
         timerCancellable = Timer.publish(every: 0.1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
-                guard let self = self, let startTime = self.startTime else { return }
-                // CRITICAL: Date-based calculation survives backgrounding
-                self.elapsedTime = self.pausedElapsedTime + Date().timeIntervalSince(startTime)
-
-                // Update total session time
-                if let sessionStartTime = self.sessionStartTime {
-                    self.totalSessionTime = self.pausedSessionTime + Date().timeIntervalSince(sessionStartTime)
+                guard let self = self, let startDate = self.activityStartDate else { return }
+                self.elapsedTime = self.activityPausedElapsed + Date().timeIntervalSince(startDate)
+                if let sessionStart = self.sessionTimerStartDate {
+                    self.totalSessionTime = self.sessionPausedElapsed + Date().timeIntervalSince(sessionStart)
                 }
             }
     }
@@ -190,10 +195,10 @@ final class SessionViewModel: ObservableObject {
         timerCancellable = nil
 
         // Preserve accumulated time
-        pausedElapsedTime = elapsedTime
-        pausedSessionTime = totalSessionTime
-        startTime = nil
-        sessionStartTime = nil
+        activityPausedElapsed = elapsedTime
+        sessionPausedElapsed = totalSessionTime
+        activityStartDate = nil
+        sessionTimerStartDate = nil
         sessionState = .paused
 
         // Persist to Firestore for crash recovery
@@ -259,7 +264,7 @@ final class SessionViewModel: ObservableObject {
         // Check if session is complete
         if currentActivityIndex < activities.count {
             // Reset timer for next activity
-            pausedElapsedTime = 0
+            activityPausedElapsed = 0
             elapsedTime = 0
             sessionState = .active
             activities[currentActivityIndex].startTime = nowString
@@ -310,7 +315,7 @@ final class SessionViewModel: ObservableObject {
         currentActivityIndex = targetIndex
 
         // Reset timer for new activity
-        pausedElapsedTime = 0
+        activityPausedElapsed = 0
         elapsedTime = 0
         sessionState = .active
         activities[currentActivityIndex].startTime = nowString
@@ -333,7 +338,7 @@ final class SessionViewModel: ObservableObject {
             id: nil,
             activityId: nil,
             activityName: "Break",
-            startTime: startTime?.toISO8601String() ?? nowString,
+            startTime: activityStartDate?.toISO8601String() ?? nowString,
             endTime: nowString,
             duration: Int(elapsedTime),
             notes: nil,
@@ -355,7 +360,7 @@ final class SessionViewModel: ObservableObject {
         // Check if session is complete
         if currentActivityIndex < activities.count {
             // Reset timer for next activity
-            pausedElapsedTime = 0
+            activityPausedElapsed = 0
             elapsedTime = 0
             sessionState = .active
             activities[currentActivityIndex].startTime = nowString
@@ -483,48 +488,51 @@ final class SessionViewModel: ObservableObject {
         timerCancellable?.cancel()
         timerCancellable = nil
 
-        // End current activity if not already ended
+        let nowString = Date().toISO8601String()
+
+        // Finalize current activity data locally (no network calls yet)
+        var finalActivity: SessionActivity? = nil
         if currentActivityIndex < activities.count && activities[currentActivityIndex].endTime == nil {
-            let nowString = Date().toISO8601String()
             let duration = Int(elapsedTime)
             activities[currentActivityIndex].endTime = nowString
             activities[currentActivityIndex].duration = duration
-
-            guard let sessionId = currentSession?.id else { return }
-            try? await repository.addSessionActivity(
-                userId: userId,
-                sessionId: sessionId,
-                activity: activities[currentActivityIndex]
-            )
-
-            // Update Activity.totalPracticeTime and lastUsed for final activity
-            if let activityId = activities[currentActivityIndex].activityId {
-                try? await activityRepository.updateActivityStats(
-                    userId: userId,
-                    activityId: activityId,
-                    additionalTime: duration,
-                    lastUsed: nowString
-                )
-            }
+            finalActivity = activities[currentActivityIndex]
         }
 
-        // Calculate total duration from all activities
         let totalDuration = activities.reduce(0) { $0 + $1.duration }
 
-        // End session in Firestore
-        guard let sessionId = currentSession?.id else { return }
-        let nowString = Date().toISO8601String()
-        try? await repository.endSession(
-            userId: userId,
-            sessionId: sessionId,
-            endTime: nowString,
-            totalDuration: totalDuration
-        )
-
+        // Transition state immediately — works offline, Firestore syncs in background
         sessionState = .ended
-
-        // End Live Activity immediately (D-07)
         endLiveActivity()
+
+        // Persist to Firestore in background — Firestore queues writes offline and syncs on reconnect.
+        // Firestore's async/await updateData waits for server confirmation, so we must not await
+        // these on the main path or session completion blocks when the device is offline.
+        guard let sessionId = currentSession?.id else { return }
+        Task { [weak self] in
+            guard let self else { return }
+            if let activity = finalActivity {
+                try? await self.repository.addSessionActivity(
+                    userId: self.userId,
+                    sessionId: sessionId,
+                    activity: activity
+                )
+                if let activityId = activity.activityId {
+                    try? await self.activityRepository.updateActivityStats(
+                        userId: self.userId,
+                        activityId: activityId,
+                        additionalTime: activity.duration,
+                        lastUsed: nowString
+                    )
+                }
+            }
+            try? await self.repository.endSession(
+                userId: self.userId,
+                sessionId: sessionId,
+                endTime: nowString,
+                totalDuration: totalDuration
+            )
+        }
     }
 
     /// Add a new activity to the session
@@ -601,10 +609,10 @@ final class SessionViewModel: ObservableObject {
         // Reset all state
         elapsedTime = 0
         totalSessionTime = 0
-        pausedElapsedTime = 0
-        pausedSessionTime = 0
-        startTime = nil
-        sessionStartTime = nil
+        activityPausedElapsed = 0
+        sessionPausedElapsed = 0
+        activityStartDate = nil
+        sessionTimerStartDate = nil
         sessionState = .setup
         currentActivityIndex = 0
         activities = []
@@ -697,11 +705,11 @@ final class SessionViewModel: ObservableObject {
     private func updateLiveActivityResumed() {
         guard #available(iOS 16.2, *) else { return }
         let state = HoneLiveActivityAttributes.ContentState(
-            activityStartDate: Date() - pausedElapsedTime,
+            activityStartDate: Date() - activityPausedElapsed,
             isPaused: false,
             pausedElapsedSeconds: 0,
             activityName: currentActivityName,
-            sessionStartDate: Date() - pausedSessionTime,
+            sessionStartDate: Date() - sessionPausedElapsed,
             totalPausedSessionSeconds: 0
         )
         Task {
