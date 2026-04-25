@@ -25,6 +25,31 @@ struct SessionSummaryView: View {
 
     private let chartColors: [Color] = [.blue, .green, .orange, .purple, .red, .teal, .pink, .cyan]
 
+    @State private var selectedActivityName: String? = nil
+
+    private var practiceActivities: [SessionActivity] {
+        activities.filter { !$0.isInBetweenTime }
+    }
+
+    private func activityName(at location: CGPoint, chartSize: CGSize) -> String? {
+        let center = CGPoint(x: chartSize.width / 2, y: chartSize.height / 2)
+        let dx = location.x - center.x
+        let dy = location.y - center.y
+        let distance = sqrt(dx * dx + dy * dy)
+        let maxRadius = min(chartSize.width, chartSize.height) / 2
+        let innerRadius = maxRadius * 0.4
+        guard distance >= innerRadius, distance <= maxRadius else { return nil }
+        let angle = (atan2(dy, dx) + .pi / 2 + 2 * .pi).truncatingRemainder(dividingBy: 2 * .pi)
+        let total = Double(practiceActivities.reduce(0) { $0 + $1.duration })
+        guard total > 0 else { return nil }
+        var cumulative: Double = 0
+        for activity in practiceActivities {
+            cumulative += Double(activity.duration) / total * 2 * .pi
+            if angle < cumulative { return activity.activityName }
+        }
+        return practiceActivities.last?.activityName
+    }
+
     var body: some View {
         NavigationView {
             List {
@@ -60,34 +85,46 @@ struct SessionSummaryView: View {
                 }
 
                 // Pie chart of activity time distribution
-                let chartActivities = activities.filter { !$0.isInBetweenTime }
-                if !chartActivities.isEmpty {
+                if !practiceActivities.isEmpty {
                     Section(header: Text("Time Distribution")) {
                         VStack(spacing: 0) {
-                            Chart(chartActivities) { activity in
+                            Chart(practiceActivities) { activity in
                                 SectorMark(
                                     angle: .value("Duration", activity.duration),
                                     innerRadius: .ratio(0.4),
                                     angularInset: 1.5
                                 )
                                 .foregroundStyle(by: .value("Activity", activity.activityName))
+                                .opacity(selectedActivityName == nil || selectedActivityName == activity.activityName ? 1.0 : 0.4)
                                 .cornerRadius(4)
                             }
                             .chartForegroundStyleScale(
-                                domain: chartActivities.map { $0.activityName },
-                                range: chartActivities.indices.map { chartColors[$0 % chartColors.count] }
+                                domain: practiceActivities.map { $0.activityName },
+                                range: practiceActivities.indices.map { chartColors[$0 % chartColors.count] }
                             )
                             .chartLegend(.hidden)
                             .frame(height: 200)
                             .padding(.horizontal, 12)
                             .padding(.top, 8)
+                            .animation(.easeInOut(duration: 0.2), value: selectedActivityName)
+                            .chartOverlay { _ in
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .onTapGesture { location in
+                                            let name = activityName(at: location, chartSize: geo.size)
+                                            withAnimation(.easeInOut(duration: 0.2)) {
+                                                selectedActivityName = (selectedActivityName == name) ? nil : name
+                                            }
+                                        }
+                                }
+                            }
 
                             LazyVGrid(
                                 columns: [GridItem(.flexible()), GridItem(.flexible())],
                                 alignment: .leading,
                                 spacing: 8
                             ) {
-                                ForEach(Array(chartActivities.enumerated()), id: \.offset) { index, activity in
+                                ForEach(Array(practiceActivities.enumerated()), id: \.offset) { index, activity in
                                     HStack(spacing: 6) {
                                         Circle()
                                             .fill(chartColors[index % chartColors.count])
@@ -96,8 +133,16 @@ struct SessionSummaryView: View {
                                             .font(.caption)
                                             .lineLimit(1)
                                     }
+                                    .opacity(selectedActivityName == nil || selectedActivityName == activity.activityName ? 1.0 : 0.4)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            selectedActivityName = (selectedActivityName == activity.activityName) ? nil : activity.activityName
+                                        }
+                                    }
                                 }
                             }
+                            .animation(.easeInOut(duration: 0.2), value: selectedActivityName)
                             .padding(.horizontal, 16)
                             .padding(.top, 12)
                             .padding(.bottom, 12)
