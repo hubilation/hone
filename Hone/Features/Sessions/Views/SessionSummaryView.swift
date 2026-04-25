@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 /// Post-session summary displaying activity breakdown and notes
 /// Shows total time, per-activity times, and all notes
@@ -53,6 +54,25 @@ struct SessionSummaryView: View {
                             Text(endTime, style: .time)
                                 .foregroundColor(.secondary)
                         }
+                    }
+                }
+
+                // Pie chart of activity time distribution
+                let chartActivities = activities.filter { !$0.isInBetweenTime }
+                if !chartActivities.isEmpty {
+                    Section(header: Text("Time Distribution")) {
+                        Chart(chartActivities) { activity in
+                            SectorMark(
+                                angle: .value("Duration", activity.duration),
+                                innerRadius: .ratio(0.4),
+                                angularInset: 1.5
+                            )
+                            .foregroundStyle(by: .value("Activity", activity.activityName))
+                            .cornerRadius(4)
+                        }
+                        .frame(height: 220)
+                        .chartLegend(position: .bottom, alignment: .center)
+                        .padding(.vertical, 8)
                     }
                 }
 
