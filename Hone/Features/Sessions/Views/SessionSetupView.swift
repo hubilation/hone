@@ -17,6 +17,9 @@ struct SessionSetupView: View {
     @State private var errorMessage = ""
     /// Frozen on first load — never re-sorted mid-session to avoid list instability
     @State private var frozenGroupedActivities: [(category: String, activities: [Activity])] = []
+    /// Tracks whether a session was started from this screen, so we know to pop on completion
+    @State private var sessionStartedFromHere = false
+    @Environment(\.dismiss) private var dismiss
 
     private let userId: String
     private let sessions: [Session]
@@ -44,103 +47,111 @@ struct SessionSetupView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if activityViewModel.activeActivities.isEmpty {
-                    ContentUnavailableView(
-                        "No Activities Yet",
-                        systemImage: "music.note.list",
-                        description: Text("Create activities in the Activities tab first")
-                    )
-                } else {
-                    // Activity selection list (scrollable)
-                    List {
-                        ForEach(frozenGroupedActivities, id: \.category) { group in
-                            Section(header: Text(group.category)) {
-                                ForEach(group.activities) { activity in
-                                    SelectableActivityRow(
-                                        activity: activity,
-                                        isSelected: selectedActivityIds.contains(activity.id ?? "")
-                                    )
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        toggleSelection(activity)
-                                    }
+        VStack(spacing: 0) {
+            if activityViewModel.activeActivities.isEmpty {
+                ContentUnavailableView(
+                    "No Activities Yet",
+                    systemImage: "music.note.list",
+                    description: Text("Create activities in the Activities tab first")
+                )
+            } else {
+                // Activity selection list (scrollable)
+                List {
+                    ForEach(frozenGroupedActivities, id: \.category) { group in
+                        Section(header: Text(group.category)) {
+                            ForEach(group.activities) { activity in
+                                SelectableActivityRow(
+                                    activity: activity,
+                                    isSelected: selectedActivityIds.contains(activity.id ?? "")
+                                )
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    toggleSelection(activity)
                                 }
                             }
                         }
                     }
-
-                    // Selected activities — fixed section above Start button
-                    if !orderedActivities.isEmpty {
-                        VStack(spacing: 0) {
-                            Divider()
-
-                            HStack {
-                                Text("Session Order")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                Spacer()
-                                Text("\(orderedActivities.count) \(orderedActivities.count == 1 ? "activity" : "activities")")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                            .background(Color(uiColor: .systemGroupedBackground))
-
-                            List {
-                                ForEach(orderedActivities) { activity in
-                                    HStack {
-                                        Image(systemName: categoryIcon(for: activity))
-                                            .foregroundColor(.blue)
-                                            .frame(width: 30)
-                                        Text(activity.name)
-                                            .font(.headline)
-                                        Spacer()
-                                    }
-                                    .padding(.vertical, 4)
-                                }
-                                .onMove { from, to in
-                                    orderedActivities.move(fromOffsets: from, toOffset: to)
-                                }
-                                .onDelete { indices in
-                                    for index in indices {
-                                        if let id = orderedActivities[index].id {
-                                            selectedActivityIds.remove(id)
-                                        }
-                                    }
-                                    orderedActivities.remove(atOffsets: indices)
-                                }
-                            }
-                            .environment(\.editMode, .constant(.active))
-                            .frame(height: min(CGFloat(orderedActivities.count) * 52, 208))
-                            .listStyle(.plain)
-                        }
-                    }
-
-                    // Start Session button
-                    Button {
-                        startSession()
-                    } label: {
-                        Text("Start Practice Session")
-                            .frame(maxWidth: .infinity)
-                            .font(.headline)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .disabled(selectedActivityIds.isEmpty)
-                    .padding()
                 }
+
+                // Selected activities — fixed section above Start button
+                if !orderedActivities.isEmpty {
+                    VStack(spacing: 0) {
+                        Divider()
+
+                        HStack {
+                            Text("Session Order")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(orderedActivities.count) \(orderedActivities.count == 1 ? "activity" : "activities")")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .background(Color(uiColor: .systemGroupedBackground))
+
+                        List {
+                            ForEach(orderedActivities) { activity in
+                                HStack {
+                                    Image(systemName: categoryIcon(for: activity))
+                                        .foregroundColor(.blue)
+                                        .frame(width: 30)
+                                    Text(activity.name)
+                                        .font(.headline)
+                                    Spacer()
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            .onMove { from, to in
+                                orderedActivities.move(fromOffsets: from, toOffset: to)
+                            }
+                            .onDelete { indices in
+                                for index in indices {
+                                    if let id = orderedActivities[index].id {
+                                        selectedActivityIds.remove(id)
+                                    }
+                                }
+                                orderedActivities.remove(atOffsets: indices)
+                            }
+                        }
+                        .environment(\.editMode, .constant(.active))
+                        .frame(height: min(CGFloat(orderedActivities.count) * 52, 208))
+                        .listStyle(.plain)
+                    }
+                }
+
+                // Start Session button
+                Button {
+                    startSession()
+                } label: {
+                    Text("Start Practice Session")
+                        .frame(maxWidth: .infinity)
+                        .font(.headline)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(selectedActivityIds.isEmpty)
+                .padding()
             }
-            .navigationTitle("Setup Practice Session")
         }
+        .navigationTitle("Setup Practice Session")
         .onAppear {
             activityViewModel.startListening()
         }
         .onChange(of: activityViewModel.activeActivities) { newActivities in
             guard frozenGroupedActivities.isEmpty else { return }
             frozenGroupedActivities = buildGroupedActivities(newActivities)
+        }
+        .onChange(of: showActiveSession) { _, isShowing in
+            // When the session sheet closes after a completed session, pop back to Home
+            guard !isShowing && sessionStartedFromHere else { return }
+            if sessionViewModel.sessionState == .ended {
+                selectedActivityIds = []
+                orderedActivities = []
+                sessionStartedFromHere = false
+                dismiss()
+            }
         }
         .alert("Error", isPresented: $showingError) {
             Button("OK") { }
@@ -164,11 +175,13 @@ struct SessionSetupView: View {
     }
 
     private func startSession() {
+        sessionStartedFromHere = true
         Task {
             do {
                 try await sessionViewModel.startSession(selectedActivities: orderedActivities)
                 showActiveSession = true
             } catch {
+                sessionStartedFromHere = false
                 errorMessage = "Failed to start session: \(error.localizedDescription)"
                 showingError = true
             }
@@ -234,9 +247,11 @@ struct SelectableActivityRow: View {
 // MARK: - Preview
 
 #Preview {
-    SessionSetupView(
-        userId: "preview-user-id",
-        sessionViewModel: SessionViewModel(userId: "preview-user-id"),
-        showActiveSession: .constant(false)
-    )
+    NavigationStack {
+        SessionSetupView(
+            userId: "preview-user-id",
+            sessionViewModel: SessionViewModel(userId: "preview-user-id"),
+            showActiveSession: .constant(false)
+        )
+    }
 }
