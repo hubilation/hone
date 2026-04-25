@@ -9,12 +9,17 @@ import SwiftUI
 
 /// Home screen with Quick Start feature
 /// Provides fastest path to starting a practice session
+private enum PlanSessionRoute: Hashable {
+    case setup(preselectedIds: [String])
+}
+
 struct QuickStartView: View {
     let userId: String
     @ObservedObject var sessionViewModel: SessionViewModel
     @ObservedObject var sessionHistoryViewModel: SessionHistoryViewModel
     @Binding var showActiveSession: Bool
 
+    @State private var navigationPath = NavigationPath()
     @State private var showingActivitySelection = false
     @State private var selectedActivity: Activity?
 
@@ -50,7 +55,7 @@ struct QuickStartView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             VStack(spacing: 24) {
                 // Dynamic greeting based on today's practice count
                 Text(greetingMessage)
@@ -86,13 +91,8 @@ struct QuickStartView: View {
                     .padding(.horizontal, 40)
 
                 // Plan Session button - secondary action
-                NavigationLink {
-                    SessionSetupView(
-                        userId: userId,
-                        sessionViewModel: sessionViewModel,
-                        showActiveSession: $showActiveSession,
-                        sessions: sessionHistoryViewModel.sessions
-                    )
+                Button {
+                    navigationPath.append(PlanSessionRoute.setup(preselectedIds: []))
                 } label: {
                     Label("Plan Session", systemImage: "list.bullet")
                         .font(.headline)
@@ -125,9 +125,25 @@ struct QuickStartView: View {
             }
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: PlanSessionRoute.self) { route in
+                if case .setup(let preselectedIds) = route {
+                    SessionSetupView(
+                        userId: userId,
+                        sessionViewModel: sessionViewModel,
+                        showActiveSession: $showActiveSession,
+                        sessions: sessionHistoryViewModel.sessions,
+                        initialActivityIds: preselectedIds
+                    )
+                }
+            }
             .onAppear {
                 sessionHistoryViewModel.startListening()
             }
+        }
+        .onChange(of: showActiveSession) { _, isShowing in
+            guard !isShowing, let ids = sessionViewModel.repeatActivityIds else { return }
+            sessionViewModel.repeatActivityIds = nil
+            navigationPath.append(PlanSessionRoute.setup(preselectedIds: ids))
         }
     }
 }

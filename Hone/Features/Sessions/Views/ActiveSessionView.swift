@@ -26,7 +26,14 @@ struct ActiveSessionView: View {
     var body: some View {
         Group {
             if viewModel.sessionState == .ended {
-                SessionSummaryViewLoader(session: viewModel.currentSession, userId: viewModel.userId)
+                SessionSummaryViewLoader(
+                    session: viewModel.currentSession,
+                    userId: viewModel.userId,
+                    onStartNewPractice: { ids in
+                        viewModel.repeatActivityIds = ids
+                        dismiss()
+                    }
+                )
             } else if viewModel.sessionState == .setup {
                 // Show setup state (for quick start flow)
                 setupContent

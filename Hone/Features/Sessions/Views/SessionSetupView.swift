@@ -23,10 +23,12 @@ struct SessionSetupView: View {
 
     private let userId: String
     private let sessions: [Session]
+    private let initialActivityIds: [String]
 
-    init(userId: String, sessionViewModel: SessionViewModel, showActiveSession: Binding<Bool>, sessions: [Session] = []) {
+    init(userId: String, sessionViewModel: SessionViewModel, showActiveSession: Binding<Bool>, sessions: [Session] = [], initialActivityIds: [String] = []) {
         self.userId = userId
         self.sessions = sessions
+        self.initialActivityIds = initialActivityIds
         self._sessionViewModel = ObservedObject(wrappedValue: sessionViewModel)
         self._showActiveSession = showActiveSession
         _activityViewModel = StateObject(wrappedValue: ActivityViewModel(userId: userId))
@@ -142,6 +144,17 @@ struct SessionSetupView: View {
         .onChange(of: activityViewModel.activeActivities) { newActivities in
             guard frozenGroupedActivities.isEmpty else { return }
             frozenGroupedActivities = buildGroupedActivities(newActivities)
+            guard !initialActivityIds.isEmpty else { return }
+            var ordered: [Activity] = []
+            var selected: Set<String> = []
+            for id in initialActivityIds {
+                if let activity = newActivities.first(where: { $0.id == id }) {
+                    ordered.append(activity)
+                    selected.insert(id)
+                }
+            }
+            orderedActivities = ordered
+            selectedActivityIds = selected
         }
         .onChange(of: showActiveSession) { _, isShowing in
             // When the session sheet closes after a completed session, pop back to Home

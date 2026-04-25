@@ -54,6 +54,7 @@ final class SessionViewModel: ObservableObject {
     @Published var activities: [SessionActivity] = []
     @Published var currentSession: Session?
     @Published var historicalNotes: [PracticeNote] = []
+    @Published var repeatActivityIds: [String]? = nil
 
     // MARK: - Timer Config (Published — change only on start/pause/resume, not every tick)
 

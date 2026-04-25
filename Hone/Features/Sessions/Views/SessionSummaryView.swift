@@ -13,6 +13,7 @@ import Charts
 struct SessionSummaryView: View {
     let session: Session?
     let activities: [SessionActivity]
+    var onStartNewPractice: (([String]) -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
 
     private var totalDuration: TimeInterval {
@@ -55,6 +56,18 @@ struct SessionSummaryView: View {
             List {
                 // Total session time
                 Section(header: Text("Session Complete")) {
+                    let repeatIds = practiceActivities.compactMap { $0.activityId }
+                    if let onStartNewPractice, !repeatIds.isEmpty {
+                        Button {
+                            onStartNewPractice(repeatIds)
+                        } label: {
+                            Label("Start New Practice", systemImage: "arrow.clockwise")
+                                .fontWeight(.semibold)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .foregroundColor(.blue)
+                    }
+
                     HStack {
                         Text("Total Practice Time")
                             .fontWeight(.semibold)
@@ -249,6 +262,7 @@ struct ReactiveSessionSummaryView: View {
 struct SessionSummaryViewLoader: View {
     let session: Session?
     let userId: String
+    var onStartNewPractice: (([String]) -> Void)? = nil
     @State private var activities: [SessionActivity] = []
     @State private var isLoading = true
 
@@ -257,7 +271,7 @@ struct SessionSummaryViewLoader: View {
             if isLoading {
                 ProgressView()
             } else {
-                SessionSummaryView(session: session, activities: activities)
+                SessionSummaryView(session: session, activities: activities, onStartNewPractice: onStartNewPractice)
             }
         }
         .task {
