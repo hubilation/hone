@@ -78,7 +78,7 @@ struct ActivityListView: View {
                         }
                 } detail: {
                     if let activity = editingActivity {
-                        ActivityFormView(activity: activity, onSave: { name, category in
+                        ActivityFormView(activity: activity, userId: userId, onSave: { name, category in
                             Task {
                                 await viewModel.updateActivity(activity, name: name, category: category)
                                 editingActivity = nil
@@ -133,7 +133,7 @@ struct ActivityListView: View {
                             })
                         }
                         .sheet(item: $editingActivity) { activity in
-                            ActivityFormView(activity: activity, onSave: { name, category in
+                            ActivityFormView(activity: activity, userId: userId, onSave: { name, category in
                                 Task {
                                     await viewModel.updateActivity(activity, name: name, category: category)
                                 }
