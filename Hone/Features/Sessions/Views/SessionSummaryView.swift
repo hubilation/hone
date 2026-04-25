@@ -60,9 +60,9 @@ struct SessionSummaryView: View {
             List {
                 // Total session time
                 Section(header: Text("Session Complete")) {
-                    if let onStartNewPractice, !repeatActivityIds.isEmpty {
+                    if let handler = onStartNewPractice, !repeatActivityIds.isEmpty {
                         Button {
-                            onStartNewPractice(repeatActivityIds)
+                            handler(repeatActivityIds)
                         } label: {
                             Label("Start New Practice", systemImage: "arrow.clockwise")
                                 .fontWeight(.semibold)
