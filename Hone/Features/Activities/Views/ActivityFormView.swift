@@ -21,15 +21,22 @@ struct ActivityFormView: View {
     let activity: Activity?
     let userId: String?
     let onSave: (String, ActivityCategory) -> Void
+    let onRestore: (() -> Void)?
 
     private let repository = StatisticsRepository.shared
 
     // MARK: - Initialization
 
-    init(activity: Activity? = nil, userId: String? = nil, onSave: @escaping (String, ActivityCategory) -> Void) {
+    init(
+        activity: Activity? = nil,
+        userId: String? = nil,
+        onSave: @escaping (String, ActivityCategory) -> Void,
+        onRestore: (() -> Void)? = nil
+    ) {
         self.activity = activity
         self.userId = userId
         self.onSave = onSave
+        self.onRestore = onRestore
     }
 
     private var showStats: Bool { activity != nil && userId != nil }
@@ -54,6 +61,16 @@ struct ActivityFormView: View {
 
                 if showStats {
                     statisticsSection
+                }
+
+                if let onRestore {
+                    Section {
+                        Button("Restore to Active") {
+                            onRestore()
+                            dismiss()
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
                 }
             }
             .navigationTitle(activity == nil ? "New Activity" : "Edit Activity")

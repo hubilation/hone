@@ -43,7 +43,7 @@ struct ActivityListView: View {
 
                             ToolbarItem(placement: .navigationBarLeading) {
                                 NavigationLink {
-                                    ArchivedActivityListView(viewModel: viewModel)
+                                    ArchivedActivityListView(viewModel: viewModel, userId: userId)
                                 } label: {
                                     Label("Archived", systemImage: "archivebox")
                                 }
@@ -108,7 +108,7 @@ struct ActivityListView: View {
 
                             ToolbarItem(placement: .navigationBarLeading) {
                                 NavigationLink {
-                                    ArchivedActivityListView(viewModel: viewModel)
+                                    ArchivedActivityListView(viewModel: viewModel, userId: userId)
                                 } label: {
                                     Label("Archived", systemImage: "archivebox")
                                 }
