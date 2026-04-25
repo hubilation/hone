@@ -32,6 +32,10 @@ struct SessionSummaryView: View {
         activities.filter { !$0.isInBetweenTime }
     }
 
+    private var repeatActivityIds: [String] {
+        practiceActivities.compactMap { $0.activityId }
+    }
+
     private func activityName(at location: CGPoint, chartSize: CGSize) -> String? {
         let center = CGPoint(x: chartSize.width / 2, y: chartSize.height / 2)
         let dx = location.x - center.x
@@ -56,10 +60,9 @@ struct SessionSummaryView: View {
             List {
                 // Total session time
                 Section(header: Text("Session Complete")) {
-                    let repeatIds = practiceActivities.compactMap { $0.activityId }
-                    if let onStartNewPractice, !repeatIds.isEmpty {
+                    if let onStartNewPractice, !repeatActivityIds.isEmpty {
                         Button {
-                            onStartNewPractice(repeatIds)
+                            onStartNewPractice(repeatActivityIds)
                         } label: {
                             Label("Start New Practice", systemImage: "arrow.clockwise")
                                 .fontWeight(.semibold)
