@@ -22,7 +22,7 @@ progress:
 **Current Plan:** 04-04-PLAN.md (complete)
 **Status:** Phase 4 Complete - Session history and statistics fully delivered and human verified
 
-Last activity: 2026-04-14 - Completed Phase 04 Plan 04-04: Navigation integration human verified; Phase 4 (Session History & Statistics) fully complete
+Last activity: 2026-04-25 - Completed quick task 260425-hs5: Update Edit Activity page to show all stats for that activity
 
 ---
 
@@ -315,7 +315,8 @@ None currently. Roadmap validated with 100% requirement coverage.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
-| 1 | Fix automatic scroll behavior to keep timer near top | 2026-03-08 | 1c9f081 | [1-fix-automatic-scroll-behavior-to-keep-ti](./ quick/1-fix-automatic-scroll-behavior-to-keep-ti/) |
+| 1 | Fix automatic scroll behavior to keep timer near top | 2026-03-08 | 1c9f081 | [1-fix-automatic-scroll-behavior-to-keep-ti](./quick/1-fix-automatic-scroll-behavior-to-keep-ti/) |
+| 260425-hs5 | Update Edit Activity page to show all stats for that activity | 2026-04-25 | TBD | [260425-hs5-update-the-edit-activity-page-to-also-co](./quick/260425-hs5-update-the-edit-activity-page-to-also-co/) |
 
 ### Research Notes
 
