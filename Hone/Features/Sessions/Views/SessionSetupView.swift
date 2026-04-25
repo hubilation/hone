@@ -13,7 +13,6 @@ struct SessionSetupView: View {
     @Binding var showActiveSession: Bool
     @State private var selectedActivityIds: Set<String> = []
     @State private var orderedActivities: [Activity] = []
-    @State private var isEditMode: EditMode = .inactive
     @State private var showingError = false
     @State private var errorMessage = ""
     /// Frozen on first load — never re-sorted mid-session to avoid list instability
@@ -47,17 +46,15 @@ struct SessionSetupView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Activity selection list
                 if activityViewModel.activeActivities.isEmpty {
-                    // Empty state
                     ContentUnavailableView(
                         "No Activities Yet",
                         systemImage: "music.note.list",
                         description: Text("Create activities in the Activities tab first")
                     )
                 } else {
+                    // Activity selection list (scrollable)
                     List {
-                        // Activity selection section - grouped by category, sorted by recency
                         ForEach(frozenGroupedActivities, id: \.category) { group in
                             Section(header: Text(group.category)) {
                                 ForEach(group.activities) { activity in
@@ -72,19 +69,34 @@ struct SessionSetupView: View {
                                 }
                             }
                         }
+                    }
 
-                        // Session order section (only show if activities selected)
-                        if !orderedActivities.isEmpty {
-                            Section {
+                    // Selected activities — fixed section above Start button
+                    if !orderedActivities.isEmpty {
+                        VStack(spacing: 0) {
+                            Divider()
+
+                            HStack {
+                                Text("Session Order")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                Spacer()
+                                Text("\(orderedActivities.count) \(orderedActivities.count == 1 ? "activity" : "activities")")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                            .background(Color(uiColor: .systemGroupedBackground))
+
+                            List {
                                 ForEach(orderedActivities) { activity in
                                     HStack {
                                         Image(systemName: categoryIcon(for: activity))
                                             .foregroundColor(.blue)
                                             .frame(width: 30)
-
                                         Text(activity.name)
                                             .font(.headline)
-
                                         Spacer()
                                     }
                                     .padding(.vertical, 4)
@@ -92,31 +104,19 @@ struct SessionSetupView: View {
                                 .onMove { from, to in
                                     orderedActivities.move(fromOffsets: from, toOffset: to)
                                 }
-                            } header: {
-                                HStack {
-                                    Text("Session Order")
-                                    Spacer()
-                                    if isEditMode == .active {
-                                        Text("Drag to reorder")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
+                                .onDelete { indices in
+                                    for index in indices {
+                                        if let id = orderedActivities[index].id {
+                                            selectedActivityIds.remove(id)
+                                        }
                                     }
+                                    orderedActivities.remove(atOffsets: indices)
                                 }
                             }
+                            .environment(\.editMode, .constant(.active))
+                            .frame(height: min(CGFloat(orderedActivities.count) * 52, 208))
+                            .listStyle(.plain)
                         }
-                    }
-
-                    // Selected count badge
-                    if !selectedActivityIds.isEmpty {
-                        HStack {
-                            Text("\(selectedActivityIds.count) \(selectedActivityIds.count == 1 ? "activity" : "activities") selected")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 8)
-                        .background(Color(uiColor: .systemBackground))
                     }
 
                     // Start Session button
@@ -134,14 +134,6 @@ struct SessionSetupView: View {
                 }
             }
             .navigationTitle("Setup Practice Session")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if !orderedActivities.isEmpty {
-                        EditButton()
-                    }
-                }
-            }
-            .environment(\.editMode, $isEditMode)
         }
         .onAppear {
             activityViewModel.startListening()
@@ -163,11 +155,9 @@ struct SessionSetupView: View {
         guard let activityId = activity.id else { return }
 
         if selectedActivityIds.contains(activityId) {
-            // Deselect: remove from set and array
             selectedActivityIds.remove(activityId)
             orderedActivities.removeAll { $0.id == activityId }
         } else {
-            // Select: add to set and append to array (selection order)
             selectedActivityIds.insert(activityId)
             orderedActivities.append(activity)
         }
@@ -177,7 +167,6 @@ struct SessionSetupView: View {
         Task {
             do {
                 try await sessionViewModel.startSession(selectedActivities: orderedActivities)
-                // Show active session immediately - no sheet to dismiss here
                 showActiveSession = true
             } catch {
                 errorMessage = "Failed to start session: \(error.localizedDescription)"
