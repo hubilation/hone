@@ -22,7 +22,7 @@ progress:
 **Current Plan:** 04-04-PLAN.md (complete)
 **Status:** Phase 4 Complete - Session history and statistics fully delivered and human verified
 
-Last activity: 2026-04-25 - Completed quick task 260425-hs5: Update Edit Activity page to show all stats for that activity
+Last activity: 2026-04-25 - Completed quick task 260425-i30: Update plan session page selected activities UI
 
 ---
 
@@ -316,7 +316,8 @@ None currently. Roadmap validated with 100% requirement coverage.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Fix automatic scroll behavior to keep timer near top | 2026-03-08 | 1c9f081 | [1-fix-automatic-scroll-behavior-to-keep-ti](./quick/1-fix-automatic-scroll-behavior-to-keep-ti/) |
-| 260425-hs5 | Update Edit Activity page to show all stats for that activity | 2026-04-25 | TBD | [260425-hs5-update-the-edit-activity-page-to-also-co](./quick/260425-hs5-update-the-edit-activity-page-to-also-co/) |
+| 260425-hs5 | Update Edit Activity page to show all stats for that activity | 2026-04-25 | 1cefe13 | [260425-hs5-update-the-edit-activity-page-to-also-co](./quick/260425-hs5-update-the-edit-activity-page-to-also-co/) |
+| 260425-i30 | Update plan session page: selected items fixed at bottom with drag/swipe | 2026-04-25 | ebc034e | [260425-i30-update-the-plan-session-page-selected-it](./quick/260425-i30-update-the-plan-session-page-selected-it/) |
 
 ### Research Notes
 
