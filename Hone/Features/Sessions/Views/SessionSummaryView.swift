@@ -72,6 +72,7 @@ struct SessionSummaryView: View {
                         }
                         .frame(height: 220)
                         .chartLegend(position: .bottom, alignment: .center)
+                        .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                     }
                 }
