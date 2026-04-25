@@ -23,6 +23,8 @@ struct SessionSummaryView: View {
         formatDuration(totalDuration)
     }
 
+    private let chartColors: [Color] = [.blue, .green, .orange, .purple, .red, .teal, .pink, .cyan]
+
     var body: some View {
         NavigationView {
             List {
@@ -61,19 +63,45 @@ struct SessionSummaryView: View {
                 let chartActivities = activities.filter { !$0.isInBetweenTime }
                 if !chartActivities.isEmpty {
                     Section(header: Text("Time Distribution")) {
-                        Chart(chartActivities) { activity in
-                            SectorMark(
-                                angle: .value("Duration", activity.duration),
-                                innerRadius: .ratio(0.4),
-                                angularInset: 1.5
+                        VStack(spacing: 0) {
+                            Chart(chartActivities) { activity in
+                                SectorMark(
+                                    angle: .value("Duration", activity.duration),
+                                    innerRadius: .ratio(0.4),
+                                    angularInset: 1.5
+                                )
+                                .foregroundStyle(by: .value("Activity", activity.activityName))
+                                .cornerRadius(4)
+                            }
+                            .chartForegroundStyleScale(
+                                domain: chartActivities.map { $0.activityName },
+                                range: chartActivities.indices.map { chartColors[$0 % chartColors.count] }
                             )
-                            .foregroundStyle(by: .value("Activity", activity.activityName))
-                            .cornerRadius(4)
+                            .chartLegend(.hidden)
+                            .frame(height: 200)
+                            .padding(.horizontal, 12)
+                            .padding(.top, 8)
+
+                            LazyVGrid(
+                                columns: [GridItem(.flexible()), GridItem(.flexible())],
+                                alignment: .leading,
+                                spacing: 8
+                            ) {
+                                ForEach(Array(chartActivities.enumerated()), id: \.offset) { index, activity in
+                                    HStack(spacing: 6) {
+                                        Circle()
+                                            .fill(chartColors[index % chartColors.count])
+                                            .frame(width: 10, height: 10)
+                                        Text(activity.activityName)
+                                            .font(.caption)
+                                            .lineLimit(1)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.top, 12)
+                            .padding(.bottom, 12)
                         }
-                        .frame(height: 220)
-                        .chartLegend(position: .bottom, alignment: .center)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
                     }
                 }
 
