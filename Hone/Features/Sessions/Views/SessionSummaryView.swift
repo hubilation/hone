@@ -110,6 +110,7 @@ struct SessionSummaryView: View {
                             .chartOverlay { _ in
                                 GeometryReader { geo in
                                     Color.clear
+                                        .contentShape(Rectangle())
                                         .onTapGesture { location in
                                             let name = activityName(at: location, chartSize: geo.size)
                                             withAnimation(.easeInOut(duration: 0.2)) {
@@ -146,6 +147,12 @@ struct SessionSummaryView: View {
                             .padding(.horizontal, 16)
                             .padding(.top, 12)
                             .padding(.bottom, 12)
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selectedActivityName = nil
+                            }
                         }
                     }
                 }
