@@ -145,6 +145,11 @@ struct QuickStartView: View {
             sessionViewModel.repeatActivityIds = nil
             navigationPath.append(PlanSessionRoute.setup(preselectedIds: ids))
         }
+        .onChange(of: sessionViewModel.repeatActivityIds) { _, ids in
+            guard let ids, !showActiveSession else { return }
+            sessionViewModel.repeatActivityIds = nil
+            navigationPath.append(PlanSessionRoute.setup(preselectedIds: ids))
+        }
     }
 }
 

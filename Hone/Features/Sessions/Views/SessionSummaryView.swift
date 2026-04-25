@@ -251,11 +251,13 @@ struct SessionSummaryView: View {
 struct ReactiveSessionSummaryView: View {
     let session: Session?
     @ObservedObject var viewModel: SessionHistoryViewModel
+    var onStartNewPractice: (([String]) -> Void)? = nil
 
     var body: some View {
         SessionSummaryView(
             session: session,
-            activities: viewModel.sessionActivities[session?.id ?? ""] ?? []
+            activities: viewModel.sessionActivities[session?.id ?? ""] ?? [],
+            onStartNewPractice: onStartNewPractice
         )
     }
 }

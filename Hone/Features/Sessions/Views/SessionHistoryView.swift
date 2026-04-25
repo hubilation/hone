@@ -8,9 +8,13 @@ struct SessionHistoryView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private let userId: String
+    private let sessionViewModel: SessionViewModel
+    @Binding private var selectedTab: Int
 
-    init(userId: String) {
+    init(userId: String, sessionViewModel: SessionViewModel, selectedTab: Binding<Int>) {
         self.userId = userId
+        self.sessionViewModel = sessionViewModel
+        self._selectedTab = selectedTab
         _viewModel = StateObject(wrappedValue: SessionHistoryViewModel(userId: userId))
     }
 
@@ -34,7 +38,12 @@ struct SessionHistoryView: View {
                     if let session = selectedSession {
                         ReactiveSessionSummaryView(
                             session: session,
-                            viewModel: viewModel
+                            viewModel: viewModel,
+                            onStartNewPractice: { ids in
+                                sessionViewModel.repeatActivityIds = ids
+                                selectedSession = nil
+                                selectedTab = 0
+                            }
                         )
                     } else {
                         ContentUnavailableView(
@@ -61,7 +70,12 @@ struct SessionHistoryView: View {
                         .sheet(item: $selectedSession) { session in
                             ReactiveSessionSummaryView(
                                 session: session,
-                                viewModel: viewModel
+                                viewModel: viewModel,
+                                onStartNewPractice: { ids in
+                                    sessionViewModel.repeatActivityIds = ids
+                                    selectedSession = nil
+                                    selectedTab = 0
+                                }
                             )
                         }
                 }
@@ -114,5 +128,9 @@ struct SessionHistoryView: View {
 }
 
 #Preview {
-    SessionHistoryView(userId: "preview-user")
+    SessionHistoryView(
+        userId: "preview-user",
+        sessionViewModel: SessionViewModel(userId: "preview-user"),
+        selectedTab: .constant(3)
+    )
 }

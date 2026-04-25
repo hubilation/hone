@@ -94,7 +94,7 @@ struct MainAppView: View {
                 }
                 .tag(2)
 
-            SessionHistoryView(userId: user.id ?? "")
+            SessionHistoryView(userId: user.id ?? "", sessionViewModel: sessionViewModel, selectedTab: $selectedTab)
                 .modifier(OfflineBannerModifier())
                 .modifier(CompactSessionHeader(sessionViewModel: sessionViewModel, showActiveSession: $showActiveSession))
                 .tabItem {
