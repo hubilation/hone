@@ -28,3 +28,6 @@ serviceAccountKey.json
 .planning/
 .clone/
 build/
+
+# Stray build output from misparsed -I flag
+-I/
